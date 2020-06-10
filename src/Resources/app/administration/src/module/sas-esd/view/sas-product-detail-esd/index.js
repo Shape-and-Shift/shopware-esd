@@ -10,6 +10,12 @@ Component.register('sas-product-detail-esd', {
 
     inject: ['repositoryFactory'],
 
+    data() {
+        return {
+            activeModal: '',
+        };
+    },
+
     computed: {
         ...mapState('swProductDetail', [
             'product'
@@ -58,6 +64,10 @@ Component.register('sas-product-detail-esd', {
         onMediaDropped(dropItem) {
             // to be consistent refetch entity with repository
             this.onSetMediaItem({ targetId: dropItem.id });
-        }
+        },
+
+        openModal(value) {
+            this.activeModal = value;
+        },
     }
 })

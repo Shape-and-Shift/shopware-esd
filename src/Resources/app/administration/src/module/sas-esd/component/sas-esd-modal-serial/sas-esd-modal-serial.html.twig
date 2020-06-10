@@ -1,0 +1,39 @@
+{% block sas_esd_modal_serial %}
+<sw-modal :title="$tc('sas-esd.serialModal.modalHeadline')"
+          @modal-close="$emit('modal-close')"
+          class="sas-esl-modal-serial"
+          :isLoading="isLoading">
+
+    {% block sas_esd_modal_serial_main %}
+        <div class="sas-esl-modal-serial__main">
+            <sw-textarea-field
+                type="textarea"
+                :label="$tc('sas-esd.serialModal.textAreaSerialNumber.label')"
+                :placeholder="$tc('sas-esd.serialModal.textAreaSerialNumber.placeholder')">
+            </sw-textarea-field>
+        </div>
+    {% endblock %}
+
+    {% block ssas_esd_modal_serial_footer %}
+        <template slot="modal-footer">
+            {% block ssas_esd_modal_serial_footer_button_cancel %}
+            <sw-button @click="cancelDeliveryConfiguration"
+                       size="small">
+                {{ $tc('sas-esd.serialModal.cancel') }}
+            </sw-button>
+            {% endblock %}
+
+            {% block ssas_esd_modal_serial_footer_button_save %}
+            <sw-button
+                @click="saveDeliveryConfiguration"
+                variant="primary"
+                size="small">
+                {{ $tc('sas-esd.serialModal.save') }}
+            </sw-button>
+            {% endblock %}
+        </template>
+    {% endblock %}
+
+
+</sw-modal>
+{% endblock %}

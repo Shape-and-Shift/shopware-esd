@@ -13,8 +13,22 @@
         },
         "emptyStateDescription": "There is no ESD configured for this product, yet.",
         "buttonAddEsd": "Add new ESD",
+        "serialSwitch": "Enable serial numbers",
         "overview": {
             "addNewEsd": "Add new ESD"
+        },
+        "media": {
+            "label": "Upload your file"
+        },
+        "serialModal": {
+            "modalHeadline": "Add serial numbers",
+            "buttonOpen": "Add serial numbers",
+            "cancel": "Cancel",
+            "save": "Import serial numbers",
+            "textAreaSerialNumber": {
+                "label": "Serial numbers",
+                "placeholder": "New line for each serial number"
+            }
         }
     }
 }

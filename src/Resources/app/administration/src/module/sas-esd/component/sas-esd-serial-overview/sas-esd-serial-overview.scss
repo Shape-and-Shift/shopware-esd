@@ -1,0 +1,25 @@
+@import "~scss/variables";
+$sw-products-variants-generated-variants-toolbar-background: #f8f9fa;
+$sw-products-variants-generated-variants-toolbar-border: $color-steam-cloud;
+
+.sas-esd-serial-overview {
+    .sw-card__content {
+        padding: 0;
+    }
+
+    .sw-configuration-option-list__toolbar {
+        background-color: $sw-products-variants-generated-variants-toolbar-background;
+        border-bottom: 1px solid $sw-products-variants-generated-variants-toolbar-border;
+        padding: 25px;
+
+        .sw-button {
+            height: 32px;
+            line-height: 16px;
+
+            .sw-icon {
+                width: 15px;
+                height: 15px;
+            }
+        }
+    }
+}

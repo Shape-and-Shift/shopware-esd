@@ -1,28 +1,35 @@
 {% block sas_product_detail_esd %}
-<sw-card :hero="false" class="sas-product-detail-esd__generated-esd">
+<div>
+    <sw-card :hero="false" class="sas-product-detail-esd__generated-esd">
+        <sas-esd-modal-serial
+            v-if="activeModal === 'serialModal'"
+            @modal-close="activeModal = ''"
+        ></sas-esd-modal-serial>
 
-    <h3>ESD</h3>
-    {{ product.extensions.esd }}
-    <br>
-    <h3>ESD MEDIA</h3>
-    {{ product.extensions.esdMedia }}
+        <sw-upload-listener
+            :uploadTag="product.id"
+            @media-upload-finish="onSetMediaItem"
+            autoUpload>
+        </sw-upload-listener>
+        <sw-media-upload-v2
+            :label="$tc('sas-esd.media.label')"
+            variant="regular"
+            :source="mediaItem"
+            :uploadTag="product.id"
+            :allowMultiSelect="false"
+            :defaultFolder="product.getEntityName()"
+            @media-drop="onMediaDropped">
+        </sw-media-upload-v2>
 
-    <sw-switch-field label="Serial" v-model="product.extensions.esd.hasSerial"></sw-switch-field>
+        <sw-switch-field :label="$tc('sas-esd.serialSwitch')" v-model="product.extensions.esd.hasSerial"></sw-switch-field>
 
-    <sw-upload-listener
-        :uploadTag="product.id"
-        @media-upload-finish="onSetMediaItem"
-        autoUpload>
-    </sw-upload-listener>
-    <sw-media-upload-v2
-        :label="$tc('sw-category.base.menu.imageLabel')"
-        variant="regular"
-        :source="mediaItem"
-        :uploadTag="product.id"
-        :allowMultiSelect="false"
-        :defaultFolder="product.getEntityName()"
-        @media-drop="onMediaDropped">
-    </sw-media-upload-v2>
+    </sw-card>
 
-</sw-card>
+    <sw-card
+        :large="false"
+        v-if="product.extensions.esd.hasSerial"
+        class="sas-esd-serial-overview">
+        <sas-esd-serial-overview></sas-esd-serial-overview>
+    </sw-card>
+</div>
 {% endblock %}

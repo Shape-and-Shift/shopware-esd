@@ -1,0 +1,33 @@
+{% block sas_esd_serial_overview %}
+    <div class="sas-esd-serial-overview">
+        {% block  sas_esd_serial_overview_option_list_toolbar %}
+            <div class="sw-configuration-option-list__toolbar">
+                {% block  sas_esd_serial_overview_option_list_toolbar_container %}
+                    <sw-container columns="1fr minmax(50px, max-content) minmax(100px, 180px) minmax(100px, 180px)" gap="0 10px">
+                        {% block  sas_esd_serial_overview_option_list_toolbar_buttons %}
+                            <sw-button variant="ghost" @click="openModal('serialModal')">
+                                {{ $tc('sas-esd.serialModal.buttonOpen') }}
+                            </sw-button>
+                        {% endblock %}
+                    </sw-container>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block sas_esd_serial_overview_data_grid %}
+            <sw-data-grid
+                :dataSource="[
+                    { id: 'uuid1', company: 'Wordify', name: 'Portia Jobson' },
+                    { id: 'uuid2', company: 'Twitternation', name: 'Baxy Eardley' },
+                    { id: 'uuid3', company: 'Skidoo', name: 'Arturo Staker' },
+                    { id: 'uuid4', company: 'Meetz', name: 'Dalston Top' },
+                    { id: 'uuid5', company: 'Photojam', name: 'Neddy Jensen' }
+                ]"
+                :columns="[
+                     { property: 'name', label: 'Name', rawData: true },
+                     { property: 'company', label: 'Company', rawData: true }
+                ]">
+            </sw-data-grid>
+        {% endblock %}
+    </div>
+{% endblock %}
