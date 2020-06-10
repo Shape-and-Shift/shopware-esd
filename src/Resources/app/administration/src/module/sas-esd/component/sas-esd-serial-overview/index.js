@@ -11,4 +11,8 @@ Component.register('sas-esd-serial-overview', {
             isLoading: false
         };
     },
+
+    methods: {
+
+    }
 });

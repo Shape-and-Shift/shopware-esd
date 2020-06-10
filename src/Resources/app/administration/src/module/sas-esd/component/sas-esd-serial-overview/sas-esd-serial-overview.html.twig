@@ -17,15 +17,17 @@
         {% block sas_esd_serial_overview_data_grid %}
             <sw-data-grid
                 :dataSource="[
-                    { id: 'uuid1', company: 'Wordify', name: 'Portia Jobson' },
-                    { id: 'uuid2', company: 'Twitternation', name: 'Baxy Eardley' },
-                    { id: 'uuid3', company: 'Skidoo', name: 'Arturo Staker' },
-                    { id: 'uuid4', company: 'Meetz', name: 'Dalston Top' },
-                    { id: 'uuid5', company: 'Photojam', name: 'Neddy Jensen' }
+                    { id: 'uuid1', serial: '10ea835c91da422f8f94a73592dacd9e', customer: 'John Doe', assigned: '10.06.2020' },
+                    { id: 'uuid2', serial: '4d296f60c75041d094a89bbba0f33f60', customer: 'Max Mustermann', assigned: '10.06.2020' },
+                    { id: 'uuid3', serial: '5af4d4dba66142b58bac8d4c9bfac52e', customer: 'Jeffrey Way', assigned: '10.06.2020' },
+                    { id: 'uuid4', serial: 'e72970b634704ff1acf1ccd84df96fb4', customer: 'Christopher Doe', assigned: '10.06.2020' },
+                    { id: 'uuid5', serial: 'a942125cd342427bafbf9e068f83987b' },
+                    { id: 'uuid6', serial: 'b6471cdeed3c416f9d826c0e12362446' },
                 ]"
                 :columns="[
-                     { property: 'name', label: 'Name', rawData: true },
-                     { property: 'company', label: 'Company', rawData: true }
+                     { property: 'serial', label: 'Serial', rawData: true },
+                     { property: 'customer', label: 'Customer', rawData: true },
+                     { property: 'assigned', label: 'Assigned', rawData: true }
                 ]">
             </sw-data-grid>
         {% endblock %}
