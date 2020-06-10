@@ -1,0 +1,12 @@
+{
+    "sas-esd": {
+        "general": {
+            "tabLabel": "ESD"
+        },
+        "tab": {
+            "esdCard": {
+                "title": "Elektronischer Software-Download"
+            }
+        }
+    }
+}

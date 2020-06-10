@@ -1,0 +1,28 @@
+{% block sas_product_detail_esd %}
+<sw-card :hero="false" class="sas-product-detail-esd__generated-esd">
+
+    <h3>ESD</h3>
+    {{ product.extensions.esd }}
+    <br>
+    <h3>ESD MEDIA</h3>
+    {{ product.extensions.esdMedia }}
+
+    <sw-switch-field label="Serial" v-model="product.extensions.esd.hasSerial"></sw-switch-field>
+
+    <sw-upload-listener
+        :uploadTag="product.id"
+        @media-upload-finish="onSetMediaItem"
+        autoUpload>
+    </sw-upload-listener>
+    <sw-media-upload-v2
+        :label="$tc('sw-category.base.menu.imageLabel')"
+        variant="regular"
+        :source="mediaItem"
+        :uploadTag="product.id"
+        :allowMultiSelect="false"
+        :defaultFolder="product.getEntityName()"
+        @media-drop="onMediaDropped">
+    </sw-media-upload-v2>
+
+</sw-card>
+{% endblock %}

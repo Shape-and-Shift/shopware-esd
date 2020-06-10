@@ -1,0 +1,23 @@
+{% block sas_product_esd_form %}
+    <div class="product-detail-esd-form">
+        {% block sas_prduct_esd_form_card %}
+            <sw-card title="Title">
+
+                {% block sas_prduct_esd_form_context_menu %}
+                    <div class="sas-product-detail-esd__context-button">
+                        <sw-context-button>
+                            {% block sas_product_esd_form_context_button_delete %}
+                                <sw-context-menu-item variant="danger"
+                                                      class="sas-product-esd-context-item__delete-action"
+                                                      @click="onShowDeleteModal">
+                                    {{ $tc('sw-product.crossselling.buttonDeleteCrossSelling') }}
+                                </sw-context-menu-item>
+                            {% endblock %}
+                        </sw-context-button>
+                    </div>
+                {% endblock %}
+
+            </sw-card>
+        {% endblock %}
+    </div>
+{% endblock %}

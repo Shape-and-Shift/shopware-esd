@@ -1,0 +1,20 @@
+{
+    "sas-esd": {
+        "general": {
+            "tabLabel": "ESD"
+        },
+        "tab": {
+            "esdCard": {
+                "title": "Electronic Software Delivery",
+                "mediaUpload": {
+                    "label": "Your downloadable products"
+                }
+            }
+        },
+        "emptyStateDescription": "There is no ESD configured for this product, yet.",
+        "buttonAddEsd": "Add new ESD",
+        "overview": {
+            "addNewEsd": "Add new ESD"
+        }
+    }
+}
