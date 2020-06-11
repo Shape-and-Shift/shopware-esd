@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -32,7 +33,7 @@ class EsdOrderEntity extends Entity
     protected $serialId;
 
     /**
-     * @var
+     * @var EsdSerialEntity
      */
     protected $serial;
 
@@ -79,5 +80,37 @@ class EsdOrderEntity extends Entity
     public function setOrderLineItem(OrderLineItemEntity $orderLineItem): void
     {
         $this->orderLineItem = $orderLineItem;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSerialId(): ?string
+    {
+        return $this->serialId;
+    }
+
+    /**
+     * @param string|null $serialId
+     */
+    public function setSerialId(?string $serialId): void
+    {
+        $this->serialId = $serialId;
+    }
+
+    /**
+     * @return EsdSerialEntity|null
+     */
+    public function getSerial(): ?EsdSerialEntity
+    {
+        return $this->serial;
+    }
+
+    /**
+     * @param EsdSerialEntity $serial
+     */
+    public function setSerial(EsdSerialEntity $serial): void
+    {
+        $this->serial = $serial;
     }
 }

@@ -14,7 +14,8 @@
                 "product": "Product",
                 "price": "Price",
                 "purchaseDate": "Purchase date",
-                "action": "Action"
+                "action": "Action",
+                "serial": "Serial"
             }
         }
     }

@@ -29,6 +29,7 @@
                                         <tr>
                                             <th scope="col">{{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}</th>
                                             <th>{{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}</th>
+                                            <th>{{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}</th>
                                             <th>{{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}</th>
                                             <th>{{ "sasEsd.account.downloadTable.action"|trans|sw_sanitize }}</th>
                                         </tr>
@@ -36,15 +37,15 @@
                                     <tbody>
                                     {% for item in items %}
                                         {% if item.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" %}
-
-                                            {{ dump(item) }}
-                                            {{ dump(item.serial.id) }}
                                             <tr>
                                                 <th scope="row">
                                                     {{ item.orderLineItem.label }}
                                                 </th>
                                                 <td>
                                                     {{ item.orderLineItem.totalPrice }}
+                                                </td>
+                                                <td>
+                                                    {{ item.serial.serial }}
                                                 </td>
                                                 <td>
                                                     {{ item.orderLineItem.createdAt|date }}
