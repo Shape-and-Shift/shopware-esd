@@ -70,7 +70,7 @@ class OrderPlacedSubscriber
             /** @var ProductEntity */
             $productData = $products->get($orderLineItem->getProductId());
 
-            if ($productData->hasExtension('esd') === false) {
+            if ($productData->hasExtension('esd') === false || $productData->getExtension('esd')->hasSerial() === false && $productData->getExtension('esd')->getMedia() === null) {
                 continue;
             }
 

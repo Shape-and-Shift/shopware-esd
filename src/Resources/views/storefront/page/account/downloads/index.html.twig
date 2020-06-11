@@ -50,7 +50,11 @@
                                                 <td>
                                                     {{ item.orderLineItem.createdAt|date }}
                                                 </td>
-                                                <td><a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {id: item.id}) }}">Download</a></td>
+                                                <td>
+                                                    {% if item.esd.media|length %}
+                                                        <a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {id: item.id}) }}">Download</a>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endif %}
                                     {% endfor %}
