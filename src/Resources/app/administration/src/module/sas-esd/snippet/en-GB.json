@@ -12,8 +12,14 @@
             }
         },
         "emptyStateDescription": "There is no ESD configured for this product, yet.",
+        "emptyStateSerialDescription" : "There are no serials configured for this ESD",
         "buttonAddEsd": "Add new ESD",
+        "contextMenuDelete": "Delete",
         "serialSwitch": "Enable serial numbers",
+        "notification": {
+            "success": "Serials successfully saved",
+            "error": "There was an error while saving your serials"
+        },
         "overview": {
             "addNewEsd": "Add new ESD"
         },

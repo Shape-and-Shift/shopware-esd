@@ -23,3 +23,18 @@ $sw-products-variants-generated-variants-toolbar-border: $color-steam-cloud;
         }
     }
 }
+
+.sas-esd-serial-overview__empty-state-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+
+    .sas-esd-serial-overview__empty-state-inner--label {
+        max-width: 300px;
+        margin-top: 25px;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+}

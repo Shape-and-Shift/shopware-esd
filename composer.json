@@ -2,7 +2,15 @@
   "name": "sas/esd",
   "description": "ESD plugin",
   "type": "shopware-platform-plugin",
-  "license": "MIT",
+    "version": "v1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Shape & Shift",
+            "role": "Manufacturer",
+            "homepage": "https://shapeandshift.dev"
+        }
+    ],
   "autoload": {
     "psr-4": {
       "Sas\\Esd\\": "src/"

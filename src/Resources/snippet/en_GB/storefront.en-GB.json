@@ -1,0 +1,21 @@
+{
+    "sasEsd": {
+        "account": {
+            "headline": "Downloads",
+            "subline": "Here you will find all your purchased downloads.",
+            "noPurchase": "You don't have purchased any download yet.",
+            "sidebar": {
+                "link": {
+                    "title": "Your downloads",
+                    "label": "Downloads"
+                }
+            },
+            "downloadTable": {
+                "product": "Product",
+                "price": "Price",
+                "purchaseDate": "Purchase date",
+                "action": "Action"
+            }
+        }
+    }
+}

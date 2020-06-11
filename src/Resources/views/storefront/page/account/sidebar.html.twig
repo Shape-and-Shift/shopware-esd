@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/page/account/sidebar.html.twig' %}
+
+{% block page_account_sidebar_link_orders %}
+    {{ parent() }}
+
+    <a href="{{ path('frontend.account.downloads.page') }}"
+       title="{{ "sasEsd.account.sidebar.link.title"|trans|sw_sanitize }}"
+       class="list-group-item list-group-item-action account-aside-item{% if controllerName is same as('Downloads') %} is-active{% endif %}">
+        {{ "sasEsd.account.sidebar.link.label"|trans|sw_sanitize }}
+    </a>
+{% endblock %}

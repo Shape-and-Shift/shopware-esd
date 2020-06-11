@@ -1,5 +1,7 @@
 {% block sas_esd_serial_overview %}
-    <div class="sas-esd-serial-overview">
+<div>
+    <div class="sas-esd-serial-overview" v-if="!isLoading && serials && serials.length > 0">
+
         {% block  sas_esd_serial_overview_option_list_toolbar %}
             <div class="sw-configuration-option-list__toolbar">
                 {% block  sas_esd_serial_overview_option_list_toolbar_container %}
@@ -16,20 +18,105 @@
 
         {% block sas_esd_serial_overview_data_grid %}
             <sw-data-grid
-                :dataSource="[
-                    { id: 'uuid1', serial: '10ea835c91da422f8f94a73592dacd9e', customer: 'John Doe', assigned: '10.06.2020' },
-                    { id: 'uuid2', serial: '4d296f60c75041d094a89bbba0f33f60', customer: 'Max Mustermann', assigned: '10.06.2020' },
-                    { id: 'uuid3', serial: '5af4d4dba66142b58bac8d4c9bfac52e', customer: 'Jeffrey Way', assigned: '10.06.2020' },
-                    { id: 'uuid4', serial: 'e72970b634704ff1acf1ccd84df96fb4', customer: 'Christopher Doe', assigned: '10.06.2020' },
-                    { id: 'uuid5', serial: 'a942125cd342427bafbf9e068f83987b' },
-                    { id: 'uuid6', serial: 'b6471cdeed3c416f9d826c0e12362446' },
-                ]"
-                :columns="[
-                     { property: 'serial', label: 'Serial', rawData: true },
-                     { property: 'customer', label: 'Customer', rawData: true },
-                     { property: 'assigned', label: 'Assigned', rawData: true }
-                ]">
+                class="sas-esd-serial-overview__data-grid"
+                :dataSource="serials"
+                :columns="serialColumns"
+                :isLoading="isLoading"
+                :showSettings="true"
+                identifier="sas-esd-overview">
+
+                {% block sw_product_variants_overview_data_grid_column_stock %}
+                    <template slot="column-customer" slot-scope="{ item }">
+                        <span v-if="item.esdOrder">
+                            <router-link :to="{ name: 'sw.customer.detail', params: { id: item.esdOrder.orderLineItem.order.orderCustomer.customerId } }">
+                                {{ item.esdOrder.orderLineItem.order.orderCustomer.firstName }} {{ item.esdOrder.orderLineItem.order.orderCustomer.lastName }}
+                            </router-link>
+                        </span>
+                    </template>
+                {% endblock %}
+
+                {% block sas_esd_serial_overview_data_grid_action_modals %}
+                <template slot="action-modals" slot-scope="{ item }">
+                    <sw-modal v-if="showDeleteModal === item.id"
+                              @modal-close="onCloseDeleteModal"
+                              :title="$tc('sw-product.variations.generatedListDeleteModalTitle')"
+                              variant="small">
+
+                        <p class="sw-product-variants-overview__modal--confirm-delete-text">
+                            {{ $tc('sw-product.variations.generatedListDeleteModalMessage') }}
+                        </p>
+
+                        <template slot="modal-footer">
+                            {% block sw_product_variants_overview_data_grid_action_modals_buttons %}
+                                <sw-button @click="onCloseDeleteModal"
+                                           size="small"
+                                           :disabled="modalLoading">
+                                    {{ $tc('sw-product.variations.generatedListDeleteModalButtonCancel') }}
+                                </sw-button>
+                                <sw-button @click="onConfirmDelete(item)"
+                                           variant="primary"
+                                           size="small"
+                                           :disabled="modalLoading">
+                                    {{ $tc('sw-product.variations.generatedListDeleteModalButtonDelete') }}
+                                </sw-button>
+                            {% endblock %}
+                        </template>
+                    </sw-modal>
+                </template>
+                {% endblock %}
+
+                {% block sas_esd_serial_overview_data_grid_actions %}
+                    <template slot="actions" slot-scope="{ item }">
+                        {% block sas_esd_serial_overview_data_grid_actions_items %}
+                            <sw-context-menu-item variant="danger" @click="onEsdDelete(item)">
+                                {{ $tc('sas-esd.contextMenuDelete') }}
+                            </sw-context-menu-item>
+                        {% endblock %}
+                    </template>
+                {% endblock %}
+
+                {% block ssas_esd_serial_overview_data_grid_pagination %}
+                    <template slot="pagination">
+                        <sw-pagination :page="page"
+                                       :limit="limit"
+                                       :total="total"
+                                       :total-visible="7"
+                                       @page-change="onPageChange">
+                        </sw-pagination>
+                    </template>
+                {% endblock %}
+
             </sw-data-grid>
         {% endblock %}
+
     </div>
+
+    {% block sas_esd_serial_overview_empty_state %}
+        <div v-else>
+            <template>
+                <div class="sas-esd-serial-overview__empty-state-inner">
+                    <img :src="'/administration/static/img/empty-states/products-empty-state.svg' | asset">
+
+                    <div class="sas-esd-serial-overview__empty-state-inner--label">
+                        <p>{{ $tc('sas-esd.emptyStateSerialDescription') }}</p>
+                    </div>
+
+                    {% block sas_product_detail_esd_add %}
+                        <sw-button variant="ghost" @click="openModal('serialModal')" :disabled="false">
+                            {{ $tc('sas-esd.serialModal.buttonOpen') }}
+                        </sw-button>
+                    {% endblock %}
+                </div>
+            </template>
+        </div>
+    {% endblock %}
+
+    {% block sas_product_detail_esd_modal_serial %}
+        <sas-esd-modal-serial
+            v-if="activeModal === 'serialModal'"
+            @modal-close="updateSerials"
+            @serial-updated="updateSerials">
+        </sas-esd-modal-serial>
+    {% endblock %}
+</div>
 {% endblock %}

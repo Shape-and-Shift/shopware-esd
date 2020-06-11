@@ -2,12 +2,13 @@
 
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
+use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
-class EsdEntity extends Entity {
-
+class EsdEntity extends Entity
+{
     use EntityIdTrait;
 
     /**
@@ -29,6 +30,16 @@ class EsdEntity extends Entity {
      * @var bool
      */
     protected $hasSerial;
+
+    /**
+     * @var string|null
+     */
+    protected $mediaId;
+
+    /**
+     * @var MediaEntity|null
+     */
+    protected $media;
 
     /**
      * @return string
@@ -81,7 +92,7 @@ class EsdEntity extends Entity {
     /**
      * @return bool
      */
-    public function isHasSerial(): bool
+    public function hasSerial(): bool
     {
         return $this->hasSerial;
     }
@@ -92,5 +103,25 @@ class EsdEntity extends Entity {
     public function setHasSerial(bool $hasSerial): void
     {
         $this->hasSerial = $hasSerial;
+    }
+
+    public function getMediaId(): ?string
+    {
+        return $this->mediaId;
+    }
+
+    public function setMediaId(?string $mediaId): void
+    {
+        $this->mediaId = $mediaId;
+    }
+
+    public function getMedia(): ?MediaEntity
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?MediaEntity $media): void
+    {
+        $this->media = $media;
     }
 }

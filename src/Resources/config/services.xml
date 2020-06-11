@@ -5,7 +5,16 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- DAL -->
         <service id="Sas\Esd\Content\Product\Extension\Esd\EsdDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
 
@@ -13,10 +22,40 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
-        <service id="Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaDefinition">
-            <tag name="shopware.entity.definition"/>
+        <service id="Sas\Esd\Content\Product\Extension\OrderLineItemExtension">
+            <tag name="shopware.entity.extension"/>
         </service>
 
+
+        <!-- Subscribers -->
+
+        <service id="Sas\Esd\Checkout\Cart\Subscriber\OrderPlacedSubscriber">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="sas_product_esd_order.repository"/>
+            <argument type="service" id="sas_product_esd_serial.repository"/>
+            <tag name="kernel.event_listener"/>
+        </service>
+
+        <!-- Storefront -->
+        <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
+            <argument type="service" id="sas_product_esd_order.repository"/>
+        </service>
+
+        <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
+            <argument type="service" id="sas_product_esd_order.repository"/>
+            <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="shopware.filesystem.private"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+        </service>
+
+        <!-- Language Snippets -->
+        <service id="Sas\Esd\Resources\snippet\en_GB\SnippetFile_en_GB">
+            <tag name="shopware.snippet.file"/>
+        </service>
+
+        <service id="Sas\Esd\Resources\snippet\de_DE\SnippetFile_de_DE">
+            <tag name="shopware.snippet.file"/>
+        </service>
 
     </services>
 </container>

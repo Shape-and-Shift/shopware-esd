@@ -4,6 +4,7 @@ namespace Sas\Esd\Content\Product\Extension\Esd;
 
 use OdTrainings\Content\Product\Extension\Events\EventsTranslation\EventsTranslationDefinition;
 use OdTrainings\Content\Product\Extension\Events\Organizer\OrganizerDefinition;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -15,6 +16,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
@@ -35,6 +38,11 @@ class EsdDefinition extends EntityDefinition
         return EsdEntity::class;
     }
 
+    public function getCollectionClass(): string
+    {
+        return EsdCollection::class;
+    }
+
     public function defineFields(): FieldCollection
     {
         return new FieldCollection([
@@ -43,6 +51,11 @@ class EsdDefinition extends EntityDefinition
             (new FkField('product_id', 'productId', ProductDefinition::class))->addFlags(new Required()),
             (new ReferenceVersionField(ProductDefinition::class))->addFlags(new Required()),
             (new ManyToOneAssociationField('product', 'product_id', ProductDefinition::class, 'id', false))->addFlags(new CascadeDelete()),
+
+            (new FkField('media_id', 'mediaId', MediaDefinition::class)),
+            (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
+
+            new OneToManyAssociationField('orders', EsdOrderDefinition::class, 'esd_id'),
 
             new BoolField('has_serial', 'hasSerial'),
 

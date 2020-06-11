@@ -13,6 +13,7 @@ Component.register('sas-product-detail-esd', {
     data() {
         return {
             activeModal: '',
+            fileAccept: 'application/pdf, image/*'
         };
     },
 
@@ -30,7 +31,7 @@ Component.register('sas-product-detail-esd', {
         },
 
         mediaItem() {
-            return this.product.extensions.esdMedia !== null ? this.product.extensions.esdMedia.media : null;
+            return this.product.extensions.esd !== null ? this.product.extensions.esd.media : null;
         },
 
     },
@@ -51,23 +52,19 @@ Component.register('sas-product-detail-esd', {
     methods: {
         onSetMediaItem({ targetId }) {
             this.mediaRepository.get(targetId, Shopware.Context.api).then((updatedMedia) => {
-                this.product.extensions.esdMedia.mediaId = targetId;
-                this.product.extensions.esdMedia.media = updatedMedia;
+                this.product.extensions.esd.mediaId = targetId;
+                this.product.extensions.esd.media = updatedMedia;
             });
         },
 
         onRemoveMediaItem() {
-            this.product.extensions.esdMedia.mediaId = null;
-            this.product.extensions.esdMedia.media = null;
+            this.product.extensions.esd.mediaId = null;
+            this.product.extensions.esd.media = null;
         },
 
         onMediaDropped(dropItem) {
             // to be consistent refetch entity with repository
             this.onSetMediaItem({ targetId: dropItem.id });
-        },
-
-        openModal(value) {
-            this.activeModal = value;
-        },
+        }
     }
 })

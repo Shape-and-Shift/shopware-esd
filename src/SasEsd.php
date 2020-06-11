@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class SasEsd extends Plugin
 {
-
     public function activate(ActivateContext $activateContext): void
     {
         $indexerMessageSender = $this->container->get(IndexerMessageSender::class);
@@ -49,7 +48,8 @@ class SasEsd extends Plugin
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
     }
 
-    public function nix() {
+    public function nix()
+    {
         /** @var EntityRepositoryInterface $mediaFolderRepository */
         $mediaFolderRepository = $this->container->get('media_folder.repository');
 

@@ -1,0 +1,65 @@
+{% sw_extends '@Storefront/storefront/page/account/_page.html.twig' %}
+
+{% block page_account_main_content %}
+    {% block page_account_downloads %}
+        <div class="account-orders">
+            {% block page_account_downloads_welcome %}
+                <div class="account-welcome">
+                    {% block page_account_downloads_welcome_headline %}
+                        <h1>{{ "sasEsd.account.headline"|trans|sw_sanitize }}</h1>
+                        <p>{{ "sasEsd.account.subline"|trans|sw_sanitize }}</p>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block page_account_downloads_main %}
+                <div class="account-orders-main">
+                    {% if items.total == 0 %}
+                        {% block page_account_downloads_info_empty %}
+                            {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                                type: "warning",
+                                content: "sasEsd.account.noPurchase"|trans|sw_sanitize
+                            } %}
+                        {% endblock %}
+                    {% else %}
+                        {% block page_account_downloads_overview %}
+                            <div class="account-orders-overview">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">{{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}</th>
+                                            <th>{{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}</th>
+                                            <th>{{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}</th>
+                                            <th>{{ "sasEsd.account.downloadTable.action"|trans|sw_sanitize }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in items %}
+                                        {% if item.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" %}
+
+                                            {{ dump(item) }}
+                                            {{ dump(item.serial.id) }}
+                                            <tr>
+                                                <th scope="row">
+                                                    {{ item.orderLineItem.label }}
+                                                </th>
+                                                <td>
+                                                    {{ item.orderLineItem.totalPrice }}
+                                                </td>
+                                                <td>
+                                                    {{ item.orderLineItem.createdAt|date }}
+                                                </td>
+                                                <td><a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {id: item.id}) }}">Download</a></td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endblock %}
+                    {% endif %}
+                </div>
+            {% endblock %}
+        </div>
+    {% endblock %}
+{% endblock %}
