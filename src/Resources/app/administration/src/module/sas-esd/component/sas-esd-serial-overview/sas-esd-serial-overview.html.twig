@@ -10,6 +10,9 @@
                             <sw-button variant="ghost" @click="openModal('serialModal')">
                                 {{ $tc('sas-esd.serialModal.buttonOpen') }}
                             </sw-button>
+                            <sw-button variant="ghost" @click="openModal('csvModal')">
+                                {{ $tc('sas-esd.sas-esd-modal-csv.buttonImport') }}
+                            </sw-button>
                         {% endblock %}
                     </sw-container>
                 {% endblock %}
@@ -76,6 +79,7 @@
                 {% endblock %}
 
                 {% block ssas_esd_serial_overview_data_grid_pagination %}
+                <!--
                     <template slot="pagination">
                         <sw-pagination :page="page"
                                        :limit="limit"
@@ -84,6 +88,7 @@
                                        @page-change="onPageChange">
                         </sw-pagination>
                     </template>
+                    -->
                 {% endblock %}
 
             </sw-data-grid>
@@ -102,9 +107,14 @@
                     </div>
 
                     {% block sas_product_detail_esd_add %}
+                    <sw-button-group>
                         <sw-button variant="ghost" @click="openModal('serialModal')" :disabled="false">
                             {{ $tc('sas-esd.serialModal.buttonOpen') }}
                         </sw-button>
+                        <sw-button variant="ghost" @click="openModal('csvModal')" :disabled="false">
+                            {{ $tc('sas-esd.sas-esd-modal-csv.buttonImport') }}
+                        </sw-button>
+                    </sw-button-group>
                     {% endblock %}
                 </div>
             </template>
@@ -118,5 +128,17 @@
             @serial-updated="updateSerials">
         </sas-esd-modal-serial>
     {% endblock %}
+
+    {% block sas_product_detail_esd_modal_csv %}
+        <sas-esd-modal-csv
+            v-if="activeModal === 'csvModal'"
+            @serial-updated="updateSerials"
+            @modal-close="updateSerials"
+            v-model="csv"
+            :esd-id="product.extensions.esd.id"
+            :map-fields="{serial: 'Serial'}">
+        </sas-esd-modal-csv>
+    {% endblock %}
+
 </div>
 {% endblock %}

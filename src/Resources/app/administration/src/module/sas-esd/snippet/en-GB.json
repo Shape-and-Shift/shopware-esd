@@ -12,13 +12,28 @@
             }
         },
         "emptyStateDescription": "There is no ESD configured for this product, yet.",
-        "emptyStateSerialDescription" : "There are no serials configured for this ESD",
+        "emptyStateSerialDescription" : "There are no serial numbers configured for this ESD product",
         "buttonAddEsd": "Add new ESD",
         "contextMenuDelete": "Delete",
         "serialSwitch": "Enable serial numbers",
         "notification": {
             "success": "Serials successfully saved",
             "error": "There was an error while saving your serials"
+        },
+        "sas-esd-modal-csv": {
+            "buttonImport": "Import from CSV",
+            "modalHeadline": "CSV import",
+            "checkboxLabel": "Does the CSV file has a header?",
+            "selectLabel": "Select csv file",
+            "selectPlaceholder": "Map csv column",
+            "notification": {
+                "success": {
+                    "ready": "The CSV is ready for the import."
+                },
+                "error": {
+                    "invalid": "The filetype is not valid."
+                }
+            }
         },
         "overview": {
             "addNewEsd": "Add new ESD"
@@ -28,7 +43,7 @@
         },
         "serialModal": {
             "modalHeadline": "Add serial numbers",
-            "buttonOpen": "Add serial numbers",
+            "buttonOpen": "Add them manually",
             "cancel": "Cancel",
             "save": "Import serial numbers",
             "textAreaSerialNumber": {

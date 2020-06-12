@@ -19,7 +19,8 @@ Component.register('sas-esd-serial-overview', {
             serials: [],
             activeModal: "",
             showDeleteModal: false,
-            modalLoading: false
+            modalLoading: false,
+            csv: []
         };
     },
 
@@ -59,14 +60,12 @@ Component.register('sas-esd-serial-overview', {
 
     methods: {
         getSerials() {
-            console.log('get serials again');
             const criteria = new Criteria(1, 10);
             criteria.addFilter(Criteria.equals('esdId', this.product.extensions.esd.id));
             criteria.addAssociation('esdOrder.orderLineItem.order.orderCustomer');
 
             this.esdSerialRepository.search(criteria, Shopware.Context.api).then((serials) => {
                 this.serials = serials;
-                console.log(this.serials);
             });
         },
 

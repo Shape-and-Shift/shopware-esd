@@ -1,0 +1,84 @@
+{% block sas_esd_modal_csv %}
+<sw-modal :title="$tc('sas-esd.sas-esd-modal-csv.modalHeadline')"
+          @modal-close="$emit('modal-close')"
+          class="sas-esl-modal-csv"
+          :isLoading="isLoading">
+
+    {% block sas_esd_modal_csv_import %}
+        <div class="sas-esd-csv-import">
+        <div class="form">
+            <div class="vue-csv-uploader-part-one">
+                <div class="form-check form-group csv-import-checkbox" v-if="headers === null">
+                    <slot name="hasHeaders" :headers="hasHeaders" :toggle="toggleHasHeaders">
+                        <sw-checkbox-field :value="hasHeaders" @change="toggleHasHeaders" :class="checkboxClass" :id="makeId('hasHeaders')"  :label="$tc('sas-esd.sas-esd-modal-csv.checkboxLabel')"></sw-checkbox-field>
+                    </slot>
+                </div>
+                <div class="csv-import-file">
+                    <input ref="csv" type="file" @change.prevent="validFileMimeType" :class="inputClass" name="csv">
+
+                    <slot name="error" v-if="showErrorMessage">
+                        <sw-alert variant="error" appearance="default" :showIcon="false" :closable="false">
+                            {{ $tc('sas-esd.sas-esd-modal-csv.notification.error.invalid') }}
+                        </sw-alert>
+                    </slot>
+                </div>
+                <div class="form-group">
+                    <slot name="next" :load="load">
+                        <sw-button @click.prevent="load" :disabled="disabledNextButton" variant="ghost" size="small" :square="false" :block="false" :isLoading="false">
+                            {{ loadBtnText }}
+                        </sw-button>
+                    </slot>
+                </div>
+            </div>
+            <div class="vue-csv-uploader-part-two">
+                <div class="vue-csv-mapping" v-if="sample">
+                    <table :class="tableClass">
+                        <slot name="thead">
+                            <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>CSV Column</th>
+                            </tr>
+                            </thead>
+                        </slot>
+                        <tbody>
+                        <tr v-for="(field, key) in fieldsToMap" :key="key">
+                            <td>{{ field.label }}</td>
+                            <td>
+                                <sw-select-field
+                                    :class="tableSelectClass"
+                                    :name="`csv_uploader_map_${key}`"
+                                    v-model="map[field.key]"
+                                    :placeholder="$tc('sas-esd.sas-esd-modal-csv.selectPlaceholder')">
+                                    <option :value="null" v-if="canIgnore">Ignore</option>
+                                    <option v-for="(column, key) in firstRow" :key="key" :value="key">{{ column }}</option>
+                                </sw-select-field>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block sas_esd_modal_csv_footer %}
+        <template slot="modal-footer">
+        {% block ssas_esd_modal_csv_footer_button_cancel %}
+            <sw-button size="small" variant="danger" @click="$emit('modal-close')">
+                {{ $tc('sas-esd.serialModal.cancel') }}
+            </sw-button>
+        {% endblock %}
+
+        {% block ssas_esd_modal_csv_footer_button_save %}
+            <slot name="submit" :submit="submit">
+                <sw-button :class="buttonClass" @click.prevent="submit" :value="submitBtnText" :disabled="isDisabled" variant="ghost" size="small" :square="false" :block="false" :isLoading="false">
+                    Import csv
+                </sw-button>
+            </slot>
+        {% endblock %}
+    </template>
+    {% endblock %}
+</sw-modal>
+{% endblock %}

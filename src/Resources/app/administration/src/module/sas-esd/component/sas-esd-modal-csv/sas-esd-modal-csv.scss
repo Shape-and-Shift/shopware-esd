@@ -1,0 +1,13 @@
+.sas-esd-csv-import {
+    .sw-alert {
+        margin-top: 5px;
+        &.sw-alert--error {
+            padding: 5px;
+        }
+    }
+
+    .csv-import-file {
+        margin-top: 24px;
+        margin-bottom: 22px;
+    }
+}
