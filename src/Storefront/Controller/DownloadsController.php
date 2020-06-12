@@ -6,6 +6,7 @@ use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -44,13 +45,16 @@ class DownloadsController extends StorefrontController
         $criteria->addAssociation('serial');
         $criteria->addAssociation('orderLineItem.order.transactions.stateMachineState');
 
+        $criteria->addSorting(
+            new FieldSorting('orderLineItem.createdAt', FieldSorting::DESCENDING)
+        );
+
         $items = $this->esdOrderRepository->search($criteria, $context->getContext());
 
         return $this->renderStorefront(
-            'storefront/page/account/downloads/index.html.twig',
-            [
-            'items' => $items
-        ]
+            'storefront/page/account/downloads/index.html.twig', [
+                'items' => $items
+            ]
         );
     }
 
