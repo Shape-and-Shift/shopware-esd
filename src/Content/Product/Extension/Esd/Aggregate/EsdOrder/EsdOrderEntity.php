@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;

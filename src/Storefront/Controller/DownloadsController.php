@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 namespace Sas\Esd\Storefront\Controller;
 
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
@@ -47,7 +46,7 @@ class DownloadsController extends StorefrontController
                 MultiFilter::CONNECTION_OR,
                 [
                     new EqualsFilter('orderLineItem.order.transactions.stateMachineState.technicalName', 'paid'),
-                    new EqualsFilter('orderLineItem.order.amountNet', 0.0)
+                    new EqualsFilter('orderLineItem.order.amountNet', 0.0),
                 ]
             )
         );
@@ -63,8 +62,9 @@ class DownloadsController extends StorefrontController
         $items = $this->esdOrderRepository->search($criteria, $context->getContext());
 
         return $this->renderStorefront(
-            'storefront/page/account/downloads/index.html.twig', [
-                'items' => $items
+            'storefront/page/account/downloads/index.html.twig',
+            [
+                'items' => $items,
             ]
         );
     }

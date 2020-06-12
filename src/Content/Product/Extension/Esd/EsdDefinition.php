@@ -1,9 +1,6 @@
 <?php declare(strict_types=1);
-
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
-use OdTrainings\Content\Product\Extension\Events\EventsTranslation\EventsTranslationDefinition;
-use OdTrainings\Content\Product\Extension\Events\Organizer\OrganizerDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -19,9 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\VersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class EsdDefinition extends EntityDefinition

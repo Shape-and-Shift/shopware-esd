@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
-
 namespace Sas\Esd\Storefront\Controller;
 
 use League\Flysystem\FilesystemInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
-use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;

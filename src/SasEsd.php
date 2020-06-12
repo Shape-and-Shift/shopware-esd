@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 namespace Sas\Esd;
 
 use Doctrine\DBAL\Connection;
@@ -43,7 +42,6 @@ class SasEsd extends Plugin
         $this->dropDatabaseTable();
     }
 
-
     /**
      * We need to drop the database tables
      * in case if the plugin is uninstalled
@@ -60,7 +58,6 @@ class SasEsd extends Plugin
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
     }
 
-
     /**
      * We need to create a private folder for the downloads,
      * otherwise the files would be accessible by public.
@@ -76,19 +73,19 @@ class SasEsd extends Plugin
 
         $mediaFolderRepository->create([
             [
-                'entity' => 'sas_product_esd',
-                'name' => 'ESD Media',
+                'entity'            => 'sas_product_esd',
+                'name'              => 'ESD Media',
                 'associationFields' => [],
-                'folder' => [
-                    'id' => $folderId,
-                    'name' => 'ESD Downloads',
+                'folder'            => [
+                    'id'              => $folderId,
+                    'name'            => 'ESD Downloads',
                     'configurationId' => $configurationId,
-                    'configuration' =>
+                    'configuration'   =>
                         [
-                            'id' => $configurationId,
-                            'private' => true
-                        ]
-                ]
+                            'id'      => $configurationId,
+                            'private' => true,
+                        ],
+                ],
             ],
         ], $installContext->getContext());
     }

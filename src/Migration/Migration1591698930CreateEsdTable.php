@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
@@ -19,7 +18,6 @@ class Migration1591698930CreateEsdTable extends MigrationStep
 
     public function update(Connection $connection): void
     {
-
         $connection->executeUpdate('
             CREATE TABLE `sas_product_esd` (
               `id` binary(16) NOT NULL,
@@ -67,27 +65,27 @@ class Migration1591698930CreateEsdTable extends MigrationStep
 
         $defaultFolderId = Uuid::randomBytes();
         $connection->insert('media_default_folder', [
-            'id' => $defaultFolderId,
+            'id'                 => $defaultFolderId,
             'association_fields' => '[]',
-            'entity' => 'sas_product_esd',
-            'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+            'entity'             => 'sas_product_esd',
+            'created_at'         => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
         ]);
 
         $mediaFolderConfigurationId = Uuid::randomBytes();
         $connection->insert('media_folder_configuration', [
-            'id' => $mediaFolderConfigurationId,
-            'no_association' => true,
+            'id'                => $mediaFolderConfigurationId,
+            'no_association'    => true,
             'create_thumbnails' => false,
-            'private' => true,
-            'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+            'private'           => true,
+            'created_at'        => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
         ]);
 
         $connection->insert('media_folder', [
-            'id' => Uuid::randomBytes(),
-            'default_folder_id' => $defaultFolderId,
+            'id'                            => Uuid::randomBytes(),
+            'default_folder_id'             => $defaultFolderId,
             'media_folder_configuration_id' => $mediaFolderConfigurationId,
-            'name' => 'ESD Media',
-            'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+            'name'                          => 'ESD Media',
+            'created_at'                    => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
         ]);
 
         $this->updateInheritance($connection, 'product', 'esd');

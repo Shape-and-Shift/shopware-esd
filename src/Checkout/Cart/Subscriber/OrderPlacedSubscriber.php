@@ -1,5 +1,4 @@
 <?php
-
 namespace Sas\Esd\Checkout\Cart\Subscriber;
 
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
@@ -84,9 +83,9 @@ class OrderPlacedSubscriber
             $esdEntity = $productData->getExtension('esd');
 
             $payload[] = [
-                'esdId' => $esdEntity->getId(),
+                'esdId'           => $esdEntity->getId(),
                 'orderLineItemId' => $orderLineItem->getId(),
-                'serialId' => $this->fetchSerial($esdEntity, $orderPlacedEvent->getContext())
+                'serialId'        => $this->fetchSerial($esdEntity, $orderPlacedEvent->getContext()),
             ];
         }
 

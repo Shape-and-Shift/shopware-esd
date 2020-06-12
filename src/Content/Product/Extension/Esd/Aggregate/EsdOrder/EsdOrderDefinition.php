@@ -1,5 +1,4 @@
 <?php
-
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialDefinition;
@@ -45,7 +44,7 @@ class EsdOrderDefinition extends EntityDefinition
             (new OneToOneAssociationField('orderLineItem', 'order_line_item_id', 'id', OrderLineItemDefinition::class, false)),
 
             (new FkField('serial_id', 'serialId', EsdSerialDefinition::class)),
-            (new OneToOneAssociationField('serial', 'serial_id', 'id', EsdSerialDefinition::class, false))
+            (new OneToOneAssociationField('serial', 'serial_id', 'id', EsdSerialDefinition::class, false)),
         ]);
     }
 }
