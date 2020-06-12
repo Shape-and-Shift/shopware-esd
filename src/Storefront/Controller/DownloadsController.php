@@ -62,7 +62,6 @@ class DownloadsController extends StorefrontController
 
         $items = $this->esdOrderRepository->search($criteria, $context->getContext());
 
-        dd($items);
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig', [
                 'items' => $items

@@ -36,7 +36,7 @@
                                     </thead>
                                     <tbody>
                                     {% for item in items %}
-                                        {% if item.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" %}
+                                        {% if item.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" or item.orderLineItem.order.amountNet == 0.0 %}
                                             <tr>
                                                 <th scope="row">
                                                     {{ item.orderLineItem.label }}
