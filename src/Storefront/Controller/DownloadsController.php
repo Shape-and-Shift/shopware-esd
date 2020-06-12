@@ -6,6 +6,7 @@ use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
@@ -40,7 +41,17 @@ class DownloadsController extends StorefrontController
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId()));
-        $criteria->addFilter(new EqualsFilter('orderLineItem.order.transactions.stateMachineState.technicalName', 'paid'));
+
+        $criteria->addFilter(
+            new MultiFilter(
+                MultiFilter::CONNECTION_OR,
+                [
+                    new EqualsFilter('orderLineItem.order.transactions.stateMachineState.technicalName', 'paid'),
+                    new EqualsFilter('orderLineItem.order.amountNet', 0.0)
+                ]
+            )
+        );
+
         $criteria->addAssociation('esd.media');
         $criteria->addAssociation('serial');
         $criteria->addAssociation('orderLineItem.order.transactions.stateMachineState');
@@ -51,6 +62,7 @@ class DownloadsController extends StorefrontController
 
         $items = $this->esdOrderRepository->search($criteria, $context->getContext());
 
+        dd($items);
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig', [
                 'items' => $items
