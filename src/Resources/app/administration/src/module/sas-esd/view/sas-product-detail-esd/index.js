@@ -37,6 +37,7 @@ Component.register('sas-product-detail-esd', {
     },
 
     created() {
+        console.log(this.product.getEntityName());
         /**
          * We need to check if the extension esd exist,
          * otherwise we would get an issue because it's undefined

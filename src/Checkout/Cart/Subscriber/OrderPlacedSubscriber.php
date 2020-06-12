@@ -50,7 +50,9 @@ class OrderPlacedSubscriber
             return $orderLineItemEntity->getProductId();
         }));
 
-        // No products in cart
+        /**
+         * If no products in the card return
+         */
         if (empty($productIds)) {
             return;
         }
@@ -70,6 +72,10 @@ class OrderPlacedSubscriber
             /** @var ProductEntity */
             $productData = $products->get($orderLineItem->getProductId());
 
+            /**
+             * If the product has no serial or no media it's not an ESD product,
+             * in that case no orderLineItem will be saved.
+             */
             if ($productData->hasExtension('esd') === false || $productData->getExtension('esd')->hasSerial() === false && $productData->getExtension('esd')->getMedia() === null) {
                 continue;
             }
