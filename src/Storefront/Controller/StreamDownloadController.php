@@ -8,6 +8,7 @@ use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -63,12 +64,23 @@ class StreamDownloadController extends StorefrontController
 
         $criteria = new Criteria([$id]);
         $criteria->addFilter(new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId()));
-        $criteria->addFilter(new EqualsFilter('orderLineItem.order.transactions.stateMachineState.technicalName', 'paid'));
+
+        $criteria->addFilter(
+            new MultiFilter(
+                MultiFilter::CONNECTION_OR,
+                [
+                    new EqualsFilter('orderLineItem.order.transactions.stateMachineState.technicalName', 'paid'),
+                    new EqualsFilter('orderLineItem.order.amountNet', 0.0),
+                ]
+            )
+        );
+
         $criteria->addAssociation('esd.media');
         $criteria->addAssociation('orderLineItem.order.transactions.stateMachineState');
 
         /** @var EsdOrderEntity $item */
         $item = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
+
         if ($item === null) {
             throw new NotFoundHttpException('Esd cannot be found');
         }
@@ -77,6 +89,8 @@ class StreamDownloadController extends StorefrontController
         $fileSystem = $esd->getMedia()->isPrivate() ? $this->filesystemPrivate : $this->filesystemPublic;
 
         $path = $this->urlGenerator->getRelativeMediaUrl($esd->getMedia());
+
+        dd($path);
 
         $response = new StreamedResponse(function () use ($fileSystem, $path) {
             $outputStream = fopen('php://output', 'wb');

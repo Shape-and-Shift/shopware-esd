@@ -42,7 +42,7 @@
                                                     {{ item.orderLineItem.label }}
                                                 </th>
                                                 <td>
-                                                    {{ item.orderLineItem.totalPrice }}
+                                                    {{ item.orderLineItem.totalPrice == 0 ? "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize : item.orderLineItem.totalPrice  }}
                                                 </td>
                                                 <td>
                                                     {{ item.serial.serial }}

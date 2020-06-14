@@ -55,6 +55,7 @@ Component.register('sas-product-detail-esd', {
             this.mediaRepository.get(targetId, Shopware.Context.api).then((updatedMedia) => {
                 this.product.extensions.esd.mediaId = targetId;
                 this.product.extensions.esd.media = updatedMedia;
+                this.product.extensions.esd.media.private = true;
             });
         },
 

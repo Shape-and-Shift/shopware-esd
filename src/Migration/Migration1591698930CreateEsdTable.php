@@ -74,9 +74,9 @@ class Migration1591698930CreateEsdTable extends MigrationStep
         $mediaFolderConfigurationId = Uuid::randomBytes();
         $connection->insert('media_folder_configuration', [
             'id'                => $mediaFolderConfigurationId,
-            'no_association'    => true,
-            'create_thumbnails' => false,
-            'private'           => true,
+            'no_association'    => 1,
+            'create_thumbnails' => 0,
+            'private'           => 1,
             'created_at'        => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
         ]);
 

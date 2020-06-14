@@ -15,7 +15,8 @@
                 "price": "Price",
                 "purchaseDate": "Purchase date",
                 "action": "Action",
-                "serial": "Serial"
+                "serial": "Serial",
+                "freeLabel": "Free"
             }
         }
     }
