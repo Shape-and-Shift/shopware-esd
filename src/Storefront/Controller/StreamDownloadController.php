@@ -90,8 +90,6 @@ class StreamDownloadController extends StorefrontController
 
         $path = $this->urlGenerator->getRelativeMediaUrl($esd->getMedia());
 
-        dd($path);
-
         $response = new StreamedResponse(function () use ($fileSystem, $path) {
             $outputStream = fopen('php://output', 'wb');
             $fileStream = $fileSystem->readStream($path);

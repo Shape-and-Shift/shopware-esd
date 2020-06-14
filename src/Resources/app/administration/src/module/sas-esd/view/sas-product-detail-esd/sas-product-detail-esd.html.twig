@@ -7,7 +7,7 @@
             @media-upload-finish="onSetMediaItem"
             autoUpload>
         </sw-upload-listener>
-        <sw-media-upload-v2
+        <sas-media-upload
             :label="$tc('sas-esd.media.label')"
             variant="regular"
             :source="mediaItem"
@@ -17,7 +17,7 @@
             :fileAccept="fileAccept"
             @media-drop="onMediaDropped"
             @media-upload-remove-image="onRemoveMediaItem">
-        </sw-media-upload-v2>
+        </sas-media-upload>
 
         <sw-switch-field :label="$tc('sas-esd.serialSwitch')" v-model="product.extensions.esd.hasSerial"></sw-switch-field>
 

@@ -8,7 +8,6 @@
             <name>exampleProduct</name>
             <entity>state_machine_state</entity>
             <title>Choose a product for the plugin configuration</title>
-            <defaultValue>39b30d0343de4400bfad08753828fc30</defaultValue>
         </component>
     </card>
 </config>

@@ -1,8 +1,7 @@
-Shopware.Component.override('sw-media-upload', {
+Shopware.Component.extend('sas-media-upload', 'sw-media-upload-v2', {
     methods: {
         getMediaEntityForUpload() {
-            console.log('override private')
-            const mediaItem = this.mediaItemStore.create();
+            const mediaItem = this.mediaRepository.create();
             mediaItem.mediaFolderId = this.mediaFolderId;
             mediaItem.private = true;
 
