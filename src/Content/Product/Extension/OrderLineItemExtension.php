@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 namespace Sas\Esd\Content\Product\Extension;
 
-
-
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
