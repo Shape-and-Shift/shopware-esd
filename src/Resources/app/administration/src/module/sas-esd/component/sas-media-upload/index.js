@@ -2,7 +2,7 @@ import template from './sas-media-upload-v2.html.twig';
 
 Shopware.Component.extend('sas-media-upload', 'sw-media-upload-v2', {
     template,
-    
+
     props: {
         fileAccept: {
             type: String,
