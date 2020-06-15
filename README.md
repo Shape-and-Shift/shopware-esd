@@ -14,14 +14,49 @@ Go to your project root folder and execute the following commands:
 
 The plugin is now installed and activated.
 
+## Setup of an ESD product
+Each product will have a new tab called **ESD** where you can upload a file and/or
+assign serial numbers.
+
+A product will automaticlly be an ESD product if one of those cases are true.
+
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592204095/ESD%20Docs/Bildschirmfoto_2020-06-15_um_09.52.32_suscrx.png)
+
+All files which will be uploaded here are **private** which means they're not visible within the Media Manager,
+or available to the public. 
+
+### Serial numbers
+If you check the toggle **Enable serial numbers** a new card will be visible where you can create or import your serial numbers.
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592204308/ESD%20Docs/Bildschirmfoto_2020-06-15_um_09.57.55_kfnj5j.png)
+
+#### Manually import serial numbers
+
+If you want to manually add serial numbers a modal will be opened where you can type in your serial numbers manually.
+Each new line is a new serial number.
+
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592204554/ESD%20Docs/Bildschirmfoto_2020-06-15_um_10.02.27_jyjo00.png)
+
+After clicking the button **import serial numbers** those will be directly listed within the serial number table.
+
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592204594/ESD%20Docs/Bildschirmfoto_2020-06-15_um_10.03.05_j59jam.png)
+
+If a customer now buys the ESD article the next free serial number will be assigned to the customer.
+
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592204693/ESD%20Docs/Bildschirmfoto_2020-06-15_um_10.04.31_wpknkh.png)
+
 ## Storefront customer Account
 Within the storefront the customer will have a new menu entry called **Downloads** 
 where all ESD products will be listed.
 
 ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592203675/ESD%20Docs/Bildschirmfoto_2020-06-15_um_09.46.12_a6wpol.png)
 
+To manually create or import serial numbers from a CSV file, just click on of the buttons which fits your needs.
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592204434/ESD%20Docs/Bildschirmfoto_2020-06-15_um_09.59.59_uii9qw.png)
+
 Only ESD products where the payment status is set to **paid** will be listed here **or** 
 if the ESD product is for free e.g €0,00
+
+If the ESD product contains a serial number, it will also be listed.
 
 ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592203665/ESD%20Docs/Bildschirmfoto_2020-06-15_um_09.47.32_luigg7.png)
 ## Tax rates
