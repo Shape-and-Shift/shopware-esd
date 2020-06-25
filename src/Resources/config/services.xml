@@ -36,6 +36,10 @@
             <tag name="kernel.event_listener"/>
         </service>
 
+        <service id="Sas\Esd\Subscriber\MediaPermissionSubscriber">
+            <tag name="kernel.event_listener" priority="-10000"/>
+        </service>
+
         <!-- Storefront -->
         <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
