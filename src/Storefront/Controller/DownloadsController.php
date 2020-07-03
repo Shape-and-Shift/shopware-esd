@@ -54,6 +54,7 @@ class DownloadsController extends StorefrontController
         $criteria->addAssociation('esd.media');
         $criteria->addAssociation('serial');
         $criteria->addAssociation('orderLineItem.order.transactions.stateMachineState');
+        $criteria->addAssociation('orderLineItem.order.currency');
 
         $criteria->addSorting(
             new FieldSorting('orderLineItem.createdAt', FieldSorting::DESCENDING)

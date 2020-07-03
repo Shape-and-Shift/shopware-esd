@@ -16,7 +16,8 @@
                 "purchaseDate": "Purchase date",
                 "action": "Action",
                 "serial": "Serial",
-                "freeLabel": "Free"
+                "freeLabel": "Free",
+                "downloadButton": "Download"
             }
         }
     }

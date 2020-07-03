@@ -42,7 +42,13 @@
                                                     {{ item.orderLineItem.label }}
                                                 </th>
                                                 <td>
-                                                    {{ item.orderLineItem.totalPrice == 0 ? "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize : item.orderLineItem.totalPrice  }}
+                                                    {% if item.orderLineItem.totalPrice == 0 %}
+                                                        <span class="badge badge-primary">
+                                                            {{ "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize }}
+                                                        </span>
+                                                    {% else %}
+                                                        {{ item.orderLineItem.totalPrice|currency }}
+                                                    {% endif %}
                                                 </td>
                                                 <td>
                                                     {{ item.serial.serial }}
@@ -52,7 +58,9 @@
                                                 </td>
                                                 <td>
                                                     {% if item.esd.media|length %}
-                                                        <a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {id: item.id}) }}">Download</a>
+                                                        <a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {id: item.id}) }}">
+                                                            {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
+                                                        </a>
                                                     {% endif %}
                                                 </td>
                                             </tr>

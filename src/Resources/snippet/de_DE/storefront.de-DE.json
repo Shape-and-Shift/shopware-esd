@@ -1,7 +1,24 @@
 {
     "sasEsd": {
         "account": {
-            "headline": "Downloads"
+            "headline": "Downloads",
+            "subline": "Hier findest du all deine gekauften Download Artikel.",
+            "noPurchase": "Du hast bisher keinen Downloadartikel gekauft.",
+            "sidebar": {
+                "link": {
+                    "title": "Deine Downloads",
+                    "label": "Downloads"
+                }
+            },
+            "downloadTable": {
+                "product": "Produkt",
+                "price": "Preis",
+                "purchaseDate": "Kaufdatum",
+                "action": "Aktion",
+                "serial": "Seriennummer",
+                "freeLabel": "Konstelos",
+                "downloadButton": "Download"
+            }
         }
     }
 }

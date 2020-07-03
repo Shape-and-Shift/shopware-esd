@@ -11,6 +11,10 @@
             "homepage": "https://shapeandshift.dev"
         }
     ],
+    "require": {
+        "shopware/core": "*",
+        "shopware/storefront": "*"
+    },
   "autoload": {
     "psr-4": {
       "Sas\\Esd\\": "src/"
