@@ -82,3 +82,31 @@ Now: If your shop is based for example in Germany ( 19% VAT ) and a customer fro
 within your shop - The ESD product will be taxed with the 23% VAT from Portugal, and not with 19% from Germany.
 
 ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1592203215/ESD%20Docs/Bildschirmfoto_2020-06-15_um_09.38.59_uagkc1.png)
+
+
+## Add serial numbers via API endpoint
+Thanks to the new concept of Shopware 6 it's easy peasy to create new serial numbers with the API.
+You just have to make a **POST** request to the API endpoint `/api/v2/sas-product-esd-serial`.
+Within the `body` you need three parameters.
+
+* `esdId` which is the ID of the ESD article
+* `serial` which represents the actual serial number
+* `id` which has to be a random generated UUID
+
+Full **POST** example:
+```
+{
+	"esdId":"e60281b55f584ccf87d722f51af8499b",
+	"serial":"testAPI",
+	"id":"a695aac053234fd3a6ab79e57a4229fb"
+}
+```
+
+
+So a fully working request would look like this example with Postman
+
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785529/Bildschirmfoto_2020-07-03_um_16.58.22_pnzcqi.png)
+
+Be sure to have a valid oauth token to be able to make requests to the admin API
+
+![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785530/Bildschirmfoto_2020-07-03_um_16.58.39_df5vpr.png)
