@@ -5,7 +5,50 @@
         },
         "tab": {
             "esdCard": {
-                "title": "Elektronischer Software-Download"
+                "title": "Electronic Software Delivery",
+                "mediaUpload": {
+                    "label": "Deine downloadbaren Produkte"
+                }
+            }
+        },
+        "emptyStateDescription": "Es gibt bisher keinen ESD für dieses Produkt.",
+        "emptyStateSerialDescription" : "Derzeit sind keine Seriennummer konfiguriert.",
+        "buttonAddEsd": "ESD hinzufügen",
+        "contextMenuDelete": "Löschen",
+        "serialSwitch": "Seriennummern aktivieren",
+        "notification": {
+            "success": "Seriennummer gespeichert",
+            "error": "Es gab ein Problem beim speichern der Seriennummer"
+        },
+        "sas-esd-modal-csv": {
+            "buttonImport": "Von CSV importieren",
+            "modalHeadline": "CSV Import",
+            "checkboxLabel": "Hat die .csv Datei einen Header?",
+            "selectLabel": "CSV Datei auswählen",
+            "selectPlaceholder": "CSV Spalte mappen",
+            "notification": {
+                "success": {
+                    "ready": "Die CSV ist bereit für den Import."
+                },
+                "error": {
+                    "invalid": "Dieser Filetyp ist nicht valide."
+                }
+            }
+        },
+        "overview": {
+            "addNewEsd": "ESD hinzufügen"
+        },
+        "media": {
+            "label": "Lade deine Datei hoch"
+        },
+        "serialModal": {
+            "modalHeadline": "Seriennummer hinzufügen",
+            "buttonOpen": "Manuell hinufügen",
+            "cancel": "Abbrechen",
+            "save": "Seriennummern importieren",
+            "textAreaSerialNumber": {
+                "label": "Seriennummern",
+                "placeholder": "Neue Zeile für jede Seriennummer"
             }
         }
     }
