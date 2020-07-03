@@ -1,2 +1,9 @@
-# 1.0.0
-- First release
+## 1.0.0
+
+### de
+
+#### Initiales Release
+
+### en
+
+#### Initial release
