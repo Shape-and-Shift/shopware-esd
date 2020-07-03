@@ -1,7 +1,8 @@
 {
     "name":"sas/esd",
-    "description":"ESD plugin",
+    "description":"ESD / Download plugin",
     "type":"shopware-platform-plugin",
+    "keywords": ["esd", "download"],
     "version":"v1.0.0",
     "license":"proprietary",
     "authors":[
@@ -22,9 +23,19 @@
     },
     "extra":{
         "shopware-plugin-class":"Sas\\Esd\\SasEsd",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "by SMK Shape & Shift LTD",
         "label":{
             "de-DE":"ESD plugin",
             "en-GB":"ESD plugin"
+        },
+        "description": {
+            "en-GB": "The ESD / Download Plugin allows you to offer digital downloads and serial numbers in your Shopware 6 shop.",
+            "de-DE": "Das ESD / Download Plugin gibt dir die Möglichkeit in deinem Shopware 6 Shop digitale Downloads anzubieten sowie Seriennummern."
+        },
+        "manufacturerLink": {
+            "en-GB": "https://shapeandshift.dev",
+            "de-DE": "https://shapeandshift.dev"
         }
     }
 }
