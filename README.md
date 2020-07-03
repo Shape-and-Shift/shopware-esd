@@ -102,11 +102,12 @@ Full **POST** example:
 }
 ```
 
+<details>
+ <summary>So a fully working request would look like this example with Postman</summary>
+ ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785529/Bildschirmfoto_2020-07-03_um_16.58.22_pnzcqi.png)
+</details>
 
-So a fully working request would look like this example with Postman
-
-![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785529/Bildschirmfoto_2020-07-03_um_16.58.22_pnzcqi.png)
-
-Be sure to have a valid oauth token to be able to make requests to the admin API
-
-![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785530/Bildschirmfoto_2020-07-03_um_16.58.39_df5vpr.png)
+<details>
+ <summary>Be sure to have a valid oauth token to be able to make requests to the admin API</summary>
+ ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785530/Bildschirmfoto_2020-07-03_um_16.58.39_df5vpr.png)
+</details>
