@@ -93,7 +93,7 @@ Within the `body` you need three parameters.
 * `serial` which represents the actual serial number
 * `id` which has to be a random generated UUID
 
-Full **POST** example:
+Full **POST** example to the endpoint `/api/v2/sas-product-esd-serial`:
 ```
 {
 	"esdId":"e60281b55f584ccf87d722f51af8499b",
