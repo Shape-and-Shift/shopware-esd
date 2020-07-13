@@ -62,11 +62,10 @@ If the ESD product contains a serial number, it will also be listed.
 ## Tax rates
 You might want to have different tax rates depending on the country where the buyer comes from.
 
-To archive this, the ESD plugin will create a new tax group while installing the plugin.
-Within the administration go to `settings->tax` and you'll find the newly created tax group "ESD tax rates".
-This group contains all European countries with it's VAT rates.
+Within the administration go to `settings->tax` and add your new tax-group, for example "ESD tax rates".
+Now you add the different countries with it's tax rates. For example you can add Germany with a 19% tax rate.
 
-The default tax rate is set to 19%. So if you're not logged in for example and therefore 
+You also have to choose a default tax rate. So if you're not logged in for example and therefore 
 don't have a shipping country yet, you will see the default tax rate.
 
 **Please double check the VAT rates, to be 100% sure those are correct.**
