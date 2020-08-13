@@ -5,7 +5,7 @@ use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class ProductExtension extends EntityExtension
@@ -13,11 +13,10 @@ class ProductExtension extends EntityExtension
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
-            (new OneToOneAssociationField(
+            (new OneToManyAssociationField(
                 'esd',
-                'id',
-                'product_id',
-                EsdDefinition::class
+                EsdDefinition::class,
+                'product_id'
             ))->addFlags(new Inherited())
         );
     }

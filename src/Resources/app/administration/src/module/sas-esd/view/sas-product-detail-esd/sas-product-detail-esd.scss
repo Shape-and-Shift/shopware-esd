@@ -1,2 +1,9 @@
 @import "~scss/variables";
 
+.sas-product-detail-esd__esd-list {
+  padding-top: 30px;
+
+  .sw-data-grid__bulk-selected {
+    margin-left: 37px;
+  }
+}

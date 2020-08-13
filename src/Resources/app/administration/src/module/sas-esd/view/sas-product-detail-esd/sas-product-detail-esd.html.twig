@@ -1,26 +1,52 @@
 {% block sas_product_detail_esd %}
 <div>
-    <sw-card :hero="false" class="sas-product-detail-esd__generated-esd">
+    <sw-card :hero="false"
+             :isLoading="isLoading"
+             class="sas-product-detail-esd__generated-esd">
 
         <sw-upload-listener
-            :uploadTag="product.id"
-            @media-upload-finish="onSetMediaItem"
-            autoUpload>
+                :uploadTag="product.id"
+                @media-upload-finish="onSetMediaItem"
+                autoUpload>
         </sw-upload-listener>
-        <sas-media-upload
-            :label="$tc('sas-esd.media.label')"
-            variant="regular"
-            :source="mediaItem"
-            :uploadTag="product.id"
-            :allowMultiSelect="false"
-            defaultFolder="sas_product_esd"
-            :fileAccept="fileAccept"
-            @media-drop="onMediaDropped"
-            @media-upload-remove-image="onRemoveMediaItem">
-        </sas-media-upload>
+
+        <sw-media-upload-v2
+                variant="regular"
+                defaultFolder="sas_product_esd"
+                :label="$tc('sas-esd.media.label')"
+                :uploadTag="product.id"
+                :fileAccept="fileAccept"
+                @media-drop="onMediaDropped">
+        </sw-media-upload-v2>
+
+        <sw-data-grid class="sas-product-detail-esd__esd-list"
+                      v-if="esdMedia && esdMedia.length > 0"
+                      :dataSource="esdMedia"
+                      :columns="mediaColumns"
+                      :fullPage="false"
+                      :showSettings="false"
+                      :allowColumnEdit="false"
+                      :allowInlineEdit="false"
+                      :compactMode="false"
+                      @selection-change="onSelectionChanged">
+            <template #preview-fileName="{ item }">
+                <sw-media-preview-v2 :source="item.id" :mediaIsPrivate="item.private"></sw-media-preview-v2>
+            </template>
+
+            <template #actions="{ item }">
+                <sw-context-menu-item variant="danger" @click="onDeleteMediaItem(item.id)">
+                    {{ $tc('global.default.delete') }}
+                </sw-context-menu-item>
+            </template>
+
+            <template #bulk>
+                <a class="link link-danger" @click="onDeleteSelectedMedia">
+                    {{ $tc('global.default.delete') }}
+                </a>
+            </template>
+        </sw-data-grid>
 
         <sw-switch-field :label="$tc('sas-esd.serialSwitch')" v-model="product.extensions.esd.hasSerial"></sw-switch-field>
-
     </sw-card>
 
     <sw-card

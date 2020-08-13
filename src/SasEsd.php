@@ -3,8 +3,6 @@ namespace Sas\Esd;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Indexing\Indexer\InheritanceIndexer;
-use Shopware\Core\Framework\DataAbstractionLayer\Indexing\MessageQueue\IndexerMessageSender;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -15,11 +13,6 @@ class SasEsd extends Plugin
 {
     public function activate(ActivateContext $activateContext): void
     {
-        /**
-         * When the plugin is activated we
-         */
-        $indexerMessageSender = $this->container->get(IndexerMessageSender::class);
-        $indexerMessageSender->partial(new \DateTimeImmutable(), [InheritanceIndexer::getName()]);
     }
 
     public function install(InstallContext $installContext): void
