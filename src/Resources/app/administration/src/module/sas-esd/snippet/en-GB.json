@@ -39,7 +39,8 @@
             "addNewEsd": "Add new ESD"
         },
         "media": {
-            "label": "Upload your file"
+            "label": "Upload your file",
+            "fileName": "Filename"
         },
         "serialModal": {
             "modalHeadline": "Add serial numbers",

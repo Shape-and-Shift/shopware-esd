@@ -5,9 +5,7 @@ import { drop, every, forEach, get, isArray, map, set } from 'lodash';
 import Papa from 'papaparse';
 import mimeTypes from "mime-types";
 
-const { Component, Context, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
+const { Component, Mixin } = Shopware;
 
 Component.register('sas-esd-modal-csv', {
     template,

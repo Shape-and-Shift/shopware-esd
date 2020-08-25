@@ -1,9 +1,9 @@
 import template from './sas-esd-serial-overview.html.twig';
 import './sas-esd-serial-overview.scss';
 
-const { Component, Mixin, StateDeprecated } = Shopware;
+const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
-const { mapState, mapGetters, mapPageErrors } = Shopware.Component.getComponentHelper();
+const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
 Component.register('sas-esd-serial-overview', {
     template,

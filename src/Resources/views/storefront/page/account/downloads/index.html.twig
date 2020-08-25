@@ -28,6 +28,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">{{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}</th>
+                                            <th>{{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}</th>
                                             <th>{{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}</th>
                                             <th>{{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}</th>
                                             <th>{{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}</th>
@@ -41,13 +42,16 @@
                                                 <th scope="row">
                                                     {{ item.orderLineItem.label }}
                                                 </th>
+                                                <th>
+                                                    {{ item.orderLineItem.order.orderNumber }}
+                                                </th>
                                                 <td>
-                                                    {% if item.orderLineItem.totalPrice == 0 %}
+                                                    {% if item.orderLineItem.unitPrice == 0 %}
                                                         <span class="badge badge-primary">
                                                             {{ "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize }}
                                                         </span>
                                                     {% else %}
-                                                        {{ item.orderLineItem.totalPrice|currency }}
+                                                        {{ item.orderLineItem.unitPrice|currency }}
                                                     {% endif %}
                                                 </td>
                                                 <td>
@@ -57,8 +61,8 @@
                                                     {{ item.orderLineItem.createdAt|date }}
                                                 </td>
                                                 <td>
-                                                    {% if item.esd.media|length %}
-                                                        <a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {id: item.id}) }}">
+                                                    {% if item.esd.esdMedia|length %}
+                                                        <a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {productId: item.esd.productId}) }}">
                                                             {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
                                                         </a>
                                                     {% endif %}

@@ -1,9 +1,8 @@
 import template from './sas-esd-modal-serial.html.twig';
 import './sas-esd-modal-serial.scss';
 
-const { Component, Context, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
+const { Component, Mixin } = Shopware;
+const { mapState } = Shopware.Component.getComponentHelper();
 
 Component.register('sas-esd-modal-serial', {
     template,

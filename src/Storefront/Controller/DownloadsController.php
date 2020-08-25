@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 namespace Sas\Esd\Storefront\Controller;
 
+use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -24,9 +21,17 @@ class DownloadsController extends StorefrontController
      */
     private $esdOrderRepository;
 
-    public function __construct(EntityRepositoryInterface $esdOrderRepository)
-    {
+    /**
+     * @var EsdService
+     */
+    private $esdService;
+
+    public function __construct(
+        EntityRepositoryInterface $esdOrderRepository,
+        EsdService $esdService
+    ) {
         $this->esdOrderRepository = $esdOrderRepository;
+        $this->esdService = $esdService;
     }
 
     /**
@@ -38,34 +43,10 @@ class DownloadsController extends StorefrontController
     {
         $this->denyAccessUnlessLoggedIn();
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId()));
-
-        $criteria->addFilter(
-            new MultiFilter(
-                MultiFilter::CONNECTION_OR,
-                [
-                    new EqualsFilter('orderLineItem.order.transactions.stateMachineState.technicalName', 'paid'),
-                    new EqualsFilter('orderLineItem.order.amountNet', 0.0),
-                ]
-            )
-        );
-
-        $criteria->addAssociation('esd.media');
-        $criteria->addAssociation('serial');
-        $criteria->addAssociation('orderLineItem.order.transactions.stateMachineState');
-        $criteria->addAssociation('orderLineItem.order.currency');
-
-        $criteria->addSorting(
-            new FieldSorting('orderLineItem.createdAt', FieldSorting::DESCENDING)
-        );
-
-        $items = $this->esdOrderRepository->search($criteria, $context->getContext());
-
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig',
             [
-                'items' => $items,
+                'items' => $this->esdService->getEsdOrderListByCustomer($context),
             ]
         );
     }
