@@ -36,6 +36,10 @@
         "manufacturerLink": {
             "en-GB": "https://shapeandshift.dev",
             "de-DE": "https://shapeandshift.dev"
+        },
+        "supportLink": {
+            "de-DE": "https://shapeandshift.dev",
+            "en-GB": "https://shapeandshift.dev"
         }
     }
 }
