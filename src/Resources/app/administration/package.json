@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mime-types": "^2.1.24",
     "papaparse": "^5.0.0"
   }
