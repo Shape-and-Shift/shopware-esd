@@ -18,6 +18,10 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <service id="Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <service id="Sas\Esd\Content\Product\Extension\ProductExtension">
             <tag name="shopware.entity.extension"/>
         </service>
@@ -26,13 +30,11 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
-
         <!-- Subscribers -->
 
         <service id="Sas\Esd\Checkout\Cart\Subscriber\OrderPlacedSubscriber">
             <argument type="service" id="product.repository"/>
-            <argument type="service" id="sas_product_esd_order.repository"/>
-            <argument type="service" id="sas_product_esd_serial.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
             <tag name="kernel.event_listener"/>
         </service>
 
@@ -40,16 +42,28 @@
             <tag name="kernel.event_listener" priority="-10000"/>
         </service>
 
+        <service id="Sas\Esd\Subscriber\ProductSubscriber">
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Sas\Esd\Subscriber\OrderStateChangedSubscriber">
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
+            <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <!-- Storefront -->
         <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
-            <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="shopware.filesystem.private"/>
-            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
         </service>
 
         <!-- Language Snippets -->
@@ -61,5 +75,18 @@
             <tag name="shopware.snippet.file"/>
         </service>
 
+        <!-- Service -->
+        <service id="Sas\Esd\Service\EsdService">
+            <argument type="service" id="sas_product_esd.repository"/>
+            <argument type="service" id="sas_product_esd_order.repository"/>
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="shopware.filesystem.private"/>
+        </service>
+
+        <service id="Sas\Esd\Service\EsdOrderService">
+            <argument type="service" id="sas_product_esd_order.repository"/>
+            <argument type="service" id="sas_product_esd_serial.repository"/>
+        </service>
     </services>
 </container>

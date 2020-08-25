@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -39,6 +40,11 @@ class EsdEntity extends Entity
      * @var MediaEntity|null
      */
     protected $media;
+
+    /**
+     * @var EsdMediaCollection|null
+     */
+    protected $esdMedia;
 
     /**
      * @return string
@@ -122,5 +128,20 @@ class EsdEntity extends Entity
     public function setMedia(?MediaEntity $media): void
     {
         $this->media = $media;
+    }
+
+    public function getEsdMedia(): ?EsdMediaCollection
+    {
+        return $this->esdMedia;
+    }
+
+    public function setEsdMedia(?EsdMediaCollection $esdMedia): void
+    {
+        $this->esdMedia = $esdMedia;
+    }
+
+    public function getApiAlias(): string
+    {
+        return 'esd';
     }
 }

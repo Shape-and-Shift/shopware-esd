@@ -2,24 +2,20 @@
 namespace Sas\Esd;
 
 use Doctrine\DBAL\Connection;
+use Sas\Esd\Service\EsdService;
+use Sas\Esd\Update\Update;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Indexing\Indexer\InheritanceIndexer;
-use Shopware\Core\Framework\DataAbstractionLayer\Indexing\MessageQueue\IndexerMessageSender;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class SasEsd extends Plugin
 {
     public function activate(ActivateContext $activateContext): void
     {
-        /**
-         * When the plugin is activated we
-         */
-        $indexerMessageSender = $this->container->get(IndexerMessageSender::class);
-        $indexerMessageSender->partial(new \DateTimeImmutable(), [InheritanceIndexer::getName()]);
     }
 
     public function install(InstallContext $installContext): void
@@ -40,6 +36,20 @@ class SasEsd extends Plugin
 
         /* Drop the database tables */
         $this->dropDatabaseTable();
+
+        $dirCompress = dirname(__DIR__, 4) . '/files/' . EsdService::FOLDER_COMPRESS_NAME;
+        if (is_dir($dirCompress)) {
+            $this->rmdirRecursive($dirCompress);
+        }
+    }
+
+    private function rmdirRecursive($dir) {
+        foreach(scandir($dir) as $file) {
+            if ('.' === $file || '..' === $file) continue;
+            if (is_dir("$dir/$file")) rmdir_recursive("$dir/$file");
+            else unlink("$dir/$file");
+        }
+        rmdir($dir);
     }
 
     /**
@@ -54,6 +64,7 @@ class SasEsd extends Plugin
         $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd`');
         $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_order`');
         $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_serial`');
+        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_media`');
         $connection->executeUpdate('ALTER TABLE `product` DROP COLUMN `esd`');
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
     }
@@ -88,5 +99,14 @@ class SasEsd extends Plugin
                 ],
             ],
         ], $installContext->getContext());
+    }
+
+    public function update(UpdateContext $updateContext): void
+    {
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
+
+        (new Update())->update($connection, $updateContext);
+        parent::update($updateContext);
     }
 }

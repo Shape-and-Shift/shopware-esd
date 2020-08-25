@@ -12,6 +12,7 @@
             },
             "downloadTable": {
                 "product": "Produkt",
+                "orderNumber": "Bestellnr.",
                 "price": "Preis",
                 "purchaseDate": "Kaufdatum",
                 "action": "Aktion",

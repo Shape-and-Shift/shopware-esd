@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -11,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\SetNullOnDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
@@ -49,6 +51,7 @@ class EsdDefinition extends EntityDefinition
             (new FkField('media_id', 'mediaId', MediaDefinition::class)),
             (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
 
+            new OneToManyAssociationField('esdMedia', EsdMediaDefinition::class, 'esd_id'),
             new OneToManyAssociationField('orders', EsdOrderDefinition::class, 'esd_id'),
 
             new BoolField('has_serial', 'hasSerial'),

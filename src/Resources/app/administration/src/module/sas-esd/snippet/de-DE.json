@@ -39,7 +39,8 @@
             "addNewEsd": "ESD hinzufügen"
         },
         "media": {
-            "label": "Lade deine Datei hoch"
+            "label": "Lade deine Datei hoch",
+            "fileName": "Dateiname"
         },
         "serialModal": {
             "modalHeadline": "Seriennummer hinzufügen",
