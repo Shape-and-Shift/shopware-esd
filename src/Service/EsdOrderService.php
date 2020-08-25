@@ -10,7 +10,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
-class EsdOrderService {
+class EsdOrderService
+{
 
     /**
      * @var EntityRepositoryInterface
@@ -34,8 +35,7 @@ class EsdOrderService {
         OrderLineItemCollection $orderLineItems,
         Context $context,
         ?ProductCollection $products = null
-    ): void
-    {
+    ): void {
         $newEsdOrders = [];
         /** @var OrderLineItemEntity $orderLineItem */
         foreach ($orderLineItems as $orderLineItem) {
