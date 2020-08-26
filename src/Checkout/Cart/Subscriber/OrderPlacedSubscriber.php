@@ -35,7 +35,7 @@ class OrderPlacedSubscriber
     {
         $orderLineItems = $event->getOrder()->getLineItems();
 
-        if ($orderLineItems === null) {
+        if ($orderLineItems === null || $event->getOrder()->getAmountTotal() > 0.0) {
             return;
         }
 
