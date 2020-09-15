@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
@@ -47,64 +48,55 @@ class EsdEntity extends Entity
     protected $esdMedia;
 
     /**
-     * @return string
+     * @var bool|null
      */
+    protected $hasCustomDownloadLimit;
+
+    /**
+     * @var bool|null
+     */
+    protected $hasUnlimitedDownload;
+
+    /**
+     * @var int|null
+     */
+    protected $downloadLimitNumber;
+
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     */
     public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string
-     */
     public function getProductId(): string
     {
         return $this->productId;
     }
 
-    /**
-     * @param string $productId
-     */
     public function setProductId(string $productId): void
     {
         $this->productId = $productId;
     }
 
-    /**
-     * @return ProductEntity|null
-     */
     public function getProduct(): ?ProductEntity
     {
         return $this->product;
     }
 
-    /**
-     * @param ProductEntity|null $product
-     */
     public function setProduct(?ProductEntity $product): void
     {
         $this->product = $product;
     }
 
-    /**
-     * @return bool
-     */
     public function hasSerial(): bool
     {
         return $this->hasSerial;
     }
 
-    /**
-     * @param bool $hasSerial
-     */
     public function setHasSerial(bool $hasSerial): void
     {
         $this->hasSerial = $hasSerial;
@@ -138,6 +130,36 @@ class EsdEntity extends Entity
     public function setEsdMedia(?EsdMediaCollection $esdMedia): void
     {
         $this->esdMedia = $esdMedia;
+    }
+
+    public function getHasCustomDownloadLimit(): ?bool
+    {
+        return $this->hasCustomDownloadLimit;
+    }
+
+    public function setHasCustomDownloadLimit($hasCustomDownloadLimit): void
+    {
+        $this->hasCustomDownloadLimit = $hasCustomDownloadLimit;
+    }
+
+    public function getDownloadLimitNumber(): ?int
+    {
+        return $this->downloadLimitNumber;
+    }
+
+    public function setDownloadLimitNumber($downloadLimitNumber): void
+    {
+        $this->downloadLimitNumber = $downloadLimitNumber;
+    }
+
+    public function getHasUnlimitedDownload(): ?bool
+    {
+        return $this->hasUnlimitedDownload;
+    }
+
+    public function setHasUnlimitedDownload($hasUnlimitedDownload): void
+    {
+        $this->hasUnlimitedDownload = $hasUnlimitedDownload;
     }
 
     public function getApiAlias(): string

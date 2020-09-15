@@ -1,8 +1,21 @@
 {% block sas_product_detail_esd %}
-<div>
+<div class="sas-product-detail-esd__generated-esd">
+    <div class="sas-product-detail-esd__alert"
+         v-if="isShowDownloadMailAlert || isShowSerialMailAlert">
+        <div class="h6">{{ $tc('sas-esd.alertMailSettingTitle') }}</div>
+        <p v-if="isShowDownloadMailAlert && isShowSerialMailAlert">
+            <span v-html="$tc('sas-esd.alertMailSetting')"></span>
+        </p>
+        <p v-else-if="isShowDownloadMailAlert && !isShowSerialMailAlert">
+            <span v-html="$tc('sas-esd.alertDownloadMailSetting')"></span>
+        </p>
+        <p v-else>
+            <span v-html="$tc('sas-esd.alertSerialMailSetting')"></span>
+        </p>
+    </div>
+
     <template v-if="isLoadedEsd || isLoadedEsdMedia">
-        <sw-card :hero="false"
-                 class="sas-product-detail-esd__generated-esd">
+        <sw-card :hero="false">
 
             <sw-upload-listener
                     :uploadTag="product.id"
@@ -45,19 +58,43 @@
                     </a>
                 </template>
             </sw-data-grid>
-
-            <sw-switch-field :label="$tc('sas-esd.serialSwitch')"
-                             v-model="product.extensions.esd.hasSerial">
-            </sw-switch-field>
         </sw-card>
 
-        <sw-card :large="false"
-                 v-if="product.extensions.esd.hasSerial"
-                 class="sas-esd-serial-overview">
+        <sw-card :title="$tc('sas-esd.serialModal.title')"
+                 v-if="esdMedia && esdMedia.length > 0">
 
-            <sas-esd-serial-overview
+            <sw-switch-field :label="$tc('sas-esd.serialModal.serialSwitch')"
+                             v-model="product.extensions.esd.hasSerial">
+            </sw-switch-field>
+
+            <div v-if="product.extensions.esd.hasSerial"
+                 class="sas-esd-serial-overview">
+                <sas-esd-serial-overview
                     @serial-open="openModal('serialModal')"
-            ></sas-esd-serial-overview>
+                ></sas-esd-serial-overview>
+            </div>
+        </sw-card>
+
+        <sw-card :title="$tc('sas-esd.downloadLimit.title')"
+                 v-if="esdMedia && esdMedia.length > 0">
+            <sw-switch-field :label="$tc('sas-esd.downloadLimit.customLimitToggle')"
+                             v-model="product.extensions.esd.hasCustomDownloadLimit">
+            </sw-switch-field>
+
+            <template v-if="product.extensions.esd.hasCustomDownloadLimit">
+                <sw-switch-field :disabled="!product.extensions.esd.hasCustomDownloadLimit"
+                                 :label="$tc('sas-esd.downloadLimit.unlimitedToggle')"
+                                 v-model="product.extensions.esd.hasUnlimitedDownload">
+                </sw-switch-field>
+
+                <sw-field v-if="!product.extensions.esd.hasUnlimitedDownload"
+                          class="sas-product-detail-esd__download-limit-number"
+                          type="number"
+                          :placeholder="$tc('sas-esd.downloadLimit.downloadLimitPlaceholder')"
+                          :label="$tc('sas-esd.downloadLimit.downloadLimitLabel')"
+                          v-model="product.extensions.esd.downloadLimitNumber">
+                </sw-field>
+            </template>
         </sw-card>
     </template>
 </div>

@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia;
 
 use Shopware\Core\Content\Media\MediaEntity;
@@ -8,11 +9,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 class EsdMediaEntity extends Entity
 {
     use EntityIdTrait;
-
-    /**
-     * @var string|null
-     */
-    protected $userId;
 
     /**
      * @var string|null
@@ -29,17 +25,11 @@ class EsdMediaEntity extends Entity
      */
     protected $media;
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     */
     public function setId(string $id): void
     {
         $this->id = $id;

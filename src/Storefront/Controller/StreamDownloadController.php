@@ -1,7 +1,10 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Storefront\Controller;
 
 use League\Flysystem\FilesystemInterface;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
+use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -35,52 +38,51 @@ class StreamDownloadController extends StorefrontController
      */
     private $esdService;
 
+    /**
+     * @var EsdDownloadService
+     */
+    private $esdDownloadService;
+
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         FilesystemInterface $filesystemPrivate,
-        EsdService $esdService
+        EsdService $esdService,
+        EsdDownloadService $esdDownloadService
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->filesystemPrivate = $filesystemPrivate;
         $this->esdService = $esdService;
+        $this->esdDownloadService = $esdDownloadService;
     }
 
     /**
-     * @Route("/esd/download/{productId}", name="frontend.sas.esd.download", options={"seo"="false"}, methods={"GET"})
-     *
-     * @throws CustomerNotLoggedInException
+     * @Route("/esd/download/{esdOrderId}", name="frontend.sas.esd.download", options={"seo"="false"}, methods={"GET"})
      */
-    public function __invoke(SalesChannelContext $context, string $productId)
+    public function downloadByUserLoggedIn(SalesChannelContext $context, string $esdOrderId): ?StreamedResponse
     {
         $this->denyAccessUnlessLoggedIn();
 
-        $esdOrder = $this->esdService->getEsdOrderByCustomer($productId, $context);
+        $esdOrder = $this->esdService->getEsdOrderByCustomer($esdOrderId, $context);
         if (empty($esdOrder)) {
             throw new NotFoundHttpException('Esd cannot be found');
         }
 
-        if (!is_file($this->esdService->getCompressFile($productId))) {
-            // Create a zip file for old version
-            $this->esdService->compressFiles($productId);
+        return $this->downloadProcess($esdOrder, $context);
+    }
+
+    /**
+     * @Route("/esd/download/guest/{esdOrderId}", name="frontend.sas.esd.download.guest", options={"seo"="false"}, methods={"GET"})
+     *
+     * @return StreamedResponse
+     */
+    public function downloadByGuest(SalesChannelContext $context, string $esdOrderId): ?StreamedResponse
+    {
+        $esdOrder = $this->esdService->getEsdOrderByGuest($esdOrderId, $context);
+        if (empty($esdOrder)) {
+            throw new NotFoundHttpException('Esd cannot be found');
         }
 
-        $fileSystem = $this->filesystemPrivate;
-        $path = $this->esdService->getPathCompressFile($productId);
-        $response = new StreamedResponse(function () use ($fileSystem, $path) {
-            $outputStream = fopen('php://output', 'wb');
-            $fileStream = $fileSystem->readStream($path);
-            stream_copy_to_stream($fileStream, $outputStream);
-        });
-
-        $disposition = HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            $this->esdService->downloadFileName($esdOrder->getOrderLineItem()->getLabel())
-        );
-
-        $response->headers->set('Content-Type', 'zip');
-        $response->headers->set('Content-Disposition', $disposition);
-
-        return $response;
+        return $this->downloadProcess($esdOrder, $context);
     }
 
     /**
@@ -111,5 +113,36 @@ class StreamDownloadController extends StorefrontController
         }
 
         throw new CustomerNotLoggedInException();
+    }
+
+    private function downloadProcess(EsdOrderEntity $esdOrder, SalesChannelContext $context): ?StreamedResponse
+    {
+        $productId = $esdOrder->getEsd()->getProductId();
+
+        if (!is_file($this->esdService->getCompressFile($productId))) {
+            // Create a zip file for old version
+            $this->esdService->compressFiles($productId);
+        }
+
+        $this->esdDownloadService->checkLimitDownload($esdOrder);
+        $this->esdDownloadService->addDownloadHistory($esdOrder, $context->getContext());
+
+        $fileSystem = $this->filesystemPrivate;
+        $path = $this->esdService->getPathCompressFile($productId);
+        $response = new StreamedResponse(function () use ($fileSystem, $path): void {
+            $outputStream = fopen('php://output', 'wb');
+            $fileStream = $fileSystem->readStream($path);
+            stream_copy_to_stream($fileStream, $outputStream);
+        });
+
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $this->esdService->downloadFileName($esdOrder->getOrderLineItem()->getLabel())
+        );
+
+        $response->headers->set('Content-Type', 'zip');
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
     }
 }

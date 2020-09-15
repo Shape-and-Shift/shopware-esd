@@ -8,7 +8,7 @@ const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 Component.register('sas-product-detail-esd', {
     template,
 
-    inject: ['repositoryFactory'],
+    inject: ['repositoryFactory', 'systemConfigApiService'],
 
     data() {
         return {
@@ -16,13 +16,16 @@ Component.register('sas-product-detail-esd', {
             fileAccept: 'application/pdf, image/*',
             selectedItems: null,
             isLoading: true,
-            isLoadedEsd: false
+            isLoadedEsd: false,
+            isShowDownloadMailAlert: false,
+            isShowSerialMailAlert: false,
         };
     },
 
     computed: {
         ...mapState('swProductDetail', [
-            'product'
+            'product',
+            'parentProduct'
         ]),
 
         ...mapGetters('swProductDetail', {
@@ -46,6 +49,10 @@ Component.register('sas-product-detail-esd', {
             return this.repositoryFactory.create('media');
         },
 
+        mailTemplateRepository() {
+            return this.repositoryFactory.create('mail_template');
+        },
+
         mediaColumns() {
             return this.getMediaColumns();
         }
@@ -63,7 +70,11 @@ Component.register('sas-product-detail-esd', {
     },
 
     created() {
-        this.loadEsd();
+        if (this.product.id !== this.parentProduct.id) {
+            Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', false);
+            this.loadEsd();
+            this.loadMedia();
+        }
     },
 
     methods: {
@@ -83,30 +94,75 @@ Component.register('sas-product-detail-esd', {
                     esdExtension.productId = this.product.id;
                     this.product.extensions.esd = esdExtension;
                     this.isLoading = false;
-                } else if (!this.isLoadedEsdMedia) {
-                    const criteria = new Criteria();
-                    criteria.addAssociation('media');
-                    criteria.addFilter(Criteria.equals('esdId', this.product.extensions.esd.id));
-                    criteria.addFilter(Criteria.not('and', [Criteria.equals('mediaId', null)]));
-
-                    this.esdMediaRepository.search(criteria, Shopware.Context.api).then((esdMedia) => {
-                        this.product.extensions.esd.esdMedia = esdMedia;
-
-                        const esdMediaList = this.createMediaCollection();
-                        Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
-                        esdMedia.forEach((esdMedia) => {
-                            Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
-                        })
-
-                        this.isLoading = false;
-                        Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', true);
-                    });
                 }
             }
 
             if (typeof this.product.extensions.esd !== 'undefined') {
                 this.isLoadedEsd = true;
+
+                if (this.product.extensions.esd.esdMedia.length === 0) {
+                    this.loadMedia();
+                }
             }
+
+            this.checkMailSettings();
+        },
+
+        async checkMailSettings() {
+            const config = await this.systemConfigApiService.getValues('SasEsd.config');
+
+            const criteria = new Criteria();
+            criteria.getAssociation('salesChannels')
+                .setLimit(1)
+                .addAssociation('salesChannel');
+            criteria.addAssociation('mailTemplateType');
+
+            const downloadTechnicalName = 'sas_esd.download';
+            const serialTechnicalName = 'sas_esd.serial';
+            const technicalNames = [];
+            if (config['SasEsd.config.isSendDownloadConfirmation'] === true ) {
+                technicalNames.push(downloadTechnicalName)
+            }
+
+            if (config['SasEsd.config.isSendSerialConfirmation'] === true ) {
+                technicalNames.push(serialTechnicalName)
+            }
+
+            if (technicalNames.length > 0) {
+                criteria.addFilter(Criteria.equalsAny('mailTemplateType.technicalName', technicalNames));
+
+                this.mailTemplateRepository.search(criteria, Shopware.Context.api).then((items) => {
+                    items.forEach(item => {
+                        if (item.salesChannels.length === 0) {
+                            if (item.mailTemplateType.technicalName === serialTechnicalName) {
+                                this.isShowSerialMailAlert = true;
+                            } else {
+                                this.isShowDownloadMailAlert = true;
+                            }
+                        }
+                    })
+                });
+            }
+        },
+
+        loadMedia() {
+            const criteria = new Criteria();
+            criteria.addAssociation('media');
+            criteria.addFilter(Criteria.equals('esdId', this.product.extensions.esd.id));
+            criteria.addFilter(Criteria.not('and', [Criteria.equals('mediaId', null)]));
+
+            this.esdMediaRepository.search(criteria, Shopware.Context.api).then((esdMedia) => {
+                this.product.extensions.esd.esdMedia = esdMedia;
+
+                const esdMediaList = this.createMediaCollection();
+                Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
+                esdMedia.forEach((esdMedia) => {
+                    Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                })
+
+                this.isLoading = false;
+                Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', true);
+            });
         },
 
         getMediaColumns() {

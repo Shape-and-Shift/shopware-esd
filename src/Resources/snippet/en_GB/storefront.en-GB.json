@@ -15,10 +15,12 @@
                 "orderNumber": "Order No.",
                 "price": "Price",
                 "purchaseDate": "Purchase date",
+                "downloadRemaining": "Download remaining",
                 "action": "Action",
                 "serial": "Serial",
                 "freeLabel": "Free",
-                "downloadButton": "Download"
+                "downloadButton": "Download",
+                "unlimitedDownload": "Unlimited"
             }
         }
     }

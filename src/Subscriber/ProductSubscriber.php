@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Subscriber;
 
 use Sas\Esd\Service\EsdService;
@@ -25,7 +26,7 @@ class ProductSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onProductsWritten(EntityWrittenEvent $event)
+    public function onProductsWritten(EntityWrittenEvent $event): void
     {
         if (!empty($event->getIds()[0])) {
             $this->esdService->compressFiles($event->getIds()[0]);

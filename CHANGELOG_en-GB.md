@@ -1,3 +1,9 @@
+# 1.2.0
+* Added Download confirmation template
+* Added Serial confirmation template
+* Added Download Limitation of ESD
+* Improved API documentation
+
 # 1.1.0
 
 * Added multiple file uploads

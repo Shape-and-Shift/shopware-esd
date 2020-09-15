@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Subscriber;
 
 use Sas\Esd\Service\EsdOrderService;
@@ -46,10 +47,11 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function orderStatePaid(OrderStateMachineStateChangeEvent $event)
+    public function orderStatePaid(OrderStateMachineStateChangeEvent $event): void
     {
-        $criteria = (new Criteria([$event->getOrder()->getId()]))
-            ->addAssociation('lineItems.product.esd.esdMedia');
+        $criteria = new Criteria([$event->getOrder()->getId()]);
+        $criteria->addAssociation('lineItems.product.esd.esdMedia');
+        $criteria->addAssociation('orderCustomer.customer');
 
         $criteria->addFilter(
             new NotFilter(
@@ -68,7 +70,7 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
 
                 $esdOrders = $this->esdService->getEsdOrderByOrderLineItemIds($orderLineItemIds, $event->getContext());
                 if (empty($esdOrders->first()) && $order->getAmountTotal() > 0) {
-                    $this->esdOrderService->addNewEsdOrders($order->getLineItems(), $event->getContext());
+                    $this->esdOrderService->addNewEsdOrders($order, $event->getContext());
                 }
             }
         }

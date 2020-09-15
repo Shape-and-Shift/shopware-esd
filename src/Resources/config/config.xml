@@ -4,10 +4,31 @@
     <card>
         <title>ESD Configuration</title>
         <title lang="de-DE">ESD Konfiguration</title>
-        <component name="sw-entity-single-select">
-            <name>exampleProduct</name>
-            <entity>state_machine_state</entity>
-            <title>Choose a product for the plugin configuration</title>
-        </component>
+
+        <input-field type="bool">
+            <name>isSendDownloadConfirmation</name>
+            <label>Sending download confirmation email</label>
+            <label lang="de-DE">Download Bestätigungs Email senden</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>isSendSerialConfirmation</name>
+            <label>Sending serial number confirmation email</label>
+            <label lang="de-DE">Seriennummer Bestätigungs Email senden</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>isNotDownloadLimitation</name>
+            <label>No download limitation</label>
+            <label lang="de-DE">Kein Download Limit</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+
+        <input-field type="int">
+            <name>limitDownloadNumber</name>
+            <label>Enter the global number of the maximal amount of downloads.</label>
+            <label lang="de-DE">Gebe die Anzahl der maximalen globalen Downloads ein.</label>
+            <defaultValue>0</defaultValue>
+        </input-field>
     </card>
 </config>

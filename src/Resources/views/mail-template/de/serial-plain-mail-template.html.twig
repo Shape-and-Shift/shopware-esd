@@ -1,0 +1,7 @@
+Hallo {{order.orderCustomer.firstName}},
+vielen Dank für deine Bestellung.
+Nachstehend findest du die Details zu deinen digitalen Seriennummer mit der Bestellnummer {{order.orderNumber}}.
+
+{% for esdSerial in esdSerials %}
+    Pos.: {{ loop.index }} | Name: {{ esdSerial.productName|u.wordwrap(80) }} | Seriennummer: {{ esdSerial.serial }}
+{% endfor %}
