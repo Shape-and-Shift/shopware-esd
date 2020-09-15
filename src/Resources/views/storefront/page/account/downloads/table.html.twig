@@ -1,0 +1,64 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">{{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}</th>
+        <th>{{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}</th>
+        <th>{{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}</th>
+        <th>{{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}</th>
+        <th>{{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}</th>
+        <th>{{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}</th>
+        <th>{{ "sasEsd.account.downloadTable.action"|trans|sw_sanitize }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for esdOrder in esdOrders %}
+        {% if esdOrder.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" or esdOrder.orderLineItem.order.amountNet == 0.0 %}
+            <tr>
+                <th scope="row">
+                    {{ esdOrder.orderLineItem.label }}
+                </th>
+                <th>
+                    {{ esdOrder.orderLineItem.order.orderNumber }}
+                </th>
+                <td>
+                    {% if esdOrder.orderLineItem.unitPrice == 0 %}
+                        <span class="badge badge-primary">
+                            {{ "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize }}
+                        </span>
+                    {% else %}
+                        {{ esdOrder.orderLineItem.unitPrice|currency }}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ esdOrder.serial.serial }}
+                </td>
+                <td>
+                    {{ esdOrder.orderLineItem.createdAt|date }}
+                </td>
+                <td>
+                    {% set isDisabledDownload = false %}
+                    {% if downloadLimits[esdOrder.id] == null %}
+                        {{ "sasEsd.account.downloadTable.unlimitedDownload"|trans|sw_sanitize }}
+                    {% else %}
+                        {% set downloadLimit = downloadLimits[esdOrder.id] %}
+                        {% if esdOrder.countDownload >= downloadLimit %}
+                            <span class="text-danger">0</span>
+                            {% set isDisabledDownload = true %}
+                        {% else %}
+                            {{ esdOrder.countDownload }} / {{ downloadLimit }}
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if esdOrder.esd.esdMedia|length %}
+                        <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %}js-esd-download-selector{% endif %}"
+                           href="{{ url('frontend.sas.esd.download', {esdOrderId: esdOrder.id}) }}">
+                            {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>

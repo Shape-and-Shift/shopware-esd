@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
@@ -66,35 +67,37 @@ class Migration1591698930CreateEsdTable extends MigrationStep
         ');
 
         $defaultFolderId = Uuid::randomBytes();
+
         try {
             $connection->insert('media_default_folder', [
-                'id'                 => $defaultFolderId,
+                'id' => $defaultFolderId,
                 'association_fields' => '[]',
-                'entity'             => EsdDefinition::ENTITY_NAME,
-                'created_at'         => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+                'entity' => EsdDefinition::ENTITY_NAME,
+                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (DBALException $e) {
         }
 
         $mediaFolderConfigurationId = Uuid::randomBytes();
+
         try {
             $connection->insert('media_folder_configuration', [
-                'id'                => $mediaFolderConfigurationId,
-                'no_association'    => 1,
+                'id' => $mediaFolderConfigurationId,
+                'no_association' => 1,
                 'create_thumbnails' => 0,
-                'private'           => 1,
-                'created_at'        => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+                'private' => 1,
+                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (DBALException $e) {
         }
 
         try {
             $connection->insert('media_folder', [
-                'id'                            => Uuid::randomBytes(),
-                'default_folder_id'             => $defaultFolderId,
+                'id' => Uuid::randomBytes(),
+                'default_folder_id' => $defaultFolderId,
                 'media_folder_configuration_id' => $mediaFolderConfigurationId,
-                'name'                          => 'ESD Media',
-                'created_at'                    => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+                'name' => 'ESD Media',
+                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (DBALException $e) {
         }

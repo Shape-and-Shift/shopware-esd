@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaDefinition;
@@ -13,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
@@ -54,6 +56,9 @@ class EsdDefinition extends EntityDefinition
             new OneToManyAssociationField('orders', EsdOrderDefinition::class, 'esd_id'),
 
             new BoolField('has_serial', 'hasSerial'),
+            new BoolField('has_custom_download_limit', 'hasCustomDownloadLimit'),
+            new BoolField('has_unlimited_download', 'hasUnlimitedDownload'),
+            new IntField('download_limit_number', 'downloadLimitNumber'),
 
             new CreatedAtField(),
         ]);

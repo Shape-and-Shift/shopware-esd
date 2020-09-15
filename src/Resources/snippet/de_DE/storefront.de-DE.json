@@ -15,10 +15,12 @@
                 "orderNumber": "Bestellnr.",
                 "price": "Preis",
                 "purchaseDate": "Kaufdatum",
+                "downloadRemaining": "Rest herunterladen",
                 "action": "Aktion",
                 "serial": "Seriennummer",
                 "freeLabel": "Konstelos",
-                "downloadButton": "Download"
+                "downloadButton": "Download",
+                "unlimitedDownload": "Unbegrenzt"
             }
         }
     }

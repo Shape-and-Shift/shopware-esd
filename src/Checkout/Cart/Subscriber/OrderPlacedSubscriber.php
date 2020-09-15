@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Sas\Esd\Checkout\Cart\Subscriber;
 
 use Sas\Esd\Service\EsdOrderService;
@@ -16,7 +17,6 @@ class OrderPlacedSubscriber
      * @var EntityRepositoryInterface
      */
     private $productRepository;
-
 
     /**
      * @var EsdOrderService
@@ -59,7 +59,7 @@ class OrderPlacedSubscriber
         /** @var ProductCollection $products */
         $products = $this->productRepository->search($criteria, $event->getContext())->getEntities();
         if ($products->count() > 0) {
-            $this->esdOrderService->addNewEsdOrders($orderLineItems, $event->getContext(), $products);
+            $this->esdOrderService->addNewEsdOrders($event->getOrder(), $event->getContext(), $products);
         }
     }
 }

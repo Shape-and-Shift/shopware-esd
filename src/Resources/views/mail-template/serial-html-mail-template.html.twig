@@ -1,0 +1,26 @@
+<div style="font-family:arial; font-size:12px;">
+    <br/>
+    <p>Dear {{order.orderCustomer.firstName}},</p>
+
+    Thank you for your order.<br/>
+    Please find the details of your serial product of order {{order.orderNumber}}.<br/>
+    <br/>
+
+    <table width="80%" border="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+        <tr>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Pos.</strong></td>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Name</strong></td>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Serial Number</strong></td>
+        </tr>
+
+        {% for esdSerial in esdSerials %}
+            <tr>
+                <td style="border-bottom:1px solid #cccccc;">{{ loop.index }} </td>
+                <td style="border-bottom:1px solid #cccccc;">
+                    {{ esdSerial.productName|u.wordwrap(80) }}
+                </td>
+                <td style="border-bottom:1px solid #cccccc;">{{ esdSerial.serial }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>

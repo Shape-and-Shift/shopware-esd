@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialDefinition;
@@ -9,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -45,6 +47,8 @@ class EsdOrderDefinition extends EntityDefinition
 
             (new FkField('serial_id', 'serialId', EsdSerialDefinition::class)),
             (new OneToOneAssociationField('serial', 'serial_id', 'id', EsdSerialDefinition::class, false)),
+
+            new IntField('count_download', 'countDownload'),
         ]);
     }
 }

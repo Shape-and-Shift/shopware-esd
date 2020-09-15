@@ -15,7 +15,6 @@
         "emptyStateSerialDescription" : "There are no serial numbers configured for this ESD product",
         "buttonAddEsd": "Add new ESD",
         "contextMenuDelete": "Delete",
-        "serialSwitch": "Enable serial numbers",
         "notification": {
             "success": "Serials successfully saved",
             "error": "There was an error while saving your serials"
@@ -43,6 +42,8 @@
             "fileName": "Filename"
         },
         "serialModal": {
+            "title": "Serial numbers",
+            "serialSwitch": "Enable serial numbers",
             "modalHeadline": "Add serial numbers",
             "buttonOpen": "Add them manually",
             "cancel": "Cancel",
@@ -51,6 +52,17 @@
                 "label": "Serial numbers",
                 "placeholder": "New line for each serial number"
             }
-        }
+        },
+        "downloadLimit": {
+            "title": "Download limit",
+            "customLimitToggle": "Custom download limit",
+            "unlimitedToggle": "Unlimited",
+            "downloadLimitLabel": "Download limit number",
+            "downloadLimitPlaceholder": "Input your custom download limit number for this ESD"
+        },
+        "alertMailSettingTitle": "Enable sending of confirmation emails",
+        "alertMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the download link or the serial number.Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
+        "alertDownloadMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the download link. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
+        "alertSerialMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the serial number. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template."
     }
 }

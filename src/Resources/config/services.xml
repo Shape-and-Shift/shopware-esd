@@ -22,6 +22,10 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <service id="Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory\EsdDownloadHistoryDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <service id="Sas\Esd\Content\Product\Extension\ProductExtension">
             <tag name="shopware.entity.extension"/>
         </service>
@@ -58,12 +62,14 @@
         <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
+            <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
+            <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
         </service>
 
         <!-- Language Snippets -->
@@ -87,6 +93,27 @@
         <service id="Sas\Esd\Service\EsdOrderService">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="sas_product_esd_serial.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdMailService"/>
+        </service>
+
+        <service id="Sas\Esd\Service\EsdMailService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="mail_template.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
+            <argument type="service" id="messenger.bus.shopware" />
+        </service>
+
+        <service id="Sas\Esd\Service\EsdDownloadService">
+            <argument type="service" id="sas_product_esd_order.repository"/>
+            <argument type="service" id="sas_product_esd_download_history.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <!-- Message -->
+        <service id="Sas\Esd\Message\SendMailHandler">
+            <argument type="service" id="Shopware\Core\Content\MailTemplate\Service\MailService"/>
+
+            <tag name="messenger.message_handler"/>
         </service>
     </services>
 </container>

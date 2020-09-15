@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Service;
 
 use League\Flysystem\FilesystemInterface;
@@ -21,7 +22,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class EsdService
 {
-    const FOLDER_COMPRESS_NAME = 'esd-compress';
+    public const FOLDER_COMPRESS_NAME = 'esd-compress';
 
     /**
      * @var EntityRepositoryInterface
@@ -85,7 +86,7 @@ class EsdService
             mkdir($outZipPath, 0777);
         }
 
-        $zip = new \ZipArchive;
+        $zip = new \ZipArchive();
         $zip->open($this->getCompressFile($productId), \ZipArchive::OVERWRITE | \ZipArchive::CREATE);
 
         foreach ($esdMedia as $media) {
@@ -124,9 +125,26 @@ class EsdService
         return $esd->getEsdMedia();
     }
 
-    public function getEsdOrderByCustomer($productId, SalesChannelContext $context): EsdOrderEntity
+    public function getEsdOrderByCustomer(string $esdOrderId, SalesChannelContext $context): EsdOrderEntity
     {
-        $criteria = $this->createCriteriaEsdOrder($context->getCustomer()->getId(), $productId);
+        $criteria = new Criteria([$esdOrderId]);
+        $criteria->addAssociation('orderLineItem.order');
+        $criteria->addAssociation('esd');
+        $criteria->addFilter(
+            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId())
+        );
+
+        /** @var EsdOrderEntity $esdOrder */
+        $esdOrder = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
+
+        return $esdOrder;
+    }
+
+    public function getEsdOrderByGuest(string $esdOrderId, SalesChannelContext $context): EsdOrderEntity
+    {
+        $criteria = new Criteria([$esdOrderId]);
+        $criteria->addAssociation('orderLineItem');
+        $criteria->addAssociation('esd');
 
         /** @var EsdOrderEntity $esdOrder */
         $esdOrder = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
@@ -152,7 +170,41 @@ class EsdService
         return $esOrders;
     }
 
-    private function createCriteriaEsdOrder(string $customerId, string $productId = null): Criteria
+    public function getCompressFile($productId): string
+    {
+        return $this->getPrivateFolder() . $this->getPathCompressFile($productId);
+    }
+
+    public function getPathCompressFile($productId): string
+    {
+        return self::FOLDER_COMPRESS_NAME . "/$productId.zip";
+    }
+
+    public function downloadFileName($string): string
+    {
+        return $this->convertFileName($string) . '.zip';
+    }
+
+    public function getPrivateFolder(): string
+    {
+        return dirname(__DIR__, 5) . '/files/';
+    }
+
+    public function getFileSize(string $productId): string
+    {
+        $size = filesize($this->getCompressFile($productId));
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        $power = $size > 0 ? floor(log($size, 1024)) : 0;
+
+        return number_format(
+            $size / pow(1024, $power),
+            2,
+            '.',
+            ','
+        ) . ' ' . $units[$power];
+    }
+
+    private function createCriteriaEsdOrder(string $customerId, ?string $productId = null): Criteria
     {
         $criteria = new Criteria();
         $criteria->addAssociation('orderLineItem.order.transactions.stateMachineState');
@@ -188,31 +240,12 @@ class EsdService
         return $criteria;
     }
 
-    public function getCompressFile($productId): string
-    {
-        return $this->getPrivateFolder() . $this->getPathCompressFile($productId);
-    }
-
-    public function getPathCompressFile($productId): string
-    {
-        return self::FOLDER_COMPRESS_NAME . "/$productId.zip";
-    }
-
-    public function downloadFileName($string): string
-    {
-        return $this->convertFileName($string) . '.zip';
-    }
-
     private function convertFileName($string): string
     {
         $string = str_replace(' ', '-', $string);
         $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string);
-        return preg_replace('/-+/', '-', $string);
-    }
 
-    public function getPrivateFolder(): string
-    {
-        return dirname(__DIR__, 5) . '/files/';
+        return preg_replace('/-+/', '-', $string);
     }
 
     private function checkExistAllFiles(EsdMediaCollection $esdMedia): bool

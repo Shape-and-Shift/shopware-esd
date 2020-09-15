@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Subscriber;
 
 use Shopware\Core\Framework\Context;
@@ -11,7 +12,7 @@ class MediaPermissionSubscriber
     {
         if ($event->getRequest()->attributes->get('_route') === 'api.action.media.upload') {
             $context = $event->getRequest()->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
-            $f = \Closure::bind(function ($class) {
+            $f = \Closure::bind(function ($class): void {
                 $class->scope = Context::SYSTEM_SCOPE;
             }, null, $context);
             $f($context);

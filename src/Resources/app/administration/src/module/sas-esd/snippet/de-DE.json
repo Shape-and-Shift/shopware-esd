@@ -15,7 +15,6 @@
         "emptyStateSerialDescription" : "Derzeit sind keine Seriennummer konfiguriert.",
         "buttonAddEsd": "ESD hinzufügen",
         "contextMenuDelete": "Löschen",
-        "serialSwitch": "Seriennummern aktivieren",
         "notification": {
             "success": "Seriennummer gespeichert",
             "error": "Es gab ein Problem beim speichern der Seriennummer"
@@ -43,6 +42,7 @@
             "fileName": "Dateiname"
         },
         "serialModal": {
+            "serialSwitch": "Seriennummer",
             "modalHeadline": "Seriennummer hinzufügen",
             "buttonOpen": "Manuell hinufügen",
             "cancel": "Abbrechen",
@@ -51,6 +51,17 @@
                 "label": "Seriennummern",
                 "placeholder": "Neue Zeile für jede Seriennummer"
             }
-        }
+        },
+        "downloadLimit": {
+            "title": "Download Limit",
+            "customLimitToggle": "Benutzerdefiniertes Download Limit",
+            "unlimitedToggle": "Unbegrenzt",
+            "downloadLimitLabel": "Anzahl der limitierten Downloads",
+            "downloadLimitPlaceholder": "Benutzerdefiniertes Download Limit"
+        },
+        "alertMailSettingTitle": "Email Benachrichtigungen aktivieren",
+        "alertMailSetting": "Aktuell werden keine Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
+        "alertDownloadMailSetting": "Aktuell werden keine Download Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Download Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
+        "alertSerialMailSetting": "Aktuell werden keine Seriennummer Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Seriennummer Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst."
     }
 }

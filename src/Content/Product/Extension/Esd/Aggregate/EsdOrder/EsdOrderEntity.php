@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
@@ -35,6 +36,11 @@ class EsdOrderEntity extends Entity
      * @var EsdSerialEntity
      */
     protected $serial;
+
+    /**
+     * @var string|null
+     */
+    protected $countDownload;
 
     /**
      * @var OrderLineItemEntity
@@ -81,35 +87,33 @@ class EsdOrderEntity extends Entity
         $this->orderLineItem = $orderLineItem;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSerialId(): ?string
     {
         return $this->serialId;
     }
 
-    /**
-     * @param string|null $serialId
-     */
     public function setSerialId(?string $serialId): void
     {
         $this->serialId = $serialId;
     }
 
-    /**
-     * @return EsdSerialEntity|null
-     */
     public function getSerial(): ?EsdSerialEntity
     {
         return $this->serial;
     }
 
-    /**
-     * @param EsdSerialEntity $serial
-     */
     public function setSerial(EsdSerialEntity $serial): void
     {
         $this->serial = $serial;
+    }
+
+    public function getCountDownload(): ?int
+    {
+        return $this->countDownload;
+    }
+
+    public function setCountDownload(int $countDownload): void
+    {
+        $this->countDownload = $countDownload;
     }
 }

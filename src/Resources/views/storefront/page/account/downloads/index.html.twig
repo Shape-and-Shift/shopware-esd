@@ -14,7 +14,7 @@
 
             {% block page_account_downloads_main %}
                 <div class="account-orders-main">
-                    {% if items.total == 0 %}
+                    {% if esdOrders.total == 0 %}
                         {% block page_account_downloads_info_empty %}
                             {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
                                 type: "warning",
@@ -23,55 +23,13 @@
                         {% endblock %}
                     {% else %}
                         {% block page_account_downloads_overview %}
-                            <div class="account-orders-overview">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">{{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}</th>
-                                            <th>{{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}</th>
-                                            <th>{{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}</th>
-                                            <th>{{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}</th>
-                                            <th>{{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}</th>
-                                            <th>{{ "sasEsd.account.downloadTable.action"|trans|sw_sanitize }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for item in items %}
-                                        {% if item.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" or item.orderLineItem.order.amountNet == 0.0 %}
-                                            <tr>
-                                                <th scope="row">
-                                                    {{ item.orderLineItem.label }}
-                                                </th>
-                                                <th>
-                                                    {{ item.orderLineItem.order.orderNumber }}
-                                                </th>
-                                                <td>
-                                                    {% if item.orderLineItem.unitPrice == 0 %}
-                                                        <span class="badge badge-primary">
-                                                            {{ "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize }}
-                                                        </span>
-                                                    {% else %}
-                                                        {{ item.orderLineItem.unitPrice|currency }}
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {{ item.serial.serial }}
-                                                </td>
-                                                <td>
-                                                    {{ item.orderLineItem.createdAt|date }}
-                                                </td>
-                                                <td>
-                                                    {% if item.esd.esdMedia|length %}
-                                                        <a class="btn btn-primary" href="{{ url('frontend.sas.esd.download', {productId: item.esd.productId}) }}">
-                                                            {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
-                                                        </a>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+                            <div class="account-orders-overview" data-esd-download-remaining="true">
+                                <div class="account-esd-downloads">
+                                    {% sw_include '@Storefront/storefront/page/account/downloads/table.html.twig' with {
+                                        esdOrders: esdOrders,
+                                        downloadLimits: downloadLimits
+                                    } %}
+                                </div>
                             </div>
                         {% endblock %}
                     {% endif %}
@@ -79,4 +37,11 @@
             {% endblock %}
         </div>
     {% endblock %}
+{% endblock %}
+
+{% block base_script_router %}
+    {{ parent() }}
+    <script>
+        window.router['frontend.account.downloads.remaining'] = '{{ path('frontend.account.downloads.remaining') }}';
+    </script>
 {% endblock %}
