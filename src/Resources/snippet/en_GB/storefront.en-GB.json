@@ -22,6 +22,12 @@
                 "downloadButton": "Download",
                 "unlimitedDownload": "Unlimited"
             }
+        },
+        "checkout": {
+            "confirmESD": "I would like to waive my right of withdrawal in order to be able to download the article immediately."
+        },
+        "detail": {
+            "instantDownloadAvailable": "Instant download available"
         }
     }
 }

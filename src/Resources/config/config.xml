@@ -30,5 +30,19 @@
             <label lang="de-DE">Gebe die Anzahl der maximalen globalen Downloads ein.</label>
             <defaultValue>0</defaultValue>
         </input-field>
+
+        <input-field type="bool">
+            <name>isShowESDWithdrawal</name>
+            <label>Show ESD withdrawal within checkout</label>
+            <label lang="de-DE">ESD Widerrufsrecht an der Kasse anzeigen</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
+            <name>isShowInstantESDDownload</name>
+            <label>Show instant download available</label>
+            <label lang="de-DE">Sofortigen Download anzeigen verfügbar</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
     </card>
 </config>
