@@ -112,8 +112,13 @@
         <!-- Message -->
         <service id="Sas\Esd\Message\SendMailHandler">
             <argument type="service" id="Shopware\Core\Content\MailTemplate\Service\MailService"/>
-
             <tag name="messenger.message_handler"/>
+        </service>
+
+        <!-- Extension -->
+        <service id="Sas\Esd\Extension\Twig\EsdExtension">
+            <argument type="service" id="sas_product_esd.repository" />
+            <tag name="twig.extension"/>
         </service>
     </services>
 </container>

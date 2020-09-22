@@ -1,0 +1,31 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm_tos_control %}
+    {% if shopware.config.SasEsd.config.isShowESDWithdrawal == true %}
+        {% set productIds = [] %}
+        {% for lineItem in page.cart.lineItems %}
+            {% set productIds = productIds|merge([lineItem.id]) %}
+        {% endfor %}
+
+        {% set esd = searchEsdByProductIds(productIds, context.context) %}
+
+        {% if esd.count > 0 and page.cart.lineItems.count == esd.count %}
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox"
+                       class="checkout-confirm-tos-checkbox custom-control-input{% if formViolations.getViolations('/tos') is not empty %} is-invalid{% endif %}"
+                       required="required"
+                       id="tos"
+                       form="confirmOrderForm"
+                       name="tos"/>
+                <label for="tos"
+                       class="checkout-confirm-tos-label custom-control-label">
+                    {{ "sasEsd.checkout.confirmESD"|trans()|sw_sanitize }}
+                </label>
+            </div>
+        {% else %}
+            {{ parent() }}
+        {% endif %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
