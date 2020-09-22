@@ -1,3 +1,7 @@
+# 1.2.1
+* added instant download badge on product detail
+* added ESD withdrawal notice within checkout
+
 # 1.2.0
 * Added Download confirmation template
 * Added Serial confirmation template

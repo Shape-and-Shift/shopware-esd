@@ -1,3 +1,7 @@
+# 1.2.1
+* added instant download badge on product detail
+* added ESD withdrawal notice within checkout
+
 # 1.2.0 
 * Email mit Download Link nach erfolgreichen kauf
 * Email mit Serial Number nach erfolgreichen kauf
