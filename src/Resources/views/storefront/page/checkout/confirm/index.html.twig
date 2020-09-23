@@ -12,16 +12,17 @@
         {% if esd.count > 0 and page.cart.lineItems.count == esd.count %}
             <div class="custom-control custom-checkbox">
                 <input type="checkbox"
-                       class="checkout-confirm-tos-checkbox custom-control-input{% if formViolations.getViolations('/tos') is not empty %} is-invalid{% endif %}"
+                       class="checkout-confirm-tos-checkbox custom-control-input{% if formViolations.getViolations('/waiveRightOfRescission') is not empty %} is-invalid{% endif %}"
                        required="required"
-                       id="tos"
+                       id="waiveRightOfRescission"
                        form="confirmOrderForm"
-                       name="tos"/>
-                <label for="tos"
+                       name="waiveRightOfRescission"/>
+                <label for="waiveRightOfRescission"
                        class="checkout-confirm-tos-label custom-control-label">
                     {{ "sasEsd.checkout.confirmESD"|trans()|sw_sanitize }}
                 </label>
             </div>
+            {{ parent() }}
         {% else %}
             {{ parent() }}
         {% endif %}
