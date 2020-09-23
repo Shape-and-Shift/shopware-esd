@@ -1,3 +1,6 @@
+# 1.2.2
+* fixed issue with terms of use
+
 # 1.2.1
 * added instant download badge on product detail
 * added ESD withdrawal notice within checkout
