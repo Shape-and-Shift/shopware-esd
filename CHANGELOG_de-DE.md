@@ -1,3 +1,7 @@
+# 1.2.3
+* added various filetypes to be able to upload also documents
+* it's also possible to upload your very own .zip file
+
 # 1.2.2
 * fixed issue with terms of use
 

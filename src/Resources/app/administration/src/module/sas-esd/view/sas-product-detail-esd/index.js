@@ -13,7 +13,7 @@ Component.register('sas-product-detail-esd', {
     data() {
         return {
             activeModal: '',
-            fileAccept: 'application/pdf, image/*',
+            fileAccept: '*',
             selectedItems: null,
             isLoading: true,
             isLoadedEsd: false,
