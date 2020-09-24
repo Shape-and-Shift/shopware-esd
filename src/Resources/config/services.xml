@@ -58,6 +58,10 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Sas\Esd\Subscriber\MediaFileExtensionSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <!-- Storefront -->
         <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
