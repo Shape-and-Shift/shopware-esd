@@ -1,3 +1,6 @@
+#1.2.5
+* show always revocation for digital downloads. Text Snippet Key is `sasEsd.checkout.confirmESD`
+
 # 1.2.4
 * fixed umlauts while downloading the .zip within the storefront
 
