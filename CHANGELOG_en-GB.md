@@ -1,3 +1,6 @@
+# 1.2.4
+* fixed umlauts while downloading the .zip within the storefront
+
 # 1.2.3
 * added various filetypes to be able to upload also documents
 * it's also possible to upload your very own .zip file
