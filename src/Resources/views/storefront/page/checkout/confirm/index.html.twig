@@ -8,8 +8,7 @@
         {% endfor %}
 
         {% set esd = searchEsdByProductIds(productIds, context.context) %}
-
-        {% if esd.count > 0 and page.cart.lineItems.count == esd.count %}
+        {% if esd.count %}
             <div class="custom-control custom-checkbox">
                 <input type="checkbox"
                        class="checkout-confirm-tos-checkbox custom-control-input{% if formViolations.getViolations('/waiveRightOfRescission') is not empty %} is-invalid{% endif %}"
@@ -22,8 +21,6 @@
                     {{ "sasEsd.checkout.confirmESD"|trans()|sw_sanitize }}
                 </label>
             </div>
-            {{ parent() }}
-        {% else %}
             {{ parent() }}
         {% endif %}
     {% else %}

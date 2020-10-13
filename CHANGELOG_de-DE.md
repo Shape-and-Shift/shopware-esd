@@ -1,3 +1,7 @@
+#1.2.5
+* zeige Verzicht auf Widerruf immer bei digitalen Downloads. 
+Text Snippet Key ist `sasEsd.checkout.confirmESD`
+
 # 1.2.4
 * Fehler bei Umlaute behoben, beim downloaden der .zip Datei
 
