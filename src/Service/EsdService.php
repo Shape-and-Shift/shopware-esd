@@ -243,6 +243,13 @@ class EsdService
     private function convertFileName($string): string
     {
         $string = str_replace(' ', '-', $string);
+        $string = str_replace('ä', 'ae', $string);
+        $string = str_replace('ü', 'ue', $string);
+        $string = str_replace('ö', 'oe', $string);
+        $string = str_replace('Ä', 'Ae', $string);
+        $string = str_replace('Ö', 'Oe', $string);
+        $string = str_replace('Ü', 'Ue', $string);
+        $string = str_replace('ß', 'ss', $string);
         $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string);
 
         return preg_replace('/-+/', '-', $string);
