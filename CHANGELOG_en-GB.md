@@ -1,4 +1,7 @@
-#1.2.5
+# 1.2.6
+* Updated to disable reload the page to get the remaining download data on Shopware version 6.3.2.0 >= 6.3.3.0
+
+# 1.2.5
 * show always revocation for digital downloads. Text Snippet Key is `sasEsd.checkout.confirmESD`
 
 # 1.2.4

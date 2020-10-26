@@ -1,4 +1,7 @@
-#1.2.5
+# 1.2.6
+* Aktualisiert, um das Neuladen der Seite zu deaktivieren und die verbleibenden Download-Daten für Shopware Version 6.3.2.0> = 6.3.3.0 abzurufen
+
+# 1.2.5
 * zeige Verzicht auf Widerruf immer bei digitalen Downloads. 
 Text Snippet Key ist `sasEsd.checkout.confirmESD`
 

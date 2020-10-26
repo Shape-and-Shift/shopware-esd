@@ -67,6 +67,7 @@
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
+            <argument type="service" id="Shopware\Core\Framework\Store\Services\StoreService" />
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
