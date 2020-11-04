@@ -1,3 +1,6 @@
+# 1.2.7
+* fixed a bug with the general terms and condition checkbox during the checkout
+
 # 1.2.6
 * Updated to disable reload the page to get the remaining download data on Shopware version 6.3.2.0 >= 6.3.3.0
 

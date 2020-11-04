@@ -1,3 +1,6 @@
+# 1.2.7
+* fixed a bug with the general terms and condition checkbox during the checkout
+
 # 1.2.6
 * Aktualisiert, um das Neuladen der Seite zu deaktivieren und die verbleibenden Download-Daten für Shopware Version 6.3.2.0> = 6.3.3.0 abzurufen
 
