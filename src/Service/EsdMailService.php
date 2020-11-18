@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Store\Services\StoreService;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -37,16 +38,23 @@ class EsdMailService
      */
     private $messageBus;
 
+    /**
+     * @var StoreService
+     */
+    private $storeService;
+
     public function __construct(
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $mailTemplateRepository,
         EsdService $esdService,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        StoreService $storeService
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->mailTemplateRepository = $mailTemplateRepository;
         $this->esdService = $esdService;
         $this->messageBus = $messageBus;
+        $this->storeService = $storeService;
     }
 
     public function sendMailDownload(
@@ -135,10 +143,26 @@ class EsdMailService
 
     private function getMailTemplate(Context $context, string $technicalName, OrderEntity $order): ?MailTemplateEntity
     {
+        // TODO remove it when finalizing the official patch
+        $shopwareVersion = $this->storeService->getShopwareVersion();
+        if ($shopwareVersion >= '6.3.3.0') {
+            return $this->getMailTemplateHotFixVersion6330($context, $technicalName);
+        }
+
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannels');
         $criteria->addFilter(new EqualsFilter('mailTemplateType.technicalName', $technicalName));
         $criteria->addFilter(new EqualsFilter('salesChannels.salesChannelId', $order->getSalesChannelId()));
+        $criteria->setLimit(1);
+
+        return $this->mailTemplateRepository->search($criteria, $context)->first();
+    }
+
+    // TODO remove it when finalizing the official patch
+    private function getMailTemplateHotFixVersion6330(Context $context, string $technicalName): ?MailTemplateEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('mailTemplateType.technicalName', $technicalName));
         $criteria->setLimit(1);
 
         return $this->mailTemplateRepository->search($criteria, $context)->first();

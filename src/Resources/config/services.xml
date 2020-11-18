@@ -106,6 +106,7 @@
             <argument type="service" id="mail_template.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="messenger.bus.shopware" />
+            <argument type="service" id="Shopware\Core\Framework\Store\Services\StoreService" />
         </service>
 
         <service id="Sas\Esd\Service\EsdDownloadService">
