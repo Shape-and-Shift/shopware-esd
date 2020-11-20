@@ -1,3 +1,6 @@
+# 1.2.8
+* Made a hotfix to send the download email on Shopware version 6.3.3.0
+
 # 1.2.7
 * fixed a bug with the general terms and condition checkbox during the checkout
 
