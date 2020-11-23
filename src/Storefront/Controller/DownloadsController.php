@@ -9,7 +9,6 @@ use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Store\Services\StoreService;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -37,21 +36,14 @@ class DownloadsController extends StorefrontController
      */
     private $esdDownloadService;
 
-    /**
-     * @var StoreService
-     */
-    private $storeService;
-
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EsdService $esdService,
-        EsdDownloadService $esdDownloadService,
-        StoreService $storeService
+        EsdDownloadService $esdDownloadService
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
-        $this->storeService = $storeService;
     }
 
     /**
@@ -66,18 +58,11 @@ class DownloadsController extends StorefrontController
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
 
-        $isReloadData = true;
-        $shopwareVersion = $this->storeService->getShopwareVersion();
-        if ($shopwareVersion >= '6.3.2.0' && $shopwareVersion < '6.3.3.0') {
-            $isReloadData = false;
-        }
-
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig',
             [
                 'esdOrders' => $esdOrders,
                 'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
-                'isReloadData' => $isReloadData
             ]
         );
     }

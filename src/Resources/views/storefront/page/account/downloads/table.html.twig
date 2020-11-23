@@ -51,7 +51,7 @@
                 </td>
                 <td>
                     {% if esdOrder.esd.esdMedia|length %}
-                        <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %} {% if isReloadData %}js-esd-download-selector{% endif %}{% endif %}"
+                        <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %} js-esd-download-selector{% endif %}"
                            href="{{ url('frontend.sas.esd.download', {esdOrderId: esdOrder.id}) }}">
                             {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
                         </a>

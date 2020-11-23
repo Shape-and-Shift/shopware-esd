@@ -1,5 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 
 export default class EsdDownloadRemaining extends Plugin {
 
@@ -9,7 +9,7 @@ export default class EsdDownloadRemaining extends Plugin {
     };
 
     init() {
-        this.client = new StoreApiClient();
+        this.client = new HttpClient();
         this._registerEvents();
     }
 

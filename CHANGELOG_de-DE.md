@@ -1,3 +1,6 @@
+# 1.2.9
+* Das Neuladen der verbleibenden Download-Daten in Shopware >= v6.3.2.0 wurde behoben. Der verbleibende Download kann aktualisiert werden, nachdem Sie auf "Jetzt herunterladen" geklickt haben
+
 # 1.2.8
 * Ein Hotfix zum Senden der Download-E-Mail in der Shopware version 6.3.3.0 wurde erstellt
 
