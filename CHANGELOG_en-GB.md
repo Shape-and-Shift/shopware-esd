@@ -1,3 +1,6 @@
+# 1.2.9
+* Fixed reload the remaining download data on Shopware >= v6.3.2.0, can update the remaining download after click download now
+
 # 1.2.8
 * Made a hotfix to send the download email on Shopware version 6.3.3.0
 
