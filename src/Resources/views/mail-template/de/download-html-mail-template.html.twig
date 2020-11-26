@@ -28,7 +28,7 @@
                         <td style="border-bottom:1px solid #cccccc;">{{ esdFiles[lineItem.productId] }}</td>
                         <td style="border-bottom:1px solid #cccccc;">
                             {% if order.orderCustomer.customer.guest %}
-                                <a href="{{ url('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}) }}">
+                                <a href="{{ rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}, salesChannel.domains|first.url) }}">
                                     Download
                                 </a>
                             {% else %}

@@ -1,3 +1,7 @@
+# 1.2.10
+* Die url in der E-Mail-Vorlage wurde repariert, Wechsel von url() zu rawUrl(), um die Vertriebskanal-Domain zu erhalten
+* Verbesserte Funktion zum Versenden von E-Mails, Sie können die esd-E-Mail an den Käufer senden Kaufen Ändern Sie den Zahlungsstatus auf bezahlt mit dem Schalter `E-Mail an Kunden senden` ist aktiviert
+
 # 1.2.9
 * Das Neuladen der verbleibenden Download-Daten in Shopware >= v6.3.2.0 wurde behoben. Der verbleibende Download kann aktualisiert werden, nachdem Sie auf "Jetzt herunterladen" geklickt haben
 

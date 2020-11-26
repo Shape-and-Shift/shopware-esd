@@ -1,3 +1,7 @@
+# 1.2.10
+* Fixed the url in the mail template, change from url() to rawUrl() to get the sales channel domain
+* Improved send mail feature, you can send the esd email to the buyer buy change the payment status to paid with the `Send email to customer` toggle is enable
+
 # 1.2.9
 * Fixed reload the remaining download data on Shopware >= v6.3.2.0, can update the remaining download after click download now
 

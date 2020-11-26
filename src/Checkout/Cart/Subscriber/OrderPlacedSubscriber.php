@@ -60,6 +60,7 @@ class OrderPlacedSubscriber
         $products = $this->productRepository->search($criteria, $event->getContext())->getEntities();
         if ($products->count() > 0) {
             $this->esdOrderService->addNewEsdOrders($event->getOrder(), $event->getContext(), $products);
+            $this->esdOrderService->sendMail($event->getOrder(), $event->getContext());
         }
     }
 }
