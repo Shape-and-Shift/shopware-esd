@@ -8,7 +8,7 @@ Nachstehend findest du die Details zu deinen digitalen Download mit der Bestelln
 {% set esdOrderIds = esdOrderListIds[lineItem.id] %}
 {% for esdOrderId in esdOrderIds %}
 {% set pos = pos + 1 %}
-Pos.: {{ pos }} | Name: {{ lineItem.label|u.wordwrap(80) }} | Dateigröße: {{ esdFiles[lineItem.productId] }} | Download Link: {% if order.orderCustomer.customer.guest %}{{ url('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}) }}{% else %}{{ url('frontend.sas.esd.download', {esdOrderId: esdOrderId}) }}{% endif %}
+Pos.: {{ pos }} | Name: {{ lineItem.label|u.wordwrap(80) }} | Dateigröße: {{ esdFiles[lineItem.productId] }} | Download Link: {% if order.orderCustomer.customer.guest %}{{ rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}, salesChannel.domains|first.url) }}{% else %}{{ url('frontend.sas.esd.download', {esdOrderId: esdOrderId}) }}{% endif %}
 
 {% endfor %}
 {% endif %}

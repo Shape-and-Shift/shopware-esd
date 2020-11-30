@@ -2,14 +2,16 @@
 
 namespace Sas\Esd\Service;
 
-use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -46,9 +48,6 @@ class EsdOrderService
         ?ProductCollection $products = null
     ): void {
         $newEsdOrders = [];
-        $esdSerials = [];
-        $esdOrderListIds = [];
-        $esdOrderLineItems = [];
         foreach ($order->getLineItems() as $orderLineItem) {
             if ($products instanceof ProductCollection) {
                 $product = $products->get($orderLineItem->getProductId());
@@ -76,35 +75,84 @@ class EsdOrderService
                 $serialId = null;
                 if (!empty($fetchSerialIds)) {
                     $serialId = current($fetchSerialIds);
-
-                    /** @var EsdSerialEntity $serial */
-                    $serial = $fetchSerials->get($serialId);
-                    $esdSerials[] = [
-                        'serial' => $serial->getSerial(),
-                        'productName' => $orderLineItem->getLabel(),
-                    ];
-
                     unset($fetchSerialIds[$serialId]);
                 }
 
-                $newEsdOrderId = Uuid::randomHex();
                 $newEsdOrders[] = [
-                    'id' => $newEsdOrderId,
+                    'id' => Uuid::randomHex(),
                     'esdId' => $esd->getId(),
                     'orderLineItemId' => $orderLineItem->getId(),
                     'serialId' => $serialId,
                 ];
-                $esdOrderListIds[$orderLineItem->getId()][] = $newEsdOrderId;
-
-                $esdOrderLineItems[$orderLineItem->getId()] = $orderLineItem;
             }
         }
 
         if (!empty($newEsdOrders)) {
             $this->esdOrderRepository->create($newEsdOrders, $context);
-            $this->esdMailService->sendMailDownload($order, $esdOrderLineItems, $esdOrderListIds, $context);
-            $this->esdMailService->sendMailSerial($order, $esdSerials, $context);
         }
+    }
+
+    public function sendMail(OrderEntity $order, Context $context): void {
+        $esdSerials = [];
+        $esdOrderListIds = [];
+        $esdOrderLineItems = [];
+
+        $criteria = new Criteria();
+        $criteria->addAssociation('orderLineItem');
+        $criteria->addAssociation('serial');
+        $criteria->addAssociation('esd.esdMedia');
+        $criteria->addFilter(
+            new EqualsAnyFilter('orderLineItemId', array_values($order->getLineItems()->getIds()))
+        );
+
+        $esdOrders = $this->esdOrderRepository->search($criteria, $context);
+
+        $esdByLineItemIds = [];
+        /** @var EsdOrderEntity $esdOrder */
+        foreach ($esdOrders->getEntities() as $esdOrder) {
+            $esd = $esdOrder->getEsd();
+            if ($esd === null || $esd->getEsdMedia() === null) {
+                continue;
+            }
+
+            $esdOrderLineItems[$esdOrder->getOrderLineItemId()] = $esdOrder->getOrderLineItem();
+            $esdByLineItemIds[$esdOrder->getOrderLineItemId()] = $esd;
+        }
+
+        /** @var OrderLineItemEntity $orderLineItem */
+        foreach ($order->getLineItems() as $orderLineItem) {
+            if (empty($esdByLineItemIds[$orderLineItem->getId()])) {
+                continue;
+            }
+
+            $esd = $esdByLineItemIds[$orderLineItem->getId()];
+            if ($esd === null || $esd->getEsdMedia() === null) {
+                continue;
+            }
+
+            $esdOrder = $esdOrders->filter(function (EsdOrderEntity $esdOrderEntity) use ($orderLineItem) {
+                return $esdOrderEntity->getOrderLineItemId() === $orderLineItem->getId();
+            })->first();
+
+            for ($q = 0; $q < $orderLineItem->getQuantity(); ++$q) {
+                $esdOrderListIds[$orderLineItem->getId()][] = $esdOrder->getId();
+            }
+        }
+        $this->esdMailService->sendMailDownload($order, $esdOrderLineItems, $esdOrderListIds, $context);
+
+        $serialOfEsdOrders = $esdOrders->filter(function (EsdOrderEntity $esdOrderEntity) {
+            return $esdOrderEntity->getSerialId() !== null;
+        });
+
+        /** @var EsdOrderEntity $serialOfEsdOrder */
+        foreach ($serialOfEsdOrders as $serialOfEsdOrder) {
+            $esdSerials[] = [
+                'serial' => $serialOfEsdOrder->getSerial()->getSerial(),
+                'productName' => $serialOfEsdOrder->getOrderLineItem()->getLabel(),
+            ];
+        }
+
+        $this->esdMailService->sendMailSerial($order, $esdSerials, $context);
     }
 
     public function fetchSerials(EsdEntity $esd, Context $context): ?EntitySearchResult

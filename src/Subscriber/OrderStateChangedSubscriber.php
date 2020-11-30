@@ -7,6 +7,8 @@ use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\MailTemplate\Subscriber\MailSendSubscriber;
+use Shopware\Core\Content\MailTemplate\Subscriber\MailSendSubscriberConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -49,6 +51,11 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
 
     public function orderStatePaid(OrderStateMachineStateChangeEvent $event): void
     {
+        $extension = $event->getContext()->getExtension(MailSendSubscriber::MAIL_CONFIG_EXTENSION);
+        if (!$extension instanceof MailSendSubscriberConfig) {
+            $extension = new MailSendSubscriberConfig(false, [], []);
+        }
+
         $criteria = new Criteria([$event->getOrder()->getId()]);
         $criteria->addAssociation('lineItems.product.esd.esdMedia');
         $criteria->addAssociation('orderCustomer.customer');
@@ -63,15 +70,19 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $event->getContext())->get($event->getOrder()->getId());
         if (!empty($order)) {
-            if (!empty($order->getLineItems())) {
+            if (!empty($order->getLineItems()) && $order->getAmountTotal() > 0) {
                 $orderLineItemIds = array_filter($order->getLineItems()->fmap(static function (OrderLineItemEntity $orderLineItem) {
                     return $orderLineItem->getId();
                 }));
 
                 $esdOrders = $this->esdService->getEsdOrderByOrderLineItemIds($orderLineItemIds, $event->getContext());
-                if (empty($esdOrders->first()) && $order->getAmountTotal() > 0) {
+                if (empty($esdOrders->first())) {
                     $this->esdOrderService->addNewEsdOrders($order, $event->getContext());
                 }
+            }
+
+            if (!$extension->skip()) {
+                $this->esdOrderService->sendMail($order, $event->getContext());
             }
         }
     }
