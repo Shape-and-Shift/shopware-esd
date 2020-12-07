@@ -7,7 +7,6 @@ use Psr\Container\ContainerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
 use Sas\Esd\Migration\Migration1597597704CreateEsdMediaTable;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -17,10 +16,6 @@ class Update
     {
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
             $this->updateTo110($container);
-        }
-
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.2.0', '<')) {
-            $this->updateTo120($container, $updateContext);
         }
     }
 
@@ -53,17 +48,5 @@ class Update
             ]);
             $connection->update(EsdDefinition::ENTITY_NAME, ['media_id' => null], ['id' => Uuid::fromHexToBytes($esd['id'])]);
         }
-    }
-
-    private function updateTo120(ContainerInterface $container, UpdateContext $updateContext): void
-    {
-        /** @var EntityRepositoryInterface $mailTemplateTypeRepository */
-        $mailTemplateTypeRepository = $container->get('mail_template_type.repository');
-
-        /** @var EntityRepositoryInterface $mailTemplateRepository */
-        $mailTemplateRepository = $container->get('mail_template.repository');
-
-        EsdMailTemplate::addDownloadMailTemplate($mailTemplateTypeRepository, $mailTemplateRepository, $updateContext->getContext());
-        EsdMailTemplate::addSerialMailTemplate($mailTemplateTypeRepository, $mailTemplateRepository, $updateContext->getContext());
     }
 }

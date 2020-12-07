@@ -1,3 +1,6 @@
+# 1.2.13
+* Removed `updateTo120` method of the update version, because it has been replaced with the migration 
+
 # 1.2.12
 * Fixed the error of using wrong class names and change the namespace and directory of events
 

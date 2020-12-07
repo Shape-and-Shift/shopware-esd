@@ -1,3 +1,6 @@
+# 1.2.13
+* Die Methode `updateTo120` des Update Lifecycle wurde entfernt, da sie durch die Migration ersetzt worden ist. 
+
 # 1.2.12
 * Es wurde ein Fehler behoben, wonach eine falsche Class geladen worden ist, was zu deinen Fehler in den Business Events führe
 
