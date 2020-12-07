@@ -4,8 +4,8 @@ namespace Sas\Esd\Subscriber;
 
 use Sas\Esd\Service\EsdOrderService;
 use Sas\Esd\Service\EsdService;
-use Sas\Esd\Storefront\Event\EsdDownloadPaymentStatusPaidEvent;
-use Sas\Esd\Storefront\Event\EsdSerialPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;

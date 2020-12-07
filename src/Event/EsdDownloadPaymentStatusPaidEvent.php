@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Sas\Esd\Storefront\Event;
+namespace Sas\Esd\Event;
 
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;

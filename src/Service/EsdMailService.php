@@ -2,8 +2,8 @@
 
 namespace Sas\Esd\Service;
 
-use Sas\Esd\Storefront\Event\EsdDownloadPaymentStatusPaidEvent;
-use Sas\Esd\Storefront\Event\EsdSerialPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;

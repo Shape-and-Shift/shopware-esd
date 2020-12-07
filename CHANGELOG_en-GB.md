@@ -1,3 +1,6 @@
+# 1.2.12
+* Fixed the error of using wrong class names and change the namespace and directory of events
+
 # 1.2.11
 * Fixed that the navigation isn't shown on the download account page
 * Improved to send the ESD email by the business events

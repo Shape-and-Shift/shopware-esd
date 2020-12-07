@@ -1,3 +1,6 @@
+# 1.2.12
+* Es wurde ein Fehler behoben, wonach eine falsche Class geladen worden ist, was zu deinen Fehler in den Business Events führe
+
 # 1.2.11
 * Die Hauptnavigation wird nun auch angezeigt, wenn man sich auf der Account Download Seite befindet
 * Verbessertes versenden der ESD-E-Mail: Es werden nun die Business Events genutzt
