@@ -35,10 +35,11 @@
         </service>
 
         <!-- Subscribers -->
-
         <service id="Sas\Esd\Checkout\Cart\Subscriber\OrderPlacedSubscriber">
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
             <tag name="kernel.event_listener"/>
         </service>
 
@@ -55,10 +56,17 @@
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Sas\Esd\Subscriber\MediaFileExtensionSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Sas\Esd\Subscriber\BusinessEventSubscriber">
+            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventCollector"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -67,6 +75,7 @@
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
@@ -74,6 +83,10 @@
             <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
+        </service>
+
+        <service id="Sas\Esd\Api\Controller\EsdSendMailController" public="true">
+            <argument type="service" id="Sas\Esd\Service\EsdMailService"/>
         </service>
 
         <!-- Language Snippets -->
@@ -97,21 +110,20 @@
         <service id="Sas\Esd\Service\EsdOrderService">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="sas_product_esd_serial.repository"/>
-            <argument type="service" id="Sas\Esd\Service\EsdMailService"/>
-        </service>
-
-        <service id="Sas\Esd\Service\EsdMailService">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="mail_template.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
-            <argument type="service" id="messenger.bus.shopware" />
-            <argument type="service" id="Shopware\Core\Framework\Store\Services\StoreService" />
         </service>
 
         <service id="Sas\Esd\Service\EsdDownloadService">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="sas_product_esd_download_history.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="Sas\Esd\Service\EsdMailService">
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
         </service>
 
         <!-- Message -->

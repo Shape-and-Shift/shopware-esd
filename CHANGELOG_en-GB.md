@@ -1,3 +1,9 @@
+# 1.2.11
+* Fixed gone the menu navigation on the account download page
+* Improved to send the ESD email by business events
+* Added the `Resend email download` and `Resend email serial` buttons to resend ESD email in the order detail pages
+* we fixed an issue for corrupted .zip files on Windows
+
 # 1.2.10
 * Fixed the url in the mail template, change from url() to rawUrl() to get the sales channel domain
 * Improved send mail feature, you can send the esd email to the buyer buy change the payment status to paid with the `Send email to customer` toggle is enable

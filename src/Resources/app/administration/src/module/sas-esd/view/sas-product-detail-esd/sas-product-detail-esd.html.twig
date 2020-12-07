@@ -1,19 +1,5 @@
 {% block sas_product_detail_esd %}
 <div class="sas-product-detail-esd__generated-esd">
-    <div class="sas-product-detail-esd__alert"
-         v-if="isShowDownloadMailAlert || isShowSerialMailAlert">
-        <div class="h6">{{ $tc('sas-esd.alertMailSettingTitle') }}</div>
-        <p v-if="isShowDownloadMailAlert && isShowSerialMailAlert">
-            <span v-html="$tc('sas-esd.alertMailSetting')"></span>
-        </p>
-        <p v-else-if="isShowDownloadMailAlert && !isShowSerialMailAlert">
-            <span v-html="$tc('sas-esd.alertDownloadMailSetting')"></span>
-        </p>
-        <p v-else>
-            <span v-html="$tc('sas-esd.alertSerialMailSetting')"></span>
-        </p>
-    </div>
-
     <template v-if="isLoadedEsd || isLoadedEsdMedia">
         <sw-card :hero="false">
 

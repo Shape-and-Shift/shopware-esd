@@ -1,0 +1,8 @@
+{
+    "global": {
+        "businessEvents": {
+            "esd_download_payment_status_paid": "ESD Herunterladen - Zahlung erreicht Status bezahlt",
+            "esd_serial_payment_status_paid": "ESD Seriennummer - Zahlung erreicht Status bezahlt"
+        }
+    }
+}

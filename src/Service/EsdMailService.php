@@ -2,173 +2,148 @@
 
 namespace Sas\Esd\Service;
 
-use Sas\Esd\Message\SendMailMessage;
+use Sas\Esd\Storefront\Event\EsdDownloadPaymentStatusPaidEvent;
+use Sas\Esd\Storefront\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Content\MailTemplate\MailTemplateEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Store\Services\StoreService;
-use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EsdMailService
 {
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
+     * @var EsdService
+     */
+    private $esdOrderService;
+
     /**
      * @var SystemConfigService
      */
     private $systemConfigService;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EventDispatcherInterface
      */
-    private $mailTemplateRepository;
+    private $eventDispatcher;
 
     /**
-     * @var EsdService
+     * EsdMailService constructor.
+     * @param EntityRepositoryInterface $orderRepository
+     * @param EsdOrderService $esdOrderService
+     * @param SystemConfigService $systemConfigService
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    private $esdService;
-
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
-
-    /**
-     * @var StoreService
-     */
-    private $storeService;
-
     public function __construct(
+        EntityRepositoryInterface $orderRepository,
+        EsdOrderService $esdOrderService,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $mailTemplateRepository,
-        EsdService $esdService,
-        MessageBusInterface $messageBus,
-        StoreService $storeService
+        EventDispatcherInterface $eventDispatcher
     ) {
+        $this->orderRepository = $orderRepository;
+        $this->esdOrderService = $esdOrderService;
         $this->systemConfigService = $systemConfigService;
-        $this->mailTemplateRepository = $mailTemplateRepository;
-        $this->esdService = $esdService;
-        $this->messageBus = $messageBus;
-        $this->storeService = $storeService;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function sendMailDownload(
-        OrderEntity $order,
-        array $esdOrderLineItems,
-        array $esdOrderListIds,
-        Context $context
-    ): void {
-        if (empty($esdOrderLineItems)) {
-            return;
-        }
-
-        $templateData['order'] = $order;
-        $templateData['esdFiles'] = [];
-        $templateData['esdOrderListIds'] = $esdOrderListIds;
-        /** @var OrderLineItemEntity $lineItem */
-        foreach ($esdOrderLineItems as $lineItem) {
-            $templateData['esdFiles'][$lineItem->getProductId()] = $this->esdService->getFileSize($lineItem->getProductId());
-        }
-
-        $this->sendMail(
-            $order,
-            $context,
-            EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME,
-            EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_TECHNICAL_NAME,
-            $templateData
-        );
-    }
-
-    public function sendMailSerial(
-        OrderEntity $order,
-        array $esdSerials,
-        Context $context
-    ): void {
-        if (empty($esdSerials)) {
-            return;
-        }
-
-        $templateData['order'] = $order;
-        $templateData['esdSerials'] = $esdSerials;
-
-        $this->sendMail(
-            $order,
-            $context,
-            EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME,
-            EsdMailTemplate::TEMPLATE_TYPE_SERIAL_TECHNICAL_NAME,
-            $templateData
-        );
-    }
-
-    public function sendMail(
-        OrderEntity $order,
-        Context $context,
-        string $systemConfigName,
-        string $technicalName,
-        array $templateData = []
-    ): void {
-        if (!$this->getSystemConfig($systemConfigName)) {
-            return;
-        }
-
-        $mailTemplate = $this->getMailTemplate($context, $technicalName, $order);
-        if (empty($mailTemplate)) {
-            return;
-        }
-
-        $data = new DataBag();
-        $data->set('salesChannelId', $order->getSalesChannelId());
-        $data->set('subject', $mailTemplate->getSubject());
-        $data->set('senderName', $mailTemplate->getSenderName());
-
-        $customerName = $order->getOrderCustomer()->getFirstName() . ' ' . $order->getOrderCustomer()->getLastName();
-        $data->set('recipients', [$order->getOrderCustomer()->getEmail() => $customerName]);
-        $data->set('contentHtml', $mailTemplate->getContentHtml());
-        $data->set('contentPlain', $mailTemplate->getContentPlain());
-
-        $mail['data'] = $data->all();
-        $mail['context'] = $context;
-        $mail['templateData'] = $templateData;
-
-        $message = new SendMailMessage();
-        $message->setMail($mail);
-
-        $this->messageBus->dispatch($message);
-    }
-
-    private function getMailTemplate(Context $context, string $technicalName, OrderEntity $order): ?MailTemplateEntity
+    /**
+     * @param string $orderId
+     * @param Context $context
+     */
+    public function sendMailDownload(string $orderId, Context $context): void
     {
-        // TODO remove it when finalizing the official patch
-        $shopwareVersion = $this->storeService->getShopwareVersion();
-        if ($shopwareVersion >= '6.3.3.0') {
-            return $this->getMailTemplateHotFixVersion6330($context, $technicalName);
+        /** @var OrderEntity|null $order */
+        $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
+        if (!empty($order)) {
+            $templateData = $this->esdOrderService->mailTemplateData($order, $context);
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME) &&
+                !empty($templateData['esdOrderLineItems'])) {
+                $event = new EsdDownloadPaymentStatusPaidEvent($context, $order, $templateData);
+                $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
+            }
+        }
+    }
+
+    /**
+     * @param string $orderId
+     * @param Context $context
+     */
+    public function sendMailSerial(string $orderId, Context $context): void
+    {
+        /** @var OrderEntity|null $order */
+        $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
+        if (!empty($order)) {
+            $templateData = $this->esdOrderService->mailTemplateData($order, $context);
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME) &&
+                !empty($templateData['esdSerials'])) {
+                $event = new EsdSerialPaymentStatusPaidEvent($context, $order, $templateData);
+                $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
+            }
+        }
+    }
+
+    /**
+     * @param string $orderId
+     * @param Context $context
+     * @return array
+     */
+    public function enableMailButtons(string $orderId, Context $context): array
+    {
+        $buttons['download'] = false;
+        $buttons['serial'] = false;
+
+        /** @var OrderEntity|null $order */
+        $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
+        if (!empty($order)) {
+            $templateData = $this->esdOrderService->mailTemplateData($order, $context);
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME) &&
+                !empty($templateData['esdOrderLineItems'])) {
+                $buttons['download'] = true;
+            }
+
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME) &&
+                !empty($templateData['esdSerials'])) {
+                $buttons['serial'] = true;
+            }
         }
 
-        $criteria = new Criteria();
-        $criteria->addAssociation('salesChannels');
-        $criteria->addFilter(new EqualsFilter('mailTemplateType.technicalName', $technicalName));
-        $criteria->addFilter(new EqualsFilter('salesChannels.salesChannelId', $order->getSalesChannelId()));
-        $criteria->setLimit(1);
-
-        return $this->mailTemplateRepository->search($criteria, $context)->first();
+        return $buttons;
     }
 
-    // TODO remove it when finalizing the official patch
-    private function getMailTemplateHotFixVersion6330(Context $context, string $technicalName): ?MailTemplateEntity
+    /**
+     * @param string $orderId
+     * @return Criteria
+     */
+    private function getCriteria(string $orderId): Criteria
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('mailTemplateType.technicalName', $technicalName));
-        $criteria->setLimit(1);
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociation('lineItems.product.esd.esdMedia');
+        $criteria->addAssociation('orderCustomer.customer');
 
-        return $this->mailTemplateRepository->search($criteria, $context)->first();
+        $criteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [new EqualsFilter('lineItems.product.esd.esdMedia.mediaId', null)]
+            )
+        );
+
+        return $criteria;
     }
 
-    private function getSystemConfig(string $name): bool
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function getSystemConfig(string $name): bool
     {
         $isSendDownloadConfirmation = $this->systemConfigService->get('SasEsd.config.' . $name);
         if (empty($isSendDownloadConfirmation)) {

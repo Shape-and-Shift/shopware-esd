@@ -23,20 +23,6 @@ class SasEsd extends Plugin
     public function install(InstallContext $installContext): void
     {
         parent::install($installContext);
-
-        /* create the private folder for the downloads */
-        //$this->createPrivateFolder($installContext);
-
-        /** @var EntityRepositoryInterface $mailTemplateTypeRepository */
-        $mailTemplateTypeRepository = $this->container->get('mail_template_type.repository');
-
-        /** @var EntityRepositoryInterface $mailTemplateRepository */
-        $mailTemplateRepository = $this->container->get('mail_template.repository');
-
-        (new InstallUninstall(
-            $mailTemplateTypeRepository,
-            $mailTemplateRepository
-        ))->install($installContext->getContext());
     }
 
     public function uninstall(UninstallContext $context): void

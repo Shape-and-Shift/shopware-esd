@@ -140,6 +140,8 @@ class StreamDownloadController extends StorefrontController
             $this->esdService->downloadFileName($esdOrder->getOrderLineItem()->getLabel())
         );
 
+        ob_clean();
+        ob_end_flush();
         $response->headers->set('Content-Type', 'zip');
         $response->headers->set('Content-Disposition', $disposition);
 

@@ -28,25 +28,37 @@ class EsdOrderService
     private $esdSerialRepository;
 
     /**
-     * @var EsdMailService
+     * @var EsdService
      */
-    private $esdMailService;
+    private $esdService;
 
+    /**
+     * EsdOrderService constructor.
+     * @param EntityRepositoryInterface $esdOrderRepository
+     * @param EntityRepositoryInterface $esdSerialRepository
+     * @param EsdService $esdService
+     */
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $esdSerialRepository,
-        EsdMailService $esdMailService
+        EsdService $esdService
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdSerialRepository = $esdSerialRepository;
-        $this->esdMailService = $esdMailService;
+        $this->esdService = $esdService;
     }
 
+    /**
+     * @param OrderEntity $order
+     * @param Context $context
+     * @param ProductCollection|null $products
+     */
     public function addNewEsdOrders(
         OrderEntity $order,
         Context $context,
         ?ProductCollection $products = null
-    ): void {
+    ): void
+    {
         $newEsdOrders = [];
         foreach ($order->getLineItems() as $orderLineItem) {
             if ($products instanceof ProductCollection) {
@@ -92,8 +104,13 @@ class EsdOrderService
         }
     }
 
-    public function sendMail(OrderEntity $order, Context $context): void {
-        $esdSerials = [];
+    /**
+     * @param OrderEntity $order
+     * @param Context $context
+     * @return array
+     */
+    public function mailTemplateData(OrderEntity $order, Context $context): array
+    {
         $esdOrderListIds = [];
         $esdOrderLineItems = [];
 
@@ -138,23 +155,36 @@ class EsdOrderService
                 $esdOrderListIds[$orderLineItem->getId()][] = $esdOrder->getId();
             }
         }
-        $this->esdMailService->sendMailDownload($order, $esdOrderLineItems, $esdOrderListIds, $context);
+
+        $templateData['esdOrderLineItems'] = $esdOrderLineItems;
+        $templateData['esdOrderListIds'] = $esdOrderListIds;
+
+        /** @var OrderLineItemEntity $lineItem */
+        foreach ($esdOrderLineItems as $lineItem) {
+            $templateData['esdFiles'][$lineItem->getProductId()] = $this->esdService->getFileSize($lineItem->getProductId());
+        }
 
         $serialOfEsdOrders = $esdOrders->filter(function (EsdOrderEntity $esdOrderEntity) {
             return $esdOrderEntity->getSerialId() !== null;
         });
 
+        $templateData['esdSerials'] = [];
         /** @var EsdOrderEntity $serialOfEsdOrder */
         foreach ($serialOfEsdOrders as $serialOfEsdOrder) {
-            $esdSerials[] = [
+            $templateData['esdSerials'][] = [
                 'serial' => $serialOfEsdOrder->getSerial()->getSerial(),
                 'productName' => $serialOfEsdOrder->getOrderLineItem()->getLabel(),
             ];
         }
 
-        $this->esdMailService->sendMailSerial($order, $esdSerials, $context);
+        return $templateData;
     }
 
+    /**
+     * @param EsdEntity $esd
+     * @param Context $context
+     * @return EntitySearchResult|null
+     */
     public function fetchSerials(EsdEntity $esd, Context $context): ?EntitySearchResult
     {
         if (!$esd->hasSerial()) {

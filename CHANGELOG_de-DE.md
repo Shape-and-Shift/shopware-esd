@@ -1,3 +1,10 @@
+# 1.2.11
+* Die Hauptnavigation wird nun auch angezeigt, wenn man sich auf der Account Download Seite befindet
+* Verbessertes versenden der ESD-E-Mail: Es werden nun die Business Events genutzt
+* Es ist nun möglich manuell erneut die ESD Emails zu versenden innerhalb einer Order über die Buttons 
+  `E-Mail-Download erneut senden` und `E-Mail-Seriennummer erneut senden`.
+* Es wurde ein Fehler unter Windows beheben, da gepackte `.zip` Dateien teilweise beschädigt waren
+
 # 1.2.10
 * Die url in der E-Mail-Vorlage wurde repariert, Wechsel von url() zu rawUrl(), um die Vertriebskanal-Domain zu erhalten
 * Verbesserte Funktion zum Versenden von E-Mails, Sie können die esd-E-Mail an den Käufer senden Kaufen Ändern Sie den Zahlungsstatus auf bezahlt mit dem Schalter `E-Mail an Kunden senden` ist aktiviert
