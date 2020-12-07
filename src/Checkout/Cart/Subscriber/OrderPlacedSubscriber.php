@@ -3,8 +3,8 @@
 namespace Sas\Esd\Checkout\Cart\Subscriber;
 
 use Sas\Esd\Service\EsdOrderService;
-use Sas\Esd\Storefront\Event\EsdDownloadPaymentStatusPaidEvent;
-use Sas\Esd\Storefront\Event\EsdSerialPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;

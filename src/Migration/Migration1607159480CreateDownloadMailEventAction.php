@@ -4,6 +4,7 @@ namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Content\MailTemplate\MailTemplateActions;
 use Shopware\Core\Defaults;
@@ -46,7 +47,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                 [
                     'id' => Uuid::randomBytes(),
                     'title' => 'ESD - Download mail',
-                    'event_name' => 'esd.download.payment.status.paid',
+                    'event_name' => EsdDownloadPaymentStatusPaidEvent::EVENT_NAME,
                     'action_name' => MailTemplateActions::MAIL_TEMPLATE_MAIL_SEND_ACTION,
                     'config' => json_encode([
                         'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),

@@ -2,8 +2,8 @@
 
 namespace Sas\Esd\Subscriber;
 
-use Sas\Esd\Storefront\Event\EsdDownloadPaymentStatusPaidEvent;
-use Sas\Esd\Storefront\Event\EsdSerialPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
+use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Shopware\Core\Framework\Event\BusinessEventCollector;
 use Shopware\Core\Framework\Event\BusinessEventCollectorEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -30,7 +30,7 @@ class BusinessEventSubscriber implements EventSubscriberInterface
     {
         $downloadDefinition = $this->businessEventCollector->define(EsdDownloadPaymentStatusPaidEvent::class);
         if ($downloadDefinition) {
-            $event->getCollection()->set(EsdDownLoadPaymentStatusPaidEvent::EVENT_NAME, $downloadDefinition);
+            $event->getCollection()->set(EsdDownloadPaymentStatusPaidEvent::EVENT_NAME, $downloadDefinition);
         }
 
         $serialDefinition = $this->businessEventCollector->define(EsdSerialPaymentStatusPaidEvent::class);
