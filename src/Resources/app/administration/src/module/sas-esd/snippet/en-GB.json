@@ -63,6 +63,19 @@
         "alertMailSettingTitle": "Enable sending of confirmation emails",
         "alertMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the download link or the serial number.Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
         "alertDownloadMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the download link. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
-        "alertSerialMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the serial number. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template."
+        "alertSerialMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the serial number. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
+        "esdMail": {
+            "cardTitle": "ESD - Mail service",
+            "sendMailDownload": "Resend email download",
+            "sendMailSerial": "Resend email serial",
+            "alertSendMailDownloadSuccessTitle": "Resend email download",
+            "alertSendMailDownloadSuccessMessage": "Esd email download was sent successfully",
+            "alertSendMailDownloadErrorTitle": "ESD resend email download failed",
+            "alertSendMailDownloadErrorMessage": "An error occurred",
+            "alertSendMailSerialSuccessTitle": "Success resend email serial",
+            "alertSendMailSerialSuccessMessage": "ESD email serial was sent successfully",
+            "alertSendMailSerialErrorTitle": "ESD resend email serial failed",
+            "alertSendMailSerialErrorMessage": "An error occurred"
+        }
     }
 }

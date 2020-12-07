@@ -16,9 +16,7 @@ Component.register('sas-product-detail-esd', {
             fileAccept: '*',
             selectedItems: null,
             isLoading: true,
-            isLoadedEsd: false,
-            isShowDownloadMailAlert: false,
-            isShowSerialMailAlert: false,
+            isLoadedEsd: false
         };
     },
 
@@ -103,45 +101,6 @@ Component.register('sas-product-detail-esd', {
                 if (this.product.extensions.esd.esdMedia.length === 0) {
                     this.loadMedia();
                 }
-            }
-
-            this.checkMailSettings();
-        },
-
-        async checkMailSettings() {
-            const config = await this.systemConfigApiService.getValues('SasEsd.config');
-
-            const criteria = new Criteria();
-            criteria.getAssociation('salesChannels')
-                .setLimit(1)
-                .addAssociation('salesChannel');
-            criteria.addAssociation('mailTemplateType');
-
-            const downloadTechnicalName = 'sas_esd.download';
-            const serialTechnicalName = 'sas_esd.serial';
-            const technicalNames = [];
-            if (config['SasEsd.config.isSendDownloadConfirmation'] === true ) {
-                technicalNames.push(downloadTechnicalName)
-            }
-
-            if (config['SasEsd.config.isSendSerialConfirmation'] === true ) {
-                technicalNames.push(serialTechnicalName)
-            }
-
-            if (technicalNames.length > 0) {
-                criteria.addFilter(Criteria.equalsAny('mailTemplateType.technicalName', technicalNames));
-
-                this.mailTemplateRepository.search(criteria, Shopware.Context.api).then((items) => {
-                    items.forEach(item => {
-                        if (item.salesChannels.length === 0) {
-                            if (item.mailTemplateType.technicalName === serialTechnicalName) {
-                                this.isShowSerialMailAlert = true;
-                            } else {
-                                this.isShowDownloadMailAlert = true;
-                            }
-                        }
-                    })
-                });
             }
         },
 

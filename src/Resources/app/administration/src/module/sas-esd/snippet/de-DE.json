@@ -62,6 +62,19 @@
         "alertMailSettingTitle": "Email Benachrichtigungen aktivieren",
         "alertMailSetting": "Aktuell werden keine Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
         "alertDownloadMailSetting": "Aktuell werden keine Download Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Download Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
-        "alertSerialMailSetting": "Aktuell werden keine Seriennummer Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Seriennummer Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst."
+        "alertSerialMailSetting": "Aktuell werden keine Seriennummer Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Seriennummer Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",,,
+        "esdMail": {
+            "cardTitle": "ESD - Mail-Dienst",
+            "sendMailDownload": "E-Mail-Download erneut senden",
+            "sendMailSerial":"E-Mail-Seriennummer erneut senden",
+            "alertSendMailDownloadSuccessTitle": "Erfolg erneut senden Download-Serie",
+            "alertSendMailDownloadSuccessMessage": "ESD E-Mail-Download wurde erfolgreich gesendet",
+            "alertSendMailDownloadErrorTitle": "ESD E-Mail-Download erneut senden fehlgeschlagen",
+            "alertSendMailDownloadErrorMessage": "Ein Fehler ist aufgetreten",
+            "alertSendMailSerialSuccessTitle": "Erfolgreiche E-Mail-Seriennummer erneut senden",
+            "alertSendMailSerialSuccessMessage": "Esd E-Mail-Serie wurde erfolgreich gesendet",
+            "alertSendMailSerialErrorTitle": "ESD E-Mail-Serie erneut senden fehlgeschlagen",
+            "alertSendMailSerialErrorMessage": "Ein Fehler ist aufgetreten"
+        }
     }
 }

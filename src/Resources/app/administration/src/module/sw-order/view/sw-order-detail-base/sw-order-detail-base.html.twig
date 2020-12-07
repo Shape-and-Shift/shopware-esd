@@ -1,0 +1,22 @@
+{% block sw_order_detail_base_document_grid %}
+    {% parent %}
+
+    <sw-card v-if="transaction.stateMachineState.technicalName === 'paid' && (isEnableDownloadButton || isEnableSerialButton)"
+             :title="$tc('sas-esd.esdMail.cardTitle')"
+             :isLoading="isLoading">
+        <sw-container columns="1fr 1fr" gap="10px">
+            <sw-button @click="onSendDownloadMail"
+                       size="small"
+                       variant="primary"
+                       :disabled="!isEnableDownloadButton || isSendMailLoading">
+                {{ $tc('sas-esd.esdMail.sendMailDownload') }}
+            </sw-button>
+            <sw-button @click="onSendSerialMail"
+                       size="small"
+                       variant="primary"
+                       :disabled="!isEnableSerialButton || isSendMailLoading">
+                {{ $tc('sas-esd.esdMail.sendMailSerial') }}
+            </sw-button>
+        </sw-container>
+    </sw-card>
+{% endblock %}

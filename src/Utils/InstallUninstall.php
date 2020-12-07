@@ -25,12 +25,6 @@ class InstallUninstall
         $this->mailTemplateRepository = $mailTemplateRepository;
     }
 
-    public function install(Context $context): void
-    {
-        EsdMailTemplate::addDownloadMailTemplate($this->mailTemplateTypeRepository, $this->mailTemplateRepository, $context);
-        EsdMailTemplate::addSerialMailTemplate($this->mailTemplateTypeRepository, $this->mailTemplateRepository, $context);
-    }
-
     public function uninstall(Context $context): void
     {
         EsdMailTemplate::removeMailTemplate($this->mailTemplateTypeRepository, $this->mailTemplateRepository, $context);

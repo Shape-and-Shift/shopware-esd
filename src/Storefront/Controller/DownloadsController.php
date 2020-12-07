@@ -12,6 +12,8 @@ use Shopware\Core\Framework\Store\Services\StoreService;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
+use Shopware\Storefront\Page\GenericPageLoaderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,14 +38,21 @@ class DownloadsController extends StorefrontController
      */
     private $esdDownloadService;
 
+    /**
+     * @var GenericPageLoaderInterface
+     */
+    private $genericLoader;
+
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EsdService $esdService,
-        EsdDownloadService $esdDownloadService
+        EsdDownloadService $esdDownloadService,
+        GenericPageLoaderInterface $genericLoader
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
+        $this->genericLoader = $genericLoader;
     }
 
     /**
@@ -51,9 +60,11 @@ class DownloadsController extends StorefrontController
      *
      * @throws CustomerNotLoggedInException
      */
-    public function getAccountDownloads(SalesChannelContext $context): Response
+    public function getAccountDownloads(Request $request, SalesChannelContext $context): Response
     {
         $this->denyAccessUnlessLoggedIn();
+        $page = $this->genericLoader->load($request, $context);
+
         $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
@@ -61,6 +72,7 @@ class DownloadsController extends StorefrontController
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig',
             [
+                'page' => $page,
                 'esdOrders' => $esdOrders,
                 'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
             ]
@@ -70,9 +82,11 @@ class DownloadsController extends StorefrontController
     /**
      * @Route("/account/downloads/remaining", name="frontend.account.downloads.remaining", methods={"GET"}, options={"seo"="false"}, defaults={"XmlHttpRequest": true})
      */
-    public function getDownloadRemaining(SalesChannelContext $context): Response
+    public function getDownloadRemaining(Request $request, SalesChannelContext $context): Response
     {
         $this->denyAccessUnlessLoggedIn();
+        $page = $this->genericLoader->load($request, $context);
+
         $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
