@@ -1,6 +1,6 @@
 # 1.2.11
-* Fixed gone the menu navigation on the account download page
-* Improved to send the ESD email by business events
+* Fixed that the navigation isn't shown on the download account page
+* Improved to send the ESD email by the business events
 * Added the `Resend email download` and `Resend email serial` buttons to resend ESD email in the order detail pages
 * we fixed an issue for corrupted .zip files on Windows
 
