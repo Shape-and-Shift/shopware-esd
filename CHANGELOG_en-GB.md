@@ -1,3 +1,6 @@
+# 1.2.14
+* Improved download handling
+
 # 1.2.13
 * Removed `updateTo120` method of the update version, because it has been replaced with the migration 
 

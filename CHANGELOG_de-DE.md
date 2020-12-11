@@ -1,3 +1,6 @@
+# 1.2.14
+* Die Download Methode wurde verbessert und hat einen Fehler bei der Generierung der .zip Dateien behoben.
+
 # 1.2.13
 * Die Methode `updateTo120` des Update Lifecycle wurde entfernt, da sie durch die Migration ersetzt worden ist. 
 
