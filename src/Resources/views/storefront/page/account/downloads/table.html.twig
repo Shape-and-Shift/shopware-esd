@@ -1,64 +1,176 @@
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th scope="col">{{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}</th>
-        <th>{{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}</th>
-        <th>{{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}</th>
-        <th>{{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}</th>
-        <th>{{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}</th>
-        <th>{{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}</th>
-        <th>{{ "sasEsd.account.downloadTable.action"|trans|sw_sanitize }}</th>
-    </tr>
-    </thead>
-    <tbody>
+{% block page_account_sas_esd_download_table %}
     {% for esdOrder in esdOrders %}
-        {% if esdOrder.orderLineItem.order.transactions.last.stateMachineState.technicalName == "paid" or esdOrder.orderLineItem.order.amountNet == 0.0 %}
-            <tr>
-                <th scope="row">
-                    {{ esdOrder.orderLineItem.label }}
-                </th>
-                <th>
-                    {{ esdOrder.orderLineItem.order.orderNumber }}
-                </th>
-                <td>
-                    {% if esdOrder.orderLineItem.unitPrice == 0 %}
-                        <span class="badge badge-primary">
-                            {{ "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize }}
-                        </span>
-                    {% else %}
-                        {{ esdOrder.orderLineItem.unitPrice|currency }}
-                    {% endif %}
-                </td>
-                <td>
-                    {{ esdOrder.serial.serial }}
-                </td>
-                <td>
-                    {{ esdOrder.orderLineItem.createdAt|date }}
-                </td>
-                <td>
-                    {% set isDisabledDownload = false %}
-                    {% if downloadLimits[esdOrder.id] == null %}
-                        {{ "sasEsd.account.downloadTable.unlimitedDownload"|trans|sw_sanitize }}
-                    {% else %}
-                        {% set downloadLimit = downloadLimits[esdOrder.id] %}
-                        {% if esdOrder.countDownload >= downloadLimit %}
-                            <span class="text-danger">0</span>
-                            {% set isDisabledDownload = true %}
-                        {% else %}
-                            {{ esdOrder.countDownload }} / {{ downloadLimit }}
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if esdOrder.esd.esdMedia|length %}
-                        <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %} js-esd-download-selector{% endif %}"
-                           href="{{ url('frontend.sas.esd.download', {esdOrderId: esdOrder.id}) }}">
-                            {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
-                        </a>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endif %}
+        {% set isEsdVideo = shopware.config.SasEsd.config.isEsdVideo %}
+        <div class="table sas-esd-table">
+            <div class="sas-esd-wrapper">
+                <div class="sas-esd-item-header">
+                    <div class="row flex-wrap">
+                        {% block page_account_sas_esd_download_table_product_name %}
+                            <div class="col-12 pl-0 pr-0 pb-2">
+                                <h5>
+                                    {{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}:
+                                    <span>{{ esdOrder.orderLineItem.label }}</span>
+                                </h5>
+                            </div>
+                        {% endblock %}
+                    </div>
+
+                    {% block page_account_sas_esd_download_table_header %}
+                        <div class="col-12 row sas-esd-table-header-order-table-header">
+                            {% block page_account_sas_esd_download_table_header_cell_order_number %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
+                                    {{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}
+                                </div>
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_header_cell_price %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
+                                    {{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}
+                                </div>
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_header_cell_purchase_date %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
+                                    {{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}
+                                </div>
+                            {% endblock %}
+
+
+                            {% block page_account_sas_esd_download_table_header_cell_serial %}
+                                {% if esdOrder.serial.serial %}
+                                    <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
+                                        {{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}
+                                    </div>
+                                {% endif %}
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_header_cell_download_remaining %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
+                                    {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}
+                                </div>
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_header_cell_empty %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell"></div>
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+
+                    {% block page_account_sas_esd_download_table_body %}
+                        <div class="col-12 row sas-esd-table-header-order-table-body">
+                            {% block page_account_sas_esd_download_table_body_cell_order_number %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
+                                    <strong class="sas-esd-table-header-label">
+                                        {{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                                    </strong>
+                                    <span class="sas-esd-table-body-value">{{ esdOrder.orderLineItem.order.orderNumber }}</span>
+                                </div>
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_body_cell_price %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
+                                    <strong class="sas-esd-table-header-label">
+                                        {{ "sasEsd.account.downloadTable.price"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                                    </strong>
+                                    <span class="order-table-body-value">
+                                    {% if esdOrder.orderLineItem.unitPrice == 0 %}
+                                        <span class="badge badge-primary">{{ "sasEsd.account.downloadTable.freeLabel"|trans|sw_sanitize }}</span>
+                                    {% else %}
+                                        {{ esdOrder.orderLineItem.unitPrice|currency }}
+                                    {% endif %}
+                                </span>
+                                </div>
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_body_cell_purchase_date %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
+                                    <strong class="sas-esd-table-header-label">
+                                        {{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                                    </strong>
+                                    <span class="sas-esd-table-body-value">{{ esdOrder.orderLineItem.createdAt|date }}</span>
+                                </div>
+                            {% endblock %}
+
+
+                            {% block page_account_sas_esd_download_table_body_cell_serial %}
+                                {% if esdOrder.serial.serial %}
+                                    <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
+                                        <strong class="sas-esd-table-header-label">
+                                            {{ "sasEsd.account.downloadTable.serial"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                                        </strong>
+                                        <span class="sas-esd-table-body-value">{{ esdOrder.serial.serial }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_body_cell_download_remaining %}
+                                <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
+                                    <strong class="sas-esd-table-header-label">
+                                        {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                                    </strong>
+                                    <span class="sas-esd-table-body-value">
+                                        {% set isDisabledDownload = false %}
+                                        {% if downloadLimits[esdOrder.id] == null %}
+                                            {{ "sasEsd.account.downloadTable.unlimitedDownload"|trans|sw_sanitize }}
+                                        {% else %}
+                                            {% set downloadLimit = downloadLimits[esdOrder.id] %}
+                                            {% if esdOrder.countDownload >= downloadLimit %}
+                                                <span class="text-danger">0</span>
+                                                {% set isDisabledDownload = true %}
+                                            {% else %}
+                                                {{ esdOrder.countDownload }} / {{ downloadLimit }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endblock %}
+
+                            {% block page_account_sas_esd_download_table_body_cell_toggle_order_details %}
+                                <div class="col-12 col-sm sas-esd-item sas-esd-item-actions sas-esd-table-header-order-table-body-cell">
+                                    {% if esdOrder.esd.esdMedia|length %}
+                                        {% set videoCount = 0 %}
+                                        {% if esdVideoMediaByEsdIds[esdOrder.esdId] %}
+                                            {% for esdVideoMedia in esdVideoMediaByEsdIds[esdOrder.esdId] %}
+                                                {% if esdVideoMedia.media.mediaType.name == 'VIDEO' %}
+                                                    {% set videoCount = videoCount + 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        {% if isEsdVideo == false or videoCount == 0 %}
+                                            {% block page_account_sas_esd_download_table_body_cell_download_zip_button %}
+                                                <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %} {% if isReloadData %}js-esd-download-selector{% endif %}{% endif %}"
+                                                   href="{{ url('frontend.sas.esd.download', {esdOrderId: esdOrder.id}) }}">
+                                                    {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
+                                                </a>
+                                            {% endblock %}
+                                        {% else %}
+                                            {% block page_account_sas_esd_download_table_body_cell_toggle_button %}
+                                                <button class="btn btn-light btn-sm sas-esd-hide-btn collapsed"
+                                                        type="submit"
+                                                        data-toggle="collapse"
+                                                        data-target="#esdOrder{{ esdOrder.orderLineItem.order.orderNumber }}"
+                                                        aria-expanded="false">
+
+                                                    {% block page_account_sas_esd_download_table_body_cell_toggle_button_text %}
+                                                        <span class="sas-esd-hide-btn-text">{{ "sasEsd.account.downloadTable.hideFilesButton"|trans|sw_sanitize }}</span>
+                                                        <span class="sas-esd-view-btn-text">{{ "sasEsd.account.downloadTable.viewFilesButton"|trans|sw_sanitize }}</span>
+                                                    {% endblock %}
+                                                </button>
+                                            {% endblock %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </div>
+
+                {% if isEsdVideo == true %}
+                    {% sw_include '@SasEsd/storefront/page/account/downloads/video-table-detail.html.twig' %}
+                {% endif %}
+            </div>
+        </div>
+
     {% endfor %}
-    </tbody>
-</table>
+{% endblock %}

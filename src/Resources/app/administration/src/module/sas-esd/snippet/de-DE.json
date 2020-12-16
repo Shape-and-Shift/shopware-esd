@@ -1,7 +1,8 @@
 {
     "sas-esd": {
         "general": {
-            "tabLabel": "ESD"
+            "tabLabel": "ESD",
+            "videoTabLabel": "ESD video"
         },
         "tab": {
             "esdCard": {
@@ -17,7 +18,9 @@
         "contextMenuDelete": "Löschen",
         "notification": {
             "success": "Seriennummer gespeichert",
-            "error": "Es gab ein Problem beim speichern der Seriennummer"
+            "error": "Es gab ein Problem beim speichern der Seriennummer",
+            "messageSaveSuccess": "Haben Ihre ESD-Datei erfolgreich aktualisiert",
+            "messageSaveError": "Anfrage kann nicht verarbeitet werden"
         },
         "sas-esd-modal-csv": {
             "buttonImport": "Von CSV importieren",
@@ -39,7 +42,16 @@
         },
         "media": {
             "label": "Lade deine Datei hoch",
-            "fileName": "Dateiname"
+            "fileName": "Dateiname",
+            "labelContextMenuAddToEsd": "Add to ESD"
+        },
+        "video": {
+            "title": "Videotitel",
+            "fileType": "Dateityp",
+            "option": "Möglichkeit",
+            "playAndDownloadOptionLabel": "Play and download",
+            "playOptionLabel": "Play",
+            "downloadOptionLabel": "Download"
         },
         "serialModal": {
             "serialSwitch": "Seriennummer",
@@ -62,7 +74,12 @@
         "alertMailSettingTitle": "Email Benachrichtigungen aktivieren",
         "alertMailSetting": "Aktuell werden keine Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
         "alertDownloadMailSetting": "Aktuell werden keine Download Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Download Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
-        "alertSerialMailSetting": "Aktuell werden keine Seriennummer Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Seriennummer Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",,,
+        "alertSerialMailSetting": "Aktuell werden keine Seriennummer Bestätigungs Emails des ESD nach erfolgreichen Kauf versendet. Hierzu musst dem Seriennummer Email Template ein Saleschannel zugewiesen werden. Andernfalls bekommt der Kunde nach Kauf keine Email Benachrichtigung. Schau in unserer <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Dokumentation</a> wie du das Email Template zuweisen kannst.",
+        "uploadingMediaModalTitle": "Medien hochladen",
+        "fileNameUploadingLabel": "Datei hochladen: ",
+        "videoPlayAlertTitle": "ESD Video",
+        "videoPlayAlertMessage": "Wir unterstützen nur das Abspielen von Videos in den Formaten mp4 und webp",
+        "videoDoesntSupport": "Wir akzeptieren nur Videodateien",
         "esdMail": {
             "cardTitle": "ESD - Mail-Dienst",
             "sendMailDownload": "E-Mail-Download erneut senden",
@@ -75,6 +92,13 @@
             "alertSendMailSerialSuccessMessage": "Esd E-Mail-Serie wurde erfolgreich gesendet",
             "alertSendMailSerialErrorTitle": "ESD E-Mail-Serie erneut senden fehlgeschlagen",
             "alertSendMailSerialErrorMessage": "Ein Fehler ist aufgetreten"
+        },
+        "esdChange": {
+            "changeEsdVideoLabel": "Switch to ESD Video",
+            "changeEsdNormalLabel": "Switch to ESD Normal",
+            "confirmChangeTitle": "Confirm switch ESD type",
+            "confirmChangeToVideoMessage": "Do you really want to change over to ESD Video?",
+            "confirmChangeToNormalMessage": "Do you really want to change over to ESD Normal?"
         }
     }
 }

@@ -22,7 +22,7 @@ class EsdExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('searchEsdByProductIds', [$this, 'searchEsdByProductIds'])
+            new TwigFunction('searchEsdByProductIds', [$this, 'searchEsdByProductIds']),
         ];
     }
 

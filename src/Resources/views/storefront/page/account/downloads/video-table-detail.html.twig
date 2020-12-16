@@ -1,0 +1,78 @@
+{% block page_account_sas_esd_download_item_detail_overview %}
+    <div class="sas-esd-item-detail">
+        <div class="collapse"
+             id="esdOrder{{ esdOrder.orderLineItem.order.orderNumber }}">
+            <div class="sas-esd-detail-content">
+                <div class="sas-esd-detail-content-header">
+                    <div class="row">
+                        <div class="col-6 sas-esd-detail-content-header-cell">
+                            {{ "sasEsd.account.downloadTable.fileNameLabel"|trans|sw_sanitize }}
+                        </div>
+                        <div class="col-2 sas-esd-detail-content-header-cell">
+                            {{ "sasEsd.account.downloadTable.fileTypeLabel"|trans|sw_sanitize }}
+                        </div>
+                        <div class="col-4 sas-esd-detail-content-header-cell">
+                            {{ "sasEsd.account.downloadTable.downloadLabel"|trans|sw_sanitize }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sas-esd-detail-content-body">
+                    {% if esdVideoMediaByEsdIds[esdOrder.esdId] %}
+                        {% for esdVideoMedia in esdVideoMediaByEsdIds[esdOrder.esdId] %}
+                            {% if esdVideoMedia.media.mediaType.name == 'VIDEO' %}
+                                <div class="sas-esd-detail-list-item sas-esd-detail-item-product">
+                                    <div class="row sas-esd-detail-content-row">
+                                        <div class="col-12 col-md-6 sas-esd-item">
+                                            <strong class="order-item-label">
+                                                {{ "sasEsd.account.downloadTable.fileNameLabel"|trans|sw_sanitize }}
+                                            </strong>
+                                            <span class="order-item-value">
+                                            {% if (esdVideoMedia.media.title) %}
+                                                {{ esdVideoMedia.media.title }}
+                                            {% else %}
+                                                {{ esdVideoMedia.media.fileName }}
+                                            {% endif %}
+                                        </span>
+                                        </div>
+                                        <div class="col-12 col-md-2 sas-esd-item">
+                                            <strong class="order-item-label">
+                                                {{ "sasEsd.account.downloadTable.fileTypeLabel"|trans|sw_sanitize }}
+                                            </strong>
+                                            <span class="order-item-value">
+                                            {{ esdVideoMedia.media.fileExtension }}
+                                        </span>
+                                        </div>
+                                        <div class="col-12 col-md-4 sas-esd-item sas-esd-item-download-button">
+                                            {% sw_include '@SasEsd/storefront/page/account/downloads/video-table-detail-action-button.html.twig' with {
+                                                esdOrders: esdOrders,
+                                                esdVideoMediaByEsdIds: esdVideoMediaByEsdIds,
+                                                esdVideoByEsdIds: esdVideoByEsdIds,
+                                                esdVideoMedia: esdVideoMedia
+                                                } %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="sas-esd-detail-content-footer">
+                    <div class="sas-esd-item-detail-footer">
+                        <div class="row no-gutters">
+                            <div class="col-12 text-center">
+                                {% if esdOrder.esd.esdMedia|length %}
+                                    <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %} {% if isReloadData %}js-esd-download-selector{% endif %}{% endif %}"
+                                       href="{{ url('frontend.sas.esd.download', {esdOrderId: esdOrder.id}) }}">
+                                        {{ "sasEsd.account.downloadTable.downloadAllFilesByZipButton"|trans|sw_sanitize }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

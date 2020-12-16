@@ -25,6 +25,10 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
         $this->insertEventAction($connection);
     }
 
+    public function updateDestructive(Connection $connection): void
+    {
+    }
+
     private function insertEventAction(Connection $connection): void
     {
         $templateId = null;
@@ -141,7 +145,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
             'content_html' => EsdMailTemplate::getSerialHtmlMailTemplate(),
             'content_plain' => EsdMailTemplate::getSerialPlainMailTemplate(),
             'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            'mail_template_id' => $templateId
+            'mail_template_id' => $templateId,
         ];
 
         $germanMailTemplate = [
@@ -165,13 +169,15 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
         if ($englishLanguageId) {
             $connection->insert(
                 'mail_template_translation',
-                $englishMailTemplate+ ['language_id' => $englishLanguageId]
+                $englishMailTemplate + ['language_id' => $englishLanguageId]
             );
         }
 
         if ($germanLanguageId) {
             $connection->insert(
-                'mail_template_translation', $germanMailTemplate);
+                'mail_template_translation',
+                $germanMailTemplate
+            );
         }
     }
 
@@ -181,9 +187,11 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
             return (string) $connection->fetchColumn(
                 'SELECT `id`
             FROM `mail_template_type`
-            WHERE `technical_name` = :technical_name LIMIT 1;', [
-                'technical_name' => $technicalName
-            ]);
+            WHERE `technical_name` = :technical_name LIMIT 1;',
+                [
+                    'technical_name' => $technicalName,
+                ]
+            );
         } catch (DBALException $e) {
             return null;
         }
@@ -195,9 +203,11 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
             return (string) $connection->fetchColumn(
                 'SELECT `id`
             FROM `mail_template`
-            WHERE `mail_template_type_id` = :mail_template_type_id LIMIT 1', [
-                'mail_template_type_id' => $templateTypeId
-            ]);
+            WHERE `mail_template_type_id` = :mail_template_type_id LIMIT 1',
+                [
+                    'mail_template_type_id' => $templateTypeId,
+                ]
+            );
         } catch (DBALException $e) {
             return null;
         }
@@ -218,9 +228,5 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
     private function getAvailableEntities(): string
     {
         return '{"order": "order", "salesChannel": "sales_channel"}';
-    }
-
-    public function updateDestructive(Connection $connection): void
-    {
     }
 }

@@ -4,9 +4,12 @@ namespace Sas\Esd\Service;
 
 use League\Flysystem\FilesystemInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
+use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
@@ -19,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class EsdService
 {
@@ -49,18 +53,32 @@ class EsdService
      */
     private $filesystemPrivate;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $esdVideoRepository;
+
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfigService;
+
     public function __construct(
         EntityRepositoryInterface $esdProductRepository,
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $productRepository,
         UrlGeneratorInterface $urlGenerator,
-        FilesystemInterface $filesystemPrivate
+        FilesystemInterface $filesystemPrivate,
+        EntityRepositoryInterface $esdVideoRepository,
+        SystemConfigService $systemConfigService
     ) {
         $this->esdProductRepository = $esdProductRepository;
         $this->esdOrderRepository = $esdOrderRepository;
         $this->productRepository = $productRepository;
         $this->urlGenerator = $urlGenerator;
         $this->filesystemPrivate = $filesystemPrivate;
+        $this->esdVideoRepository = $esdVideoRepository;
+        $this->systemConfigService = $systemConfigService;
     }
 
     public function compressFiles($productId): bool
@@ -123,6 +141,87 @@ class EsdService
         }
 
         return $esd->getEsdMedia();
+    }
+
+    public function getEsdVideoMediaByEsdIds(array $esdIds, Context $context): array
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('esdMedia.media');
+        $criteria->addFilter(new EqualsAnyFilter('id', $esdIds));
+
+        $esdCollection = $this->esdProductRepository->search($criteria, $context)->getEntities();
+        if (empty($esdCollection)) {
+            return [];
+        }
+
+        $esdMediaByEsdIds = [];
+        /** @var EsdEntity $esd */
+        foreach ($esdCollection as $esd) {
+            if (!$this->getSystemConfig('isEsdVideo')) {
+                continue;
+            }
+
+            /** @var EsdMediaEntity $esdMedia */
+            foreach ($esd->getEsdMedia() as $esdMedia) {
+                if (empty($esdMedia->getMedia())) {
+                    continue;
+                }
+
+                $esdMediaByEsdIds[$esd->getId()][$esdMedia->getId()] = $esdMedia;
+            }
+        }
+
+        return $esdMediaByEsdIds;
+    }
+
+    public function getEsdVideo(array $esdMediaIds, Context $context): array
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('esdMediaId', $esdMediaIds));
+
+        $esdVideoByEsdIds = [];
+        $esdVideoCollection = $this->esdVideoRepository->search($criteria, $context)->getEntities();
+        if (empty($esdVideoCollection)) {
+            return [];
+        }
+
+        /** @var EsdVideoEntity $esdVideo */
+        foreach ($esdVideoCollection as $esdVideo) {
+            $esdVideoByEsdIds[$esdVideo->getEsdMediaId()] = $esdVideo;
+        }
+
+        return $esdVideoByEsdIds;
+    }
+
+    public function getVideoMedia(string $esdId, string $mediaId, Context $context): ?MediaEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('esdMedia');
+        $criteria->addFilter(new EqualsFilter('id', $esdId));
+
+        /** @var EsdEntity $esd */
+        $esd = $this->esdProductRepository->search($criteria, $context)->first();
+        if (empty($esd)) {
+            return null;
+        }
+
+        if (empty($esd->getEsdMedia())) {
+            return null;
+        }
+
+        $esdMedias = $esd->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) use ($mediaId) {
+            return $esdMedia->getMediaId() === $mediaId;
+        });
+        if (empty($esdMedias->first())) {
+            return null;
+        }
+
+        return $esdMedias->first()->getMedia();
+    }
+
+    public function getPathVideoMedia(MediaEntity $media): string
+    {
+        return $this->urlGenerator->getRelativeMediaUrl($media);
     }
 
     public function getEsdOrderByCustomer(string $esdOrderId, SalesChannelContext $context): EsdOrderEntity
@@ -202,6 +301,16 @@ class EsdService
             '.',
             ','
         ) . ' ' . $units[$power];
+    }
+
+    public function getSystemConfig(string $name): bool
+    {
+        $config = $this->systemConfigService->get('SasEsd.config.' . $name);
+        if (empty($config)) {
+            return false;
+        }
+
+        return true;
     }
 
     private function createCriteriaEsdOrder(string $customerId, ?string $productId = null): Criteria

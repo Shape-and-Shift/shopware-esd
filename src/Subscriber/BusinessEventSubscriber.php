@@ -15,18 +15,19 @@ class BusinessEventSubscriber implements EventSubscriberInterface
      */
     private $businessEventCollector;
 
-    public function __construct(BusinessEventCollector $businessEventCollector) {
+    public function __construct(BusinessEventCollector $businessEventCollector)
+    {
         $this->businessEventCollector = $businessEventCollector;
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            BusinessEventCollectorEvent::NAME => 'onRegisterEvent'
+            BusinessEventCollectorEvent::NAME => 'onRegisterEvent',
         ];
     }
 
-    public function onRegisterEvent(BusinessEventCollectorEvent $event)
+    public function onRegisterEvent(BusinessEventCollectorEvent $event): void
     {
         $downloadDefinition = $this->businessEventCollector->define(EsdDownloadPaymentStatusPaidEvent::class);
         if ($downloadDefinition) {

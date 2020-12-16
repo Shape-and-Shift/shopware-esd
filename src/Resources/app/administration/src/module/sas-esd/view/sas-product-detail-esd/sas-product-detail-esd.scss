@@ -57,4 +57,19 @@
             }
         }
     }
+
+    .sas-product-detail-esd__esd-list-select {
+        .sw-block-field__block {
+            border-radius: 15px;
+        }
+    }
+
+    .sas-product-detail-esd__change-esd {
+        padding: 0 30px;
+        text-align: center;
+    }
+}
+
+.sas-product-detail-esd__file-name-uploading {
+    margin-bottom: 10px;
 }

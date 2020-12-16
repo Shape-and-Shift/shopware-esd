@@ -85,7 +85,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'id' => $mediaFolderConfigurationId,
                 'no_association' => 1,
                 'create_thumbnails' => 0,
-                'private' => 1,
+                'private' => 0,
                 'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (DBALException $e) {

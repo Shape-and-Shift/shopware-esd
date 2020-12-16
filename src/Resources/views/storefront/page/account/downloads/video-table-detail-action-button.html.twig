@@ -1,0 +1,87 @@
+{% block page_account_sas_esd_download_table_action_button %}
+    {% set actionOption = 2 %}
+    {% if esdVideoMedia.media.fileExtension == 'mp4' or esdVideoMedia.media.fileExtension != 'webm' %}
+        {% if esdVideoByEsdIds[esdVideoMedia.id] %}
+            {% set esdVideo = esdVideoByEsdIds[esdVideoMedia.id] %}
+            {% set actionOption = esdVideo.option %}
+        {% endif %}
+    {% endif %}
+
+    {% block page_account_sas_esd_download_table_action_buttons %}
+        {% if actionOption == 0 %}
+            {% block page_account_sas_esd_download_table_action_buttons_play_and_download %}
+                <div class="esd-video-actions">
+                    <button type="button"
+                            class="btn btn-primary esd-video-action-btn"
+                            data-toggle="modal"
+                            data-backdrop="static"
+                            data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}">
+                        {{ "sasEsd.account.downloadTable.playButton"|trans|sw_sanitize }}
+                    </button>
+                    <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}{% endif %}"
+                       href="{{ path('frontend.sas.esd.media.url', {'esdId': esdOrder.esdId, 'mediaId': esdVideoMedia.media.id }) }}">
+                        {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
+                    </a>
+                </div>
+            {% endblock %}
+        {% elseif actionOption == 1 %}
+            {% block page_account_sas_esd_download_table_action_buttons_play %}
+                <button type="button"
+                        class="btn btn-primary esd-video-action-btn"
+                        data-toggle="modal"
+                        data-backdrop="static"
+                        data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}">
+                    {{ "sasEsd.account.downloadTable.playButton"|trans|sw_sanitize }}
+                </button>
+            {% endblock %}
+        {% elseif actionOption == 2 %}
+            {% block page_account_sas_esd_download_table_action_buttons_download %}
+                <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}{% endif %}"
+                   href="{{ path('frontend.sas.esd.media.url', {'esdId': esdOrder.esdId, 'mediaId': esdVideoMedia.media.id }) }}">
+                    {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
+                </a>
+            {% endblock %}
+        {% endif %}
+    {% endblock %}
+
+    {% block page_account_sas_esd_download_table_action_modal_esd_video %}
+        {% if actionOption == 0 or actionOption == 1 %}
+            <div class="modal fade esd-watch-video-modal"
+                 id="watchVideo{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}"
+                 tabindex="-1"
+                 role="dialog"
+                 data-esd-video-player="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered"
+                     role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            {% block page_account_sas_esd_download_table_action_modal_esd_video_modal_title %}
+                                <div class="modal-title h5">
+                                    {{ "sasEsd.account.video.modalTitle"|trans|sw_sanitize }}
+                                </div>
+                            {% endblock %}
+                            {% block page_account_sas_esd_download_table_action_modal_esd_video_modal_button_close %}
+                                <button type="button"
+                                        class="modal-close close js-close-esd-video-player"
+                                        data-dismiss="modal"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">{% sw_icon 'x' style { 'size': 'sm' } %}</span>
+                                </button>
+                            {% endblock %}
+                        </div>
+                        <div class="modal-body d-flex justify-content-center">
+                            {% block page_account_sas_esd_download_table_action_modal_esd_video_player %}
+                                <video src="{{ path('frontend.sas.esd.video.url', {'esdId': esdOrder.esdId, 'mediaId': esdVideoMedia.media.id }) }}"
+                                       id="esd_video_{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}"
+                                       class="js-esd-player"
+                                       controls data-plyr-config='{ "title": "{{ esdVideoMedia.media.title }}" }'>
+                                </video>
+
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+{% endblock %}

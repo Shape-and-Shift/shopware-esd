@@ -12,7 +12,6 @@ use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class SasEsd extends Plugin
 {
@@ -53,38 +52,6 @@ class SasEsd extends Plugin
         }
     }
 
-    /**
-     * We need to create a private folder for the downloads,
-     * otherwise the files would be accessible by public.
-     *
-     * @param $installContext
-     */
-    public function createPrivateFolder(InstallContext $installContext): void
-    {
-        /** @var EntityRepositoryInterface $mediaFolderRepository */
-        $mediaFolderRepository = $this->container->get('media_folder.repository');
-
-        $folderId = Uuid::randomHex();
-        $configurationId = Uuid::randomHex();
-
-        $mediaFolderRepository->create([
-            [
-                'entity' => 'sas_product_esd',
-                'name' => 'ESD Media',
-                'associationFields' => [],
-                'folder' => [
-                    'id' => $folderId,
-                    'name' => 'ESD Downloads',
-                    'configurationId' => $configurationId,
-                    'configuration' => [
-                        'id' => $configurationId,
-                        'private' => true,
-                    ],
-                ],
-            ],
-        ], $installContext->getContext());
-    }
-
     public function update(UpdateContext $updateContext): void
     {
         (new Update())->update($this->container, $updateContext);
@@ -109,6 +76,7 @@ class SasEsd extends Plugin
         $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_serial`');
         $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_media`');
         $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_download_history`');
+        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_video`');
         $connection->executeUpdate('ALTER TABLE `product` DROP COLUMN `esd`');
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
     }

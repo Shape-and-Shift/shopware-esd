@@ -1,0 +1,100 @@
+.sas-account-esd {
+    .plyr__controls__item.plyr__progress__container {
+        pointer-events: none;
+    }
+
+    .esd-video-action-btn {
+        margin-bottom: $custom-select-padding-y-sm;
+    }
+
+    .sas-esd-table {
+        @extend .order-table;
+    }
+
+    .sas-esd-wrapper {
+        @extend .order-wrapper;
+    }
+
+    .sas-esd-item-header {
+        @extend .order-item-header;
+    }
+
+    .sas-esd-table-header-order-table-header {
+        @extend .order-table-header-order-table-header;
+    }
+
+    .sas-esd-table-header-order-table-header-cell {
+        @extend .order-table-header-order-table-header-cell;
+    }
+
+    .sas-esd-table-header-order-table-body {
+        @extend .order-table-header-order-table-body;
+    }
+
+    .sas-esd-table-header-order-table-body-cell {
+        @extend .order-table-header-order-table-body-cell;
+    }
+
+    .sas-esd-table-header-label {
+        @extend .order-table-header-label;
+    }
+
+    .sas-esd-table-body-value {
+        @extend .order-table-body-value;
+    }
+
+    .sas-esd-item {
+        @extend .order-item;
+    }
+
+    .sas-esd-item-actions {
+        @extend .order-item-actions;
+    }
+
+    .sas-esd-hide-btn {
+        @extend .order-hide-btn;
+    }
+
+    .sas-esd-hide-btn-text {
+        @extend .order-hide-btn-text;
+    }
+
+    .sas-esd-view-btn-text {
+        @extend .order-view-btn-text;
+    }
+
+    .sas-esd-detail-content {
+        @extend .order-detail-content;
+    }
+
+    .sas-esd-detail-content-header {
+        @extend .order-detail-content-header;
+    }
+
+    .sas-esd-detail-content-header-cell {
+        @extend .order-detail-content-header-cell;
+    }
+
+    .sas-esd-detail-content-body {
+        @extend .order-detail-content-body;
+    }
+
+    .sas-esd-detail-list-item {
+        @extend .order-item-detail-list-item;
+    }
+
+    .sas-esd-detail-content-row {
+        @extend .order-detail-content-row;
+    }
+
+    .sas-esd-item-detail-footer {
+        @extend .order-item-detail-footer;
+    }
+
+    @include media-breakpoint-down(sm) {
+        .sas-esd-item-download-button {
+            text-align: center;
+        }
+    }
+
+}

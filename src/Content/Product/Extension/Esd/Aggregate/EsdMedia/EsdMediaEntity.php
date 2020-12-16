@@ -45,7 +45,7 @@ class EsdMediaEntity extends Entity
         $this->esdId = $esdId;
     }
 
-    public function getMediaId(): string
+    public function getMediaId(): ?string
     {
         return $this->mediaId;
     }

@@ -42,7 +42,6 @@ class EsdDownloadService
     public function checkLimitDownload(EsdOrderEntity $esdOrder): void
     {
         $limitNumber = $this->getLimitDownloadNumber($esdOrder);
-
         if ($limitNumber !== null) {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('esdOrderId', $esdOrder->getId()));

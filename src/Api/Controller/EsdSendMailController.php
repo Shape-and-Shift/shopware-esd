@@ -21,17 +21,15 @@ class EsdSendMailController extends AbstractController
      */
     private $esdMailService;
 
-    public function __construct(EsdMailService $esdMailService) {
+    public function __construct(EsdMailService $esdMailService)
+    {
         $this->esdMailService = $esdMailService;
     }
 
     /**
      * @Route("/api/v{version}/esd-mail/download", name="api.action.sas-esd.send-mail-download", methods={"POST"})
-     * @param Request $request
-     * @param Context $context
-     * @return Response
      */
-    public function sendMailDownload(Request $request, Context $context):Response
+    public function sendMailDownload(Request $request, Context $context): Response
     {
         $orderId = $request->get('orderId');
         if (!empty($orderId)) {
@@ -45,9 +43,6 @@ class EsdSendMailController extends AbstractController
 
     /**
      * @Route("/api/v{version}/esd-mail/serial", name="api.action.sas-esd.send-mail-serial", methods={"POST"})
-     * @param Request $request
-     * @param Context $context
-     * @return Response
      */
     public function sendMailSerial(Request $request, Context $context): Response
     {
@@ -63,9 +58,6 @@ class EsdSendMailController extends AbstractController
 
     /**
      * @Route("/api/v{version}/esd-mail/{orderId}/buttons", name="api.action.sas-esd.mail-buttons", methods={"GET"})
-     * @param string $orderId
-     * @param Context $context
-     * @return JsonResponse
      */
     public function getAllowMailButtons(string $orderId, Context $context): JsonResponse
     {

@@ -2,8 +2,40 @@
     {% parent %}
 
     <sw-tabs-item
+        v-if="!isShowTheEsdVideo"
         :route="{ name: 'sas.product.detail.esd', params: { id: $route.params.id } }"
         :title="$tc('sas-esd.general.tabLabel')">
         {{ $tc('sas-esd.general.tabLabel') }}
     </sw-tabs-item>
+    <sw-tabs-item
+        v-else
+        :route="{ name: 'sas.product.detail.esd.video', params: { id: $route.params.id } }"
+        :title="$tc('sas-esd.general.videoTabLabel')">
+        {{ $tc('sas-esd.general.tabLabel') }}
+    </sw-tabs-item>
 {% endblock %}
+
+{% block sw_product_detail_sidebar %}
+{% endblock %}
+
+<template slot="sidebar">
+    {% block sw_product_detail_sidebar %}
+        <sw-sidebar :propagateWidth="true">
+            <sw-sidebar-media-item ref="mediaSidebarItem" :disabled="!acl.can('product.editor')">
+                <template slot="context-menu-items" slot-scope="media">
+                    <sw-context-menu-item v-if="$route.name === 'sas.product.detail.esd' || $route.name === 'sas.product.detail.esd.video'"
+                                          @click="onAddItemToESD(media.mediaItem)">
+                        {{ $tc('sas-esd.media.labelContextMenuAddToEsd') }}
+                    </sw-context-menu-item>
+                    <sw-context-menu-item @click="onAddItemToProduct(media.mediaItem)">
+                        {{ $tc('sw-product.detailBase.labelContextMenuAddToProduct') }}
+                    </sw-context-menu-item>
+                </template>
+            </sw-sidebar-media-item>
+
+            {% block sw_product_detail_sidebar_additional_items %}
+                {% parent %}
+            {% endblock %}
+        </sw-sidebar>
+    {% endblock %}
+</template>

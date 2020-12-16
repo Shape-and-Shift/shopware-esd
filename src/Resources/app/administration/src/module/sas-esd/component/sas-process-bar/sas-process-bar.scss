@@ -1,0 +1,16 @@
+@import "~scss/variables";
+
+.sas-process-bar-container {
+    background: #f0f0f0;
+    height: 10px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.sas-process-bar {
+    background: $color-shopware-brand-500;
+    height: 10px;
+    width: 0;
+    border-radius: 10px;
+    transition: width 400ms;
+}

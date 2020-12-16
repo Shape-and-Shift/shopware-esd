@@ -32,12 +32,6 @@ class EsdOrderService
      */
     private $esdService;
 
-    /**
-     * EsdOrderService constructor.
-     * @param EntityRepositoryInterface $esdOrderRepository
-     * @param EntityRepositoryInterface $esdSerialRepository
-     * @param EsdService $esdService
-     */
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $esdSerialRepository,
@@ -48,17 +42,11 @@ class EsdOrderService
         $this->esdService = $esdService;
     }
 
-    /**
-     * @param OrderEntity $order
-     * @param Context $context
-     * @param ProductCollection|null $products
-     */
     public function addNewEsdOrders(
         OrderEntity $order,
         Context $context,
         ?ProductCollection $products = null
-    ): void
-    {
+    ): void {
         $newEsdOrders = [];
         foreach ($order->getLineItems() as $orderLineItem) {
             if ($products instanceof ProductCollection) {
@@ -104,11 +92,6 @@ class EsdOrderService
         }
     }
 
-    /**
-     * @param OrderEntity $order
-     * @param Context $context
-     * @return array
-     */
     public function mailTemplateData(OrderEntity $order, Context $context): array
     {
         $esdOrderListIds = [];
@@ -180,11 +163,6 @@ class EsdOrderService
         return $templateData;
     }
 
-    /**
-     * @param EsdEntity $esd
-     * @param Context $context
-     * @return EntitySearchResult|null
-     */
     public function fetchSerials(EsdEntity $esd, Context $context): ?EntitySearchResult
     {
         if (!$esd->hasSerial()) {

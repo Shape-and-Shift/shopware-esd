@@ -1,7 +1,7 @@
 import template from './sas-product-detail-esd.html.twig';
 import './sas-product-detail-esd.scss';
 
-const { Component } = Shopware;
+const { Component, Mixin } = Shopware;
 const { Criteria, EntityCollection } = Shopware.Data;
 const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
@@ -10,13 +10,24 @@ Component.register('sas-product-detail-esd', {
 
     inject: ['repositoryFactory', 'systemConfigApiService'],
 
+    mixins: [
+        Mixin.getByName('notification')
+    ],
+
     data() {
         return {
             activeModal: '',
             fileAccept: '*',
             selectedItems: null,
             isLoading: true,
-            isLoadedEsd: false
+            isLoadedEsd: false,
+            isShowDownloadMailAlert: false,
+            isShowSerialMailAlert: false,
+            isShowUploadProcessModal: false,
+            uploadProcess: 0,
+            fileNameUploading: '',
+            isPublicMedia: true,
+            isEsdVideo: false
         };
     },
 
@@ -53,8 +64,11 @@ Component.register('sas-product-detail-esd', {
 
         mediaColumns() {
             return this.getMediaColumns();
-        }
+        },
 
+        productRepository() {
+            return this.repositoryFactory.create('product');
+        }
     },
 
     watch: {
@@ -62,20 +76,28 @@ Component.register('sas-product-detail-esd', {
             handler() {
                 if (this.isStoreLoading === false) {
                     this.loadEsd();
+                    this.loadMedia();
                 }
             }
         }
     },
 
     created() {
-        if (this.product.id !== this.parentProduct.id) {
-            Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', false);
-            this.loadEsd();
-            this.loadMedia();
-        }
+        this.createdComponent();
     },
 
     methods: {
+        createdComponent() {
+            this.fetchMediaConfig();
+            this.fetchEsdVideoConfig();
+
+            if (this.product.id !== this.parentProduct.id) {
+                Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', false);
+                this.loadEsd();
+                this.loadMedia();
+            }
+        },
+
         createMediaCollection() {
             return new EntityCollection('/media', 'media', Shopware.Context.api);
         },
@@ -97,14 +119,11 @@ Component.register('sas-product-detail-esd', {
 
             if (typeof this.product.extensions.esd !== 'undefined') {
                 this.isLoadedEsd = true;
-
-                if (this.product.extensions.esd.esdMedia.length === 0) {
-                    this.loadMedia();
-                }
             }
         },
 
         loadMedia() {
+            this.isLoading = true;
             const criteria = new Criteria();
             criteria.addAssociation('media');
             criteria.addFilter(Criteria.equals('esdId', this.product.extensions.esd.id));
@@ -116,7 +135,9 @@ Component.register('sas-product-detail-esd', {
                 const esdMediaList = this.createMediaCollection();
                 Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
                 esdMedia.forEach((esdMedia) => {
-                    Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                    if (esdMedia.media.mediaType.name !== 'VIDEO') {
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                    }
                 })
 
                 this.isLoading = false;
@@ -131,15 +152,37 @@ Component.register('sas-product-detail-esd', {
             }];
         },
 
-        createEsdMediaAssoc(mediaItem) {
+        async createEsdMediaAssoc(mediaItem) {
+            this.isLoading = true;
             const esdMedia = this.esdMediaRepository.create(Shopware.Context.api);
             esdMedia.esdId = this.product.extensions.esd.id;
             esdMedia.mediaId = mediaItem.id;
             esdMedia.media = mediaItem;
-            esdMedia.media.private = true;
+            esdMedia.media.private = !this.isPublicMedia;
+
+            await this.esdMediaRepository.save(esdMedia, Shopware.Context.api);
 
             this.product.extensions.esd.esdMedia.push(esdMedia);
-            this.esdMedia.push(mediaItem);
+
+            this.productRepository.save(this.product, Shopware.Context.api).then(() => {
+                this.loadMedia();
+                this.createNotificationSuccess({
+                    message: this.$tc('sas-esd.notification.messageSaveSuccess')
+                });
+            }).catch(() => {
+                this.createNotificationError({
+                    message: this.$tc('sas-esd.notification.messageSaveError')
+                });
+            }).finally(() => {
+                this.isLoading = false;
+            });
+        },
+
+        fetchMediaConfig() {
+            this.systemConfigApiService.getValues('SasEsd.config')
+                .then(response => {
+                    this.isPublicMedia = response['SasEsd.config.isPublicMedia'];
+                });
         },
 
         getEsdMedia() {
@@ -147,14 +190,21 @@ Component.register('sas-product-detail-esd', {
             Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMedia);
             this.product.extensions.esd.esdMedia.forEach((esdMedia) => {
                 if (esdMedia.media && esdMedia.mediaId) {
-                    Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                    if (esdMedia.media.mediaType.name !== 'VIDEO') {
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                    }
                 }
             });
         },
 
-        onSetMediaItem({ targetId }) {
+        async onSetMediaItem({ targetId }) {
             if (this.product.extensions.esd.esdMedia.some((esd) => esd.mediaId === targetId)) {
                 return;
+            }
+
+            this.isLoading = true;
+            if (this.product.extensions.esd.isNew) {
+                await this.productRepository.save(this.product, Shopware.Context.api);
             }
 
             this.mediaRepository.get(targetId, Shopware.Context.api).then((updatedMedia) => {
@@ -185,6 +235,30 @@ Component.register('sas-product-detail-esd', {
         onMediaDropped(dropItem) {
             // to be consistent refetch entity with repository
             this.onSetMediaItem({ targetId: dropItem.id });
-        }
+        },
+
+        onShowProcess({ fileName, process }) {
+            this.uploadProcess = process;
+            if (process > 0 && process < 100) {
+                this.isShowUploadProcessModal = true;
+                this.fileNameUploading = fileName;
+            } else {
+                this.isShowUploadProcessModal = false;
+                this.uploadProcess = 0;
+                this.fileNameUploading = '';
+            }
+        },
+
+        fetchEsdVideoConfig() {
+            this.systemConfigApiService.getValues('SasEsd.config')
+                .then(response => {
+                    this.isEsdVideo = response['SasEsd.config.isEsdVideo'];
+                });
+        },
+
+
+        onMediaUploadButtonOpenSidebar() {
+            this.$root.$emit('sidebar-toggle-open');
+        },
     }
 })

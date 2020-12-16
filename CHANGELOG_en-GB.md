@@ -1,3 +1,8 @@
+# 1.3.0
+* ESD supported for the ESD video
+* You're able to switch from ESD video to ESD normal
+* Improved the template of showing ESD data in the account download page
+
 # 1.2.14
 * Improved download handling
 
