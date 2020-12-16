@@ -6,6 +6,13 @@
         <title lang="de-DE">ESD Konfiguration</title>
 
         <input-field type="bool">
+            <name>isEsdVideo</name>
+            <label>ESD support for the video</label>
+            <label lang="de-DE">Esd support for the video</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
             <name>isSendDownloadConfirmation</name>
             <label>Sending download confirmation email</label>
             <label lang="de-DE">Download Bestätigungs Email senden</label>
@@ -43,6 +50,15 @@
             <label>Show instant download available</label>
             <label lang="de-DE">Sofortigen Download anzeigen verfügbar</label>
             <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
+            <name>isPublicMedia</name>
+            <label>Is public media</label>
+            <label lang="de-DE">Ist öffentliche Medien</label>
+            <defaultValue>false</defaultValue>
+            <helpText>If it is public, your file will be able to found in the media</helpText>
+            <helpText lang="de-DE">Wenn es öffentlich ist, kann Ihre Datei in den Medien gefunden werden</helpText>
         </input-field>
     </card>
 </config>

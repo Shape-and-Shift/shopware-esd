@@ -2,9 +2,9 @@
 
 namespace Sas\Esd\Checkout\Cart\Subscriber;
 
-use Sas\Esd\Service\EsdOrderService;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
+use Sas\Esd\Service\EsdOrderService;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
@@ -38,13 +38,6 @@ class OrderPlacedSubscriber
      */
     private $eventDispatcher;
 
-    /**
-     * OrderPlacedSubscriber constructor.
-     * @param EntityRepositoryInterface $productRepository
-     * @param EsdOrderService $esdOrderService
-     * @param SystemConfigService $systemConfigService
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(
         EntityRepositoryInterface $productRepository,
         EsdOrderService $esdOrderService,
@@ -57,9 +50,6 @@ class OrderPlacedSubscriber
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @param CheckoutOrderPlacedEvent $event
-     */
     public function __invoke(CheckoutOrderPlacedEvent $event): void
     {
         $orderLineItems = $event->getOrder()->getLineItems();
@@ -91,28 +81,24 @@ class OrderPlacedSubscriber
             $this->esdOrderService->addNewEsdOrders($event->getOrder(), $event->getContext(), $products);
             $templateData = $this->esdOrderService->mailTemplateData($event->getOrder(), $event->getContext());
 
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME) &&
-                !empty($templateData['esdOrderLineItems'])) {
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
                 $event = new EsdDownloadPaymentStatusPaidEvent($event->getContext(), $event->getOrder(), $templateData);
                 $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
             }
 
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME) &&
-                !empty($templateData['esdSerials'])) {
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdSerials'])) {
                 $event = new EsdSerialPaymentStatusPaidEvent($event->getContext(), $event->getOrder(), $templateData);
                 $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
             }
         }
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
     private function getSystemConfig(string $name): bool
     {
-        $isSendDownloadConfirmation = $this->systemConfigService->get('SasEsd.config.' . $name);
-        if (empty($isSendDownloadConfirmation)) {
+        $config = $this->systemConfigService->get('SasEsd.config.' . $name);
+        if (empty($config)) {
             return false;
         }
 

@@ -3,14 +3,15 @@
 namespace Sas\Esd\Storefront\Controller;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Store\Services\StoreService;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Page\GenericPageLoaderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,16 +44,23 @@ class DownloadsController extends StorefrontController
      */
     private $genericLoader;
 
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfigService;
+
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EsdService $esdService,
         EsdDownloadService $esdDownloadService,
-        GenericPageLoaderInterface $genericLoader
+        GenericPageLoaderInterface $genericLoader,
+        SystemConfigService $systemConfigService
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
         $this->genericLoader = $genericLoader;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -66,8 +74,33 @@ class DownloadsController extends StorefrontController
         $page = $this->genericLoader->load($request, $context);
 
         $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
+
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
+
+        $esdVideoMediaByEsdIds = [];
+        $esdVideoByEsdIds = [];
+        if ($this->systemConfigService->get('SasEsd.config.isEsdVideo')) {
+            $esdIds = [];
+            /** @var EsdOrderEntity $esdOrder */
+            foreach ($esdOrdersCollection as $esdOrder) {
+                $esdIds[] = $esdOrder->getEsdId();
+            }
+
+            if (!empty($esdIds)) {
+                $esdVideoMediaByEsdIds = $this->esdService->getEsdVideoMediaByEsdIds($esdIds, $context->getContext());
+
+                $esdVideoIds = [];
+                foreach ($esdVideoMediaByEsdIds as $esdVideoMedia) {
+                    $esdVideoIds = array_merge($esdVideoIds, array_keys($esdVideoMedia));
+                }
+
+                $esdVideoByEsdIds = $this->esdService->getEsdVideo(
+                    $esdVideoIds,
+                    $context->getContext()
+                );
+            }
+        }
 
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig',
@@ -75,6 +108,8 @@ class DownloadsController extends StorefrontController
                 'page' => $page,
                 'esdOrders' => $esdOrders,
                 'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
+                'esdVideoMediaByEsdIds' => $esdVideoMediaByEsdIds,
+                'esdVideoByEsdIds' => $esdVideoByEsdIds,
             ]
         );
     }
@@ -92,6 +127,7 @@ class DownloadsController extends StorefrontController
         $esdOrdersCollection = $esdOrders->getEntities();
 
         return $this->renderStorefront('@Storefront/storefront/page/account/downloads/table.html.twig', [
+            'page' => $page,
             'esdOrders' => $esdOrders,
             'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
         ]);

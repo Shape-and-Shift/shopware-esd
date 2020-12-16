@@ -2,7 +2,7 @@
 
 {% block page_account_main_content %}
     {% block page_account_downloads %}
-        <div class="account-orders">
+        <div class="account-orders sas-account-esd">
             {% block page_account_downloads_welcome %}
                 <div class="account-welcome">
                     {% block page_account_downloads_welcome_headline %}
@@ -27,7 +27,9 @@
                                 <div class="account-esd-downloads">
                                     {% sw_include '@Storefront/storefront/page/account/downloads/table.html.twig' with {
                                         esdOrders: esdOrders,
-                                        downloadLimits: downloadLimits
+                                        downloadLimits: downloadLimits,
+                                        esdVideoMediaByEsdIds: esdVideoMediaByEsdIds,
+                                        esdVideoByEsdIds: esdVideoByEsdIds
                                     } %}
                                 </div>
                             </div>

@@ -38,12 +38,6 @@ class EsdSerialPaymentStatusPaidEvent extends Event implements MailActionInterfa
      */
     private $mailRecipientStruct;
 
-    /**
-     * EsdPaymentStatusPaidEvent constructor.
-     * @param Context $context
-     * @param OrderEntity $order
-     * @param array $templateData
-     */
     public function __construct(
         Context $context,
         OrderEntity $order,
@@ -54,17 +48,11 @@ class EsdSerialPaymentStatusPaidEvent extends Event implements MailActionInterfa
         $this->templateData = $templateData;
     }
 
-    /**
-     * @return OrderEntity
-     */
     public function getOrder(): OrderEntity
     {
         return $this->order;
     }
 
-    /**
-     * @return array
-     */
     public function getEsdSerials(): array
     {
         if (empty($this->templateData['esdSerials'])) {
@@ -72,16 +60,13 @@ class EsdSerialPaymentStatusPaidEvent extends Event implements MailActionInterfa
         }
 
         $esdSerials = $this->templateData['esdSerials'];
-        usort($esdSerials, function($a, $b) {
+        usort($esdSerials, function ($a, $b) {
             return $a['productName'] <=> $b['productName'];
         });
 
         return $esdSerials;
     }
 
-    /**
-     * @return EventDataCollection
-     */
     public static function getAvailableData(): EventDataCollection
     {
         return (new EventDataCollection())
@@ -89,17 +74,11 @@ class EsdSerialPaymentStatusPaidEvent extends Event implements MailActionInterfa
             ->add('esdSerials', new ArrayType(new ScalarValueType(ScalarValueType::TYPE_STRING)));
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return self::EVENT_NAME;
     }
 
-    /**
-     * @return MailRecipientStruct
-     */
     public function getMailStruct(): MailRecipientStruct
     {
         if (!$this->mailRecipientStruct instanceof MailRecipientStruct) {
@@ -111,17 +90,11 @@ class EsdSerialPaymentStatusPaidEvent extends Event implements MailActionInterfa
         return $this->mailRecipientStruct;
     }
 
-    /**
-     * @return string
-     */
     public function getSalesChannelId(): string
     {
         return $this->order->getSalesChannelId();
     }
 
-    /**
-     * @return Context
-     */
     public function getContext(): Context
     {
         return $this->context;

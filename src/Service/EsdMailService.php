@@ -36,13 +36,6 @@ class EsdMailService
      */
     private $eventDispatcher;
 
-    /**
-     * EsdMailService constructor.
-     * @param EntityRepositoryInterface $orderRepository
-     * @param EsdOrderService $esdOrderService
-     * @param SystemConfigService $systemConfigService
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(
         EntityRepositoryInterface $orderRepository,
         EsdOrderService $esdOrderService,
@@ -55,47 +48,34 @@ class EsdMailService
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @param string $orderId
-     * @param Context $context
-     */
     public function sendMailDownload(string $orderId, Context $context): void
     {
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
         if (!empty($order)) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME) &&
-                !empty($templateData['esdOrderLineItems'])) {
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
                 $event = new EsdDownloadPaymentStatusPaidEvent($context, $order, $templateData);
                 $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
             }
         }
     }
 
-    /**
-     * @param string $orderId
-     * @param Context $context
-     */
     public function sendMailSerial(string $orderId, Context $context): void
     {
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
         if (!empty($order)) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME) &&
-                !empty($templateData['esdSerials'])) {
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdSerials'])) {
                 $event = new EsdSerialPaymentStatusPaidEvent($context, $order, $templateData);
                 $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
             }
         }
     }
 
-    /**
-     * @param string $orderId
-     * @param Context $context
-     * @return array
-     */
     public function enableMailButtons(string $orderId, Context $context): array
     {
         $buttons['download'] = false;
@@ -105,13 +85,13 @@ class EsdMailService
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
         if (!empty($order)) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME) &&
-                !empty($templateData['esdOrderLineItems'])) {
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
                 $buttons['download'] = true;
             }
 
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME) &&
-                !empty($templateData['esdSerials'])) {
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdSerials'])) {
                 $buttons['serial'] = true;
             }
         }
@@ -119,10 +99,16 @@ class EsdMailService
         return $buttons;
     }
 
-    /**
-     * @param string $orderId
-     * @return Criteria
-     */
+    public function getSystemConfig(string $name): bool
+    {
+        $config = $this->systemConfigService->get('SasEsd.config.' . $name);
+        if (empty($config)) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function getCriteria(string $orderId): Criteria
     {
         $criteria = new Criteria([$orderId]);
@@ -137,19 +123,5 @@ class EsdMailService
         );
 
         return $criteria;
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function getSystemConfig(string $name): bool
-    {
-        $isSendDownloadConfirmation = $this->systemConfigService->get('SasEsd.config.' . $name);
-        if (empty($isSendDownloadConfirmation)) {
-            return false;
-        }
-
-        return true;
     }
 }

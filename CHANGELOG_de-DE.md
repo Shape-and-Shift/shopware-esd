@@ -1,3 +1,8 @@
+# 1.3.0
+* Es ist nun möglich ESD-Videos anzulegen
+* Sie können von ESD-Video zu ESD-Normal wechseln
+* Das anzeigen von ESD Produkten und Videos innerhalb der Account Page wurde verbessert
+
 # 1.2.14
 * Die Download Methode wurde verbessert und hat einen Fehler bei der Generierung der .zip Dateien behoben.
 

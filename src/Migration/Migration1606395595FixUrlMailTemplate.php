@@ -31,13 +31,17 @@ class Migration1606395595FixUrlMailTemplate extends MigrationStep
                 ['templateId' => $templateId]
             )->fetchAll();
 
-
             foreach ($mailTemplateTranslations as $mailTemplateTranslation) {
                 $contentHtml = $this->replaceUrlToRawUrl($mailTemplateTranslation['content_html']);
                 $contentPlain = $this->replaceUrlToRawUrl($mailTemplateTranslation['content_plain']);
                 $this->updateMailTemplateContent($connection, $contentHtml, $contentPlain, $templateId, $mailTemplateTranslation['language_id']);
             }
         }
+    }
+
+    public function updateDestructive(Connection $connection): void
+    {
+        // implement update destructive
     }
 
     private function updateMailTemplateContent(Connection $connection, string $contentHtml, string $contentPlain, string $templateId, string $languageId): void
@@ -58,15 +62,10 @@ class Migration1606395595FixUrlMailTemplate extends MigrationStep
     {
         $urlString = "url('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId})";
         $rawString = "rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}, salesChannel.domains|first.url)";
-        if (strpos($content, $urlString) !== false ) {
+        if (strpos($content, $urlString) !== false) {
             return str_replace($urlString, $rawString, $content);
         }
 
         return $content;
-    }
-
-    public function updateDestructive(Connection $connection): void
-    {
-        // implement update destructive
     }
 }

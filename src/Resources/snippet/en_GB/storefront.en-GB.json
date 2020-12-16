@@ -20,7 +20,19 @@
                 "serial": "Serial",
                 "freeLabel": "Free",
                 "downloadButton": "Download",
-                "unlimitedDownload": "Unlimited"
+                "playButton": "Play",
+                "hideFilesButton": "Hide",
+                "viewFilesButton": "View files",
+                "downloadAllFilesByZipButton": "Download all files by zip",
+                "unlimitedDownload": "Unlimited",
+                "files": "Files",
+                "fileNameLabel": "File name",
+                "fileTypeLabel": "File type",
+                "downloadLabel": "Download"
+            },
+            "video": {
+                "videoNoJs": "To view this video please enable JavaScript, and consider upgrading to a web browser that",
+                "modalTitle": "Play video"
             }
         },
         "checkout": {

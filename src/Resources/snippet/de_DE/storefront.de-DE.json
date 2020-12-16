@@ -20,7 +20,19 @@
                 "serial": "Seriennummer",
                 "freeLabel": "Konstelos",
                 "downloadButton": "Download",
-                "unlimitedDownload": "Unbegrenzt"
+                "playButton": "Play",
+                "hideFilesButton": "Ausblenden",
+                "viewFilesButton": "Dateien anzeigen",
+                "downloadAllFilesByZipButton": "Laden Sie alle Dateien per Zip herunter",
+                "unlimitedDownload": "Unbegrenzt",
+                "files": "Dateien",
+                "fileNameLabel": "Dateiname",
+                "fileTypeLabel": "Dateityp",
+                "downloadLabel": "Download"
+            },
+            "video": {
+                "videoNoJs": "Um dieses Video anzusehen, aktivieren Sie bitte JavaScript und erwägen Sie ein Upgrade auf einen Webbrowser, der",
+                "modalTitle": "Play video"
             }
         },
         "checkout": {

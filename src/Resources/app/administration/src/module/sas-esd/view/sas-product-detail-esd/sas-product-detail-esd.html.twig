@@ -2,12 +2,12 @@
 <div class="sas-product-detail-esd__generated-esd">
     <template v-if="isLoadedEsd || isLoadedEsdMedia">
         <sw-card :hero="false">
-
-            <sw-upload-listener
-                    :uploadTag="product.id"
-                    @media-upload-finish="onSetMediaItem"
-                    autoUpload>
-            </sw-upload-listener>
+            <sas-upload-listener
+                :uploadTag="product.id"
+                @media-upload-finish="onSetMediaItem"
+                @media-upload-process="onShowProcess"
+                autoUpload>
+            </sas-upload-listener>
 
             <sw-media-upload-v2
                     variant="regular"
@@ -15,7 +15,8 @@
                     :label="$tc('sas-esd.media.label')"
                     :uploadTag="product.id"
                     :fileAccept="fileAccept"
-                    @media-drop="onMediaDropped">
+                    @media-drop="onMediaDropped"
+                    @media-upload-sidebar-open="onMediaUploadButtonOpenSidebar">
             </sw-media-upload-v2>
 
             <sw-data-grid class="sas-product-detail-esd__esd-list"
@@ -27,7 +28,8 @@
                           :allowColumnEdit="false"
                           :allowInlineEdit="false"
                           :compactMode="false"
-                          @selection-change="onSelectionChanged">
+                          @selection-change="onSelectionChanged"
+                          :isLoading="isStoreLoading || isLoading">
                 <template #preview-fileName="{ item }">
                     <sw-media-preview-v2 :source="item.id" :mediaIsPrivate="item.private"></sw-media-preview-v2>
                 </template>
@@ -46,10 +48,20 @@
             </sw-data-grid>
         </sw-card>
 
-        <sw-card :title="$tc('sas-esd.serialModal.title')"
-                 v-if="esdMedia && esdMedia.length > 0">
+        <sw-card v-if="isEsdVideo && esdMedia"
+                 :hero="true">
+            <sas-switch-esd-button
+                class="sas-product-detail-esd__change-esd"
+                :label="$tc('sas-esd.esdChange.changeEsdVideoLabel')"
+                :confirmMessage="$tc('sas-esd.esdChange.confirmChangeToVideoMessage')"
+                esdType="video">
+            </sas-switch-esd-button>
+        </sw-card>
 
-            <sw-switch-field :label="$tc('sas-esd.serialModal.serialSwitch')"
+        <sw-card :title="$tc('sas-esd.serialModal.title')"
+                 v-if="esdMedia">
+            <sw-switch-field :disabled="esdMedia.length === 0"
+                             :label="$tc('sas-esd.serialModal.serialSwitch')"
                              v-model="product.extensions.esd.hasSerial">
             </sw-switch-field>
 
@@ -62,8 +74,9 @@
         </sw-card>
 
         <sw-card :title="$tc('sas-esd.downloadLimit.title')"
-                 v-if="esdMedia && esdMedia.length > 0">
-            <sw-switch-field :label="$tc('sas-esd.downloadLimit.customLimitToggle')"
+                 v-if="esdMedia">
+            <sw-switch-field :disabled="esdMedia.length === 0"
+                             :label="$tc('sas-esd.downloadLimit.customLimitToggle')"
                              v-model="product.extensions.esd.hasCustomDownloadLimit">
             </sw-switch-field>
 
@@ -82,6 +95,16 @@
                 </sw-field>
             </template>
         </sw-card>
+
+        <sw-modal v-if="isShowUploadProcessModal"
+                  :title="$tc('sas-esd.uploadingMediaModalTitle')"
+                  :closable="false"
+                  variant="small">
+            <div class="sas-product-detail-esd__file-name-uploading">
+                <strong>{{ $tc('sas-esd.fileNameUploadingLabel') }}</strong> {{ fileNameUploading }}
+            </div>
+            <sas-process-bar :process="uploadProcess"></sas-process-bar>
+        </sw-modal>
     </template>
 </div>
 {% endblock %}

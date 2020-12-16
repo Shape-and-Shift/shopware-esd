@@ -1,7 +1,8 @@
 {
     "sas-esd": {
         "general": {
-            "tabLabel": "ESD"
+            "tabLabel": "ESD",
+            "videoTabLabel": "ESD video"
         },
         "tab": {
             "esdCard": {
@@ -17,7 +18,9 @@
         "contextMenuDelete": "Delete",
         "notification": {
             "success": "Serials successfully saved",
-            "error": "There was an error while saving your serials"
+            "error": "There was an error while saving your serials",
+            "messageSaveSuccess": "Have updated your ESD file successfully",
+            "messageSaveError": "Cannot process request"
         },
         "sas-esd-modal-csv": {
             "buttonImport": "Import from CSV",
@@ -39,7 +42,16 @@
         },
         "media": {
             "label": "Upload your file",
-            "fileName": "Filename"
+            "fileName": "Filename",
+            "labelContextMenuAddToEsd": "Add to ESD"
+        },
+        "video": {
+            "title": "Video title",
+            "fileType": "File Type",
+            "option": "Option",
+            "playAndDownloadOptionLabel": "Play and download",
+            "playOptionLabel": "Play",
+            "downloadOptionLabel": "Download"
         },
         "serialModal": {
             "title": "Serial numbers",
@@ -64,6 +76,11 @@
         "alertMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the download link or the serial number.Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
         "alertDownloadMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the download link. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
         "alertSerialMailSetting": "You need to set a sales channel for the Email Templates, so Shopware is able to send a confirmation email with the serial number. Otherwise, the customer will get no email. Read our <a href=\"http://shapeandshift.dev/plugins/shopware-esd#email-template\" target=\\\"_blank\\\">Plugin Documentation</a> on how to assign an Email template.",
+        "uploadingMediaModalTitle": "Uploading media",
+        "fileNameUploadingLabel": "Uploading file: ",
+        "videoPlayAlertTitle": "ESD Video",
+        "videoPlayAlertMessage": "We only support playing videos in mp4 and webp formats",
+        "videoDoesntSupport": "We only accept video files",
         "esdMail": {
             "cardTitle": "ESD - Mail service",
             "sendMailDownload": "Resend email download",
@@ -76,6 +93,16 @@
             "alertSendMailSerialSuccessMessage": "ESD email serial was sent successfully",
             "alertSendMailSerialErrorTitle": "ESD resend email serial failed",
             "alertSendMailSerialErrorMessage": "An error occurred"
+        },
+        "esdChange": {
+            "changeEsdVideoLabel": "Switch to ESD Video",
+            "changeEsdNormalLabel": "Switch to ESD Normal",
+            "confirmChangeTitle": "Confirm switch ESD type",
+            "confirmChangeToVideoMessage": "Do you really want to change over to ESD Video?",
+            "confirmChangeToNormalMessage": "Do you really want to change over to ESD Normal?",
+            "changeButton": "Change",
+            "closeButton": "Cancel",
+            "messageChangeSuccess": "Your change has been completed"
         }
     }
 }

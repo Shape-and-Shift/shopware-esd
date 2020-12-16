@@ -7,36 +7,35 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class MediaFileExtensionSubscriber implements EventSubscriberInterface
 {
-
     public static function getSubscribedEvents()
     {
         return [
-            MediaFileExtensionWhitelistEvent::class => 'onMediaFileExtensionWhiteList'
+            MediaFileExtensionWhitelistEvent::class => 'onMediaFileExtensionWhiteList',
         ];
     }
 
-    public function onMediaFileExtensionWhiteList(MediaFileExtensionWhitelistEvent $event)
+    public function onMediaFileExtensionWhiteList(MediaFileExtensionWhitelistEvent $event): void
     {
         $newWhiteList = array_merge([
-            "ppt",
-            "pptm",
-            "pot",
-            "potx",
-            "potm",
-            "pps",
-            "ppsx",
-            "pptx",
-            "xlsx",
-            "xlsm",
-            "xls",
-            "csv",
-            "doc",
-            "docm",
-            "docx",
-            "zip",
-            "rar",
-            "tar.gz",
-            "tar.gz2",
+            'ppt',
+            'pptm',
+            'pot',
+            'potx',
+            'potm',
+            'pps',
+            'ppsx',
+            'pptx',
+            'xlsx',
+            'xlsm',
+            'xls',
+            'csv',
+            'doc',
+            'docm',
+            'docx',
+            'zip',
+            'rar',
+            'tar.gz',
+            'tar.gz2',
         ], $event->getWhitelist());
 
         $event->setWhitelist($newWhiteList);
