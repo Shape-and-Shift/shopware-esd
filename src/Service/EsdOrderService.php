@@ -51,6 +51,10 @@ class EsdOrderService
         foreach ($order->getLineItems() as $orderLineItem) {
             if ($products instanceof ProductCollection) {
                 $product = $products->get($orderLineItem->getProductId());
+                if (!$product) {
+                    continue;
+                }
+
                 /** @var EsdEntity $esd */
                 $esd = $product->getExtension('esd');
             } else {

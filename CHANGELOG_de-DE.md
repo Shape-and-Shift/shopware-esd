@@ -1,3 +1,6 @@
+# 1.3.1
+* Das Problem, dass die Bestellung nicht abgeschlossen werden kann, wenn der Warenkorb einen physischen Artikel und einen digitalen Artikel enthält, wurde behoben
+
 # 1.3.0
 * Es ist nun möglich ESD-Videos anzulegen
 * Sie können von ESD-Video zu ESD-Normal wechseln

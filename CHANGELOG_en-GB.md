@@ -1,3 +1,6 @@
+# 1.3.1
+* Fixed the issue can't finish order when the cart has a physical article and digital article
+
 # 1.3.0
 * ESD supported for the ESD video
 * You're able to switch from ESD video to ESD normal
