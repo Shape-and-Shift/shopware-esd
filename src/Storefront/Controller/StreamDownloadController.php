@@ -16,6 +16,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -74,7 +75,7 @@ class StreamDownloadController extends StorefrontController
     /**
      * @Route("/esd/download/{esdOrderId}", name="frontend.sas.esd.download", options={"seo"="false"}, methods={"GET"})
      */
-    public function downloadByUserLoggedIn(SalesChannelContext $context, string $esdOrderId): void
+    public function downloadByUserLoggedIn(SalesChannelContext $context, string $esdOrderId): Response
     {
         $this->denyAccessUnlessLoggedIn();
 
@@ -83,22 +84,22 @@ class StreamDownloadController extends StorefrontController
             throw new NotFoundHttpException('Esd cannot be found');
         }
 
-        $this->downloadProcess($esdOrder, $context);
+        return $this->downloadProcess($esdOrder, $context);
     }
 
     /**
      * @Route("/esd/download/guest/{esdOrderId}", name="frontend.sas.esd.download.guest", options={"seo"="false"}, methods={"GET"})
      *
-     * @return StreamedResponse
+     * @return Response
      */
-    public function downloadByGuest(SalesChannelContext $context, string $esdOrderId): void
+    public function downloadByGuest(SalesChannelContext $context, string $esdOrderId): Response
     {
         $esdOrder = $this->esdService->getEsdOrderByGuest($esdOrderId, $context);
         if (empty($esdOrder)) {
             throw new NotFoundHttpException('Esd cannot be found');
         }
 
-        $this->downloadProcess($esdOrder, $context);
+        return $this->downloadProcess($esdOrder, $context);
     }
 
     /**
@@ -191,7 +192,7 @@ class StreamDownloadController extends StorefrontController
         return $response;
     }
 
-    private function downloadProcess(EsdOrderEntity $esdOrder, SalesChannelContext $context): void
+    private function downloadProcess(EsdOrderEntity $esdOrder, SalesChannelContext $context): Response
     {
         $productId = $esdOrder->getEsd()->getProductId();
 
@@ -212,12 +213,19 @@ class StreamDownloadController extends StorefrontController
             $this->esdService->downloadFileName($esdOrder->getOrderLineItem()->getLabel())
         );
 
-        header('Content-Type: zip');
-        header('Cache-Control: no-cache, must-revalidate');
-        header('Content-Disposition:' . $disposition);
-        header('Content-Length: ' . filesize($path));
-        header('Pragma: public');
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'no-cache, must-revalidate');
+        $response->headers->set('Content-Type', 'zip');
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Length', filesize($path));
+        $response->headers->set('Pragma', 'public');
+
+        $response->sendHeaders();
+        $response->setContent(file_get_contents($path));
+
         flush();
         readfile($path);
+
+        return $response;
     }
 }

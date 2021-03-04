@@ -1,3 +1,6 @@
+# 1.3.2
+* Fixed to add return response for the download handling
+
 # 1.3.1
 * Fixed the issue can't finish order when the cart has a physical article and digital article
 
