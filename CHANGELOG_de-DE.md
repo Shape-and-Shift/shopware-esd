@@ -1,3 +1,6 @@
+# 1.3.2
+* Behoben, um Rückantwort für die Download-Behandlung hinzuzufügen
+
 # 1.3.1
 * Das Problem, dass die Bestellung nicht abgeschlossen werden kann, wenn der Warenkorb einen physischen Artikel und einen digitalen Artikel enthält, wurde behoben
 
