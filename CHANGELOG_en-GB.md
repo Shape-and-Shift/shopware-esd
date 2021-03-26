@@ -1,3 +1,7 @@
+# 1.3.3
+* Fixed getting line items of an ESD order
+* Improved the language of `purchase date` column within account > downloads page
+
 # 1.3.2
 * Fixed to add return response for the download handling
 

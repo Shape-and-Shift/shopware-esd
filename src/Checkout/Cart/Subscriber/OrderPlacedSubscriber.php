@@ -2,6 +2,8 @@
 
 namespace Sas\Esd\Checkout\Cart\Subscriber;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
+use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Service\EsdOrderService;
@@ -9,10 +11,9 @@ use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -68,16 +69,32 @@ class OrderPlacedSubscriber
 
         $criteria = new Criteria($productIds);
         $criteria->addAssociation('esd.esdMedia');
-        $criteria->addFilter(
-            new NotFilter(
-                NotFilter::CONNECTION_AND,
-                [new EqualsFilter('esd.esdMedia.mediaId', null)]
-            )
-        );
 
         /** @var ProductCollection $products */
         $products = $this->productRepository->search($criteria, $event->getContext())->getEntities();
-        if ($products->count() > 0) {
+
+        $esdProducts = new ProductCollection();
+        /** @var ProductEntity $product */
+        foreach ($products as $product) {
+            if (!$product->getExtension('esd')) {
+                continue;
+            }
+
+            /** @var EsdEntity $esd */
+            $esd = $product->getExtension('esd');
+            $esdMedias = $esd->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) {
+                return $esdMedia->getMediaId() !== null;
+            });
+
+            if (empty($esdMedias->getElements())) {
+                continue;
+            }
+
+            $esd->setEsdMedia($esdMedias);
+            $esdProducts->add($product);
+        }
+
+        if ($esdProducts->count() > 0) {
             $this->esdOrderService->addNewEsdOrders($event->getOrder(), $event->getContext(), $products);
             $templateData = $this->esdOrderService->mailTemplateData($event->getOrder(), $event->getContext());
 

@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Service;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
@@ -183,5 +184,26 @@ class EsdOrderService
         }
 
         return $esdSerial;
+    }
+
+    public function isEsdOrder(OrderEntity $order): bool
+    {
+        foreach ($order->getLineItems() as $lineItem) {
+            /** @var EsdEntity $esd */
+            $esd = $lineItem->getProduct()->getExtension('esd');
+            if (empty($esd)) {
+                return false;
+            }
+
+            $esdMedias = $esd->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) {
+                return $esdMedia->getMediaId() !== null;
+            });
+
+            if (!empty($esdMedias->getElements())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

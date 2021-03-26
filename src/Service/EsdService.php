@@ -19,7 +19,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -255,7 +254,17 @@ class EsdService
     {
         $criteria = $this->createCriteriaEsdOrder($context->getCustomer()->getId());
 
-        return $this->esdOrderRepository->search($criteria, $context->getContext());
+        $esdOrders = $this->esdOrderRepository->search($criteria, $context->getContext());
+        /** @var EsdOrderEntity $esdOrder */
+        foreach ($esdOrders as $esdOrder) {
+            $esdMedias = $esdOrder->getEsd()->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) {
+                return $esdMedia->getMediaId() !== null;
+            });
+
+            $esdOrder->getEsd()->setEsdMedia($esdMedias);
+        }
+
+        return $esdOrders;
     }
 
     public function getEsdOrderByOrderLineItemIds(array $ids, Context $context): EsdOrderCollection
@@ -336,12 +345,6 @@ class EsdService
                     new EqualsFilter('orderLineItem.order.amountNet', 0.0),
                 ]
             )
-        );
-
-        $criteria->addFilter(
-            new NotFilter(NotFilter::CONNECTION_AND, [
-                new EqualsFilter('esd.esdMedia.mediaId', null),
-            ])
         );
 
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
