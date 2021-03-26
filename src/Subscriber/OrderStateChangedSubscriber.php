@@ -12,8 +12,6 @@ use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -72,39 +70,37 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
         $criteria->addAssociation('lineItems.product.esd.esdMedia');
         $criteria->addAssociation('orderCustomer.customer');
 
-        $criteria->addFilter(
-            new NotFilter(
-                NotFilter::CONNECTION_AND,
-                [new EqualsFilter('lineItems.product.esd.esdMedia.mediaId', null)]
-            )
-        );
-
         /** @var OrderEntity|null $order */
-        $order = $this->orderRepository->search($criteria, $event->getContext())->get($event->getOrder()->getId());
-        if (!empty($order)) {
-            if (!empty($order->getLineItems()) && $order->getAmountTotal() > 0) {
-                $orderLineItemIds = array_filter($order->getLineItems()->fmap(static function (OrderLineItemEntity $orderLineItem) {
-                    return $orderLineItem->getId();
-                }));
+        $order = $this->orderRepository->search($criteria, $event->getContext())->first();
+        if (empty($order)) {
+            return;
+        }
 
-                $esdOrders = $this->esdService->getEsdOrderByOrderLineItemIds($orderLineItemIds, $event->getContext());
-                if (empty($esdOrders->first())) {
-                    $this->esdOrderService->addNewEsdOrders($order, $event->getContext());
-                }
+        if ($this->esdOrderService->isEsdOrder($order) &&
+            !empty($order->getLineItems()) &&
+            $order->getAmountTotal() > 0
+        ) {
+            $orderLineItemIds = array_filter($order->getLineItems()->fmap(static function (OrderLineItemEntity $orderLineItem) {
+                return $orderLineItem->getId();
+            }));
 
-                $templateData = $this->esdOrderService->mailTemplateData($order, $event->getContext());
+            $esdOrders = $this->esdService->getEsdOrderByOrderLineItemIds($orderLineItemIds, $event->getContext());
+            if (empty($esdOrders->first())) {
+                $this->esdOrderService->addNewEsdOrders($order, $event->getContext());
+            }
 
-                if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
-                    && !empty($templateData['esdOrderLineItems'])) {
-                    $event = new EsdDownloadPaymentStatusPaidEvent($event->getContext(), $order, $templateData);
-                    $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
-                }
+            $templateData = $this->esdOrderService->mailTemplateData($order, $event->getContext());
 
-                if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
-                    && !empty($templateData['esdSerials'])) {
-                    $event = new EsdSerialPaymentStatusPaidEvent($event->getContext(), $order, $templateData);
-                    $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
-                }
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
+                $event = new EsdDownloadPaymentStatusPaidEvent($event->getContext(), $order, $templateData);
+                $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
+            }
+
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdSerials'])) {
+                $event = new EsdSerialPaymentStatusPaidEvent($event->getContext(), $order, $templateData);
+                $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
             }
         }
     }

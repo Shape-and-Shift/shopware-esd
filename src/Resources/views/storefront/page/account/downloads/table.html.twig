@@ -87,7 +87,7 @@
                                     <strong class="sas-esd-table-header-label">
                                         {{ "sasEsd.account.downloadTable.purchaseDate"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
                                     </strong>
-                                    <span class="sas-esd-table-body-value">{{ esdOrder.orderLineItem.createdAt|date }}</span>
+                                    <span class="sas-esd-table-body-value">{{ esdOrder.orderLineItem.createdAt|format_datetime('medium', 'short', locale=app.request.locale) }}</span>
                                 </div>
                             {% endblock %}
 
