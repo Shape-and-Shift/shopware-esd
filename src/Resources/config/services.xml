@@ -30,6 +30,11 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <service id="Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <!-- DAL Extension -->
         <service id="Sas\Esd\Content\Product\Extension\ProductExtension">
             <tag name="shopware.entity.extension"/>
         </service>
@@ -125,6 +130,7 @@
         <service id="Sas\Esd\Service\EsdDownloadService">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="sas_product_esd_download_history.repository"/>
+            <argument type="service" id="sas_product_esd_media_download_history.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 

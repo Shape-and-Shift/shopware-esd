@@ -132,7 +132,7 @@ Component.override('sw-product-detail', {
         },
 
         isVideoFileSupportPlay(mediaItem) {
-            return mediaItem.fileExtension === 'mp4' || mediaItem.fileExtension === 'webp'
+            return mediaItem.fileExtension.toLowerCase() === 'mp4' || mediaItem.fileExtension.toLowerCase() === 'webp'
         }
     }
 });

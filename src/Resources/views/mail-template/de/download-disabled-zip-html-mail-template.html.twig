@@ -1,0 +1,41 @@
+<div style="font-family:arial; font-size:12px;">
+    <br/>
+    <p>Hallo {{order.orderCustomer.firstName}},</p>
+
+    vielen Dank für deine Bestellung.<br/>
+    Nachstehend findest du die Details zu deinen digitalen Download mit der Bestellnummer {{order.orderNumber}}.<br/>
+    <br/>
+
+    <table width="80%" border="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+        <tr>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Pos.</strong></td>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Name</strong></td>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Download</strong></td>
+        </tr>
+
+        {% set pos = 0 %}
+        {% for lineItem in order.lineItems %}
+            {% if lineItem.id in esdOrderListIds|keys %}
+                {% set esdOrderIds = esdOrderListIds[lineItem.id] %}
+                {% for esdOrderId in esdOrderIds %}
+                    {% set pos = pos + 1 %}
+                    <tr>
+                        <td style="border-bottom:1px solid #cccccc;">{{ pos }}</td>
+                        <td style="border-bottom:1px solid #cccccc;">
+                            {{ lineItem.label|u.wordwrap(80) }}
+                        </td>
+                        <td style="border-bottom:1px solid #cccccc;">
+                            {% for esdMedia in esdMediaFiles[esdOrderId] %}
+                                {% if order.orderCustomer.customer.guest %}
+                                    <a href="{{ rawUrl('frontend.sas.lineItem.media.url.guest', {esdOrderId: esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}" style="display: block;">{{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension}}</a>
+                                {% else %}
+                                    <a href="{{ rawUrl('frontend.sas.lineItem.media.url', {esdOrderId: esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}" style="display: block;">{{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension}}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </table>
+</div>

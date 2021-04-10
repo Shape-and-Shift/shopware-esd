@@ -9,6 +9,8 @@ use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -103,25 +105,57 @@ class StreamDownloadController extends StorefrontController
     }
 
     /**
-     * @Route("/esd/media/{esdId}/{mediaId}", name="frontend.sas.esd.media.url", options={"seo"="false"}, methods={"GET"})
+     * @Route("/esd/item/{esdOrderId}/{mediaId}", name="frontend.sas.lineItem.media.url", options={"seo"="false"}, methods={"GET"})
      *
      * @return StreamedResponse
      */
-    public function streamMedia(SalesChannelContext $context, string $esdId, string $mediaId): ?StreamedResponse
+    public function streamMediaLineItemByUser(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
         $this->denyAccessUnlessLoggedIn();
 
-        $esdVideoPath = $this->esdService->getVideoMedia($esdId, $mediaId, $context->getContext());
-        if (empty($esdVideoPath)) {
+        return $this->streamMediaLineItem($context, $esdOrderId, $mediaId);
+    }
+
+    /**
+     * @Route("/esd/item/guest/{esdOrderId}/{mediaId}", name="frontend.sas.lineItem.media.url.guest", options={"seo"="false"}, methods={"GET"})
+     *
+     * @return StreamedResponse
+     */
+    public function streamMediaLineItemByGuest(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
+    {
+        $esdOrder = $this->esdService->getEsdOrderByGuest($esdOrderId, $context);
+        if (empty($esdOrder)) {
+            throw new NotFoundHttpException('Esd cannot be found');
+        }
+
+        return $this->streamMediaLineItem($context, $esdOrderId, $mediaId);
+    }
+
+    private function streamMediaLineItem(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
+    {
+        $esdOrder = $this->esdService->getMediaByLineItemId($esdOrderId, $context->getContext());
+        if (empty($esdOrder)) {
+            throw new NotFoundHttpException('Cannot found this esd order');
+        }
+
+        $esdMedia = $this->esdService->getMedia($esdOrder->getEsdId(), $mediaId, $context->getContext());
+        if (empty($esdMedia)) {
             throw new NotFoundHttpException('Esd media cannot be found');
         }
 
-        $response = $this->mediaProcess($esdVideoPath);
-        $response->headers->set('Content-Type', $esdVideoPath->getMimeType());
+        if (!$this->systemConfigService->get('SasEsd.config.isEsdVideo')) {
+            $this->esdDownloadService->checkMediaDownloadHistory($esdOrderId, $esdMedia, $esdOrder, $context->getContext());
+        }
+
+        $this->esdDownloadService->addMediaDownloadHistory($esdOrderId, $esdMedia->getId(), $context->getContext());
+
+        $esdMediaPath = $esdMedia->getMedia();
+        $response = $this->mediaProcess($esdMediaPath);
+        $response->headers->set('Content-Type', $esdMediaPath->getMimeType());
 
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            $esdVideoPath->getFileName() . '.' . $esdVideoPath->getFileExtension()
+            $esdMediaPath->getFileName() . '.' . $esdMediaPath->getFileExtension()
         );
         $response->headers->set('Content-Disposition', $disposition);
 
@@ -182,14 +216,12 @@ class StreamDownloadController extends StorefrontController
     {
         $fileSystem = $this->filesystemPublic;
         $path = $this->esdService->getPathVideoMedia($media);
-        $response = new StreamedResponse(function () use ($fileSystem, $path): void {
+        return new StreamedResponse(function () use ($fileSystem, $path): void {
             $outputStream = fopen('php://output', 'rb');
             $fileStream = $fileSystem->readStream($path);
             stream_copy_to_stream($fileStream, $outputStream);
             fclose($outputStream);
         });
-
-        return $response;
     }
 
     private function downloadProcess(EsdOrderEntity $esdOrder, SalesChannelContext $context): Response
@@ -227,5 +259,21 @@ class StreamDownloadController extends StorefrontController
         readfile($path);
 
         return $response;
+    }
+
+    public function getEsdOrder(string $esdId, SalesChannelContext $context): EsdOrderEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('orderLineItem.order');
+        $criteria->addAssociation('esd');
+        $criteria->addFilter(new EqualsFilter('esdId', $esdId));
+        $criteria->addFilter(
+            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId())
+        );
+
+        /** @var EsdOrderEntity $esdOrder */
+        $esdOrder = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
+
+        return $esdOrder;
     }
 }

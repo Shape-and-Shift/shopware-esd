@@ -60,5 +60,12 @@
             <helpText>If it is public, your file will be able to found in the media</helpText>
             <helpText lang="de-DE">Wenn es öffentlich ist, kann Ihre Datei in den Medien gefunden werden</helpText>
         </input-field>
+
+        <input-field type="bool">
+            <name>isDisableZipFile</name>
+            <label>Disable compression to zip file</label>
+            <label lang="de-DE">Deaktivieren Sie die Komprimierung in eine Zip-Datei</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
     </card>
 </config>

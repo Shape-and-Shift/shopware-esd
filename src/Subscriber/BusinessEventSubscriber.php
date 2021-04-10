@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Subscriber;
 
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Shopware\Core\Framework\Event\BusinessEventCollector;
@@ -32,6 +33,16 @@ class BusinessEventSubscriber implements EventSubscriberInterface
         $downloadDefinition = $this->businessEventCollector->define(EsdDownloadPaymentStatusPaidEvent::class);
         if ($downloadDefinition) {
             $event->getCollection()->set(EsdDownloadPaymentStatusPaidEvent::EVENT_NAME, $downloadDefinition);
+        }
+
+        $downloadDisabledZipDefinition = $this->businessEventCollector->define(
+            EsdDownloadPaymentStatusPaidDisabledZipEvent::class
+        );
+        if ($downloadDisabledZipDefinition) {
+            $event->getCollection()->set(
+                EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME,
+                $downloadDisabledZipDefinition
+            );
         }
 
         $serialDefinition = $this->businessEventCollector->define(EsdSerialPaymentStatusPaidEvent::class);

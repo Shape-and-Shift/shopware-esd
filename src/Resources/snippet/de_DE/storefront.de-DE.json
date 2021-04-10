@@ -28,6 +28,7 @@
                 "files": "Dateien",
                 "fileNameLabel": "Dateiname",
                 "fileTypeLabel": "Dateityp",
+                "limitDownloadLabel": "Grenze",
                 "downloadLabel": "Download"
             },
             "video": {

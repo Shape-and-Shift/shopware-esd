@@ -25,13 +25,31 @@
                           :columns="mediaColumns"
                           :fullPage="false"
                           :showSettings="false"
-                          :allowColumnEdit="false"
-                          :allowInlineEdit="false"
+                          :allowColumnEdit="true"
+                          :allowInlineEdit="true"
                           :compactMode="false"
                           @selection-change="onSelectionChanged"
+                          @inline-edit-save="onInlineEditSave"
                           :isLoading="isStoreLoading || isLoading">
                 <template #preview-fileName="{ item }">
-                    <sw-media-preview-v2 :source="item.id" :mediaIsPrivate="item.private"></sw-media-preview-v2>
+                    <sw-media-preview-v2 :source="item.media.id" :mediaIsPrivate="item.media.private"></sw-media-preview-v2>
+                </template>
+
+                <template v-if="isDisableZipFile" #column-downloadLimit="{ item, isInlineEdit }">
+                    <template v-if="isInlineEdit">
+                        <sw-field v-model="item.downloadLimitNumber"
+                                  type="number"
+                                  size="small">
+                        </sw-field>
+                    </template>
+                    <template v-else>
+                        <template v-if="item.downloadLimitNumber">
+                            {{ item.downloadLimitNumber }}
+                        </template>
+                        <template v-else>
+                            {{ $tc('sas-esd.downloadLimit.unlimitedToggle') }}
+                        </template>
+                    </template>
                 </template>
 
                 <template #actions="{ item }">

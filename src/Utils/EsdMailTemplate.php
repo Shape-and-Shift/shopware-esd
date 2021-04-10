@@ -20,6 +20,11 @@ class EsdMailTemplate
     public const TEMPLATE_TYPE_SERIAL_TECHNICAL_NAME = 'sas_esd.serial';
     public const TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME = 'isSendSerialConfirmation';
 
+    public const TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_NAME = 'ESD - order download link with disabled zip';
+    public const TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_NAME_DE = 'ESD - order download link with disabled zip';
+    public const TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_TECHNICAL_NAME = 'sas_esd.download.disabled.zip';
+    public const TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME = 'isDisableZipFile';
+
     public static function removeMailTemplate(
         EntityRepositoryInterface $mailTemplateTypeRepository,
         EntityRepositoryInterface $mailTemplateRepository,
@@ -82,6 +87,34 @@ class EsdMailTemplate
     public static function getDownloadPlainMailTemplateGerman(): string
     {
         return file_get_contents(__DIR__ . '/../Resources/views/mail-template/de/download-plain-mail-template.html.twig');
+    }
+
+    public static function getDownloadHtmlMailTemplateForDisabledZip(): string
+    {
+        return file_get_contents(
+            __DIR__ . '/../Resources/views/mail-template/download-disabled-zip-html-mail-template.html.twig'
+        );
+    }
+
+    public static function getDownloadPlainMailTemplateForDisabledZip(): string
+    {
+        return file_get_contents(
+            __DIR__ . '/../Resources/views/mail-template/download-disabled-zip-plain-mail-template.html.twig'
+        );
+    }
+
+    public static function getDownloadHtmlMailTemplateForDisabledZipInGerman(): string
+    {
+        return file_get_contents(
+            __DIR__ . '/../Resources/views/mail-template/de/download-disabled-zip-html-mail-template.html.twig'
+        );
+    }
+
+    public static function getDownloadPlainMailTemplateForDisabledZipInGerman(): string
+    {
+        return file_get_contents(
+            __DIR__ . '/../Resources/views/mail-template/de/download-disabled-zip-plain-mail-template.html.twig'
+        );
     }
 
     public static function getSerialHtmlMailTemplate(): string

@@ -4,6 +4,7 @@ namespace Sas\Esd\Checkout\Cart\Subscriber;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Service\EsdOrderService;
@@ -108,6 +109,16 @@ class OrderPlacedSubscriber
                 && !empty($templateData['esdSerials'])) {
                 $event = new EsdSerialPaymentStatusPaidEvent($event->getContext(), $event->getOrder(), $templateData);
                 $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
+            }
+
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
+                $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent(
+                    $event->getContext(),
+                    $event->getOrder(),
+                    $templateData
+                );
+                $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
             }
         }
     }

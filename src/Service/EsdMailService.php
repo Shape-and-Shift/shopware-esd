@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Service;
 
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
@@ -53,6 +54,15 @@ class EsdMailService
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
         if (!empty($order)) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
+
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
+                $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($context, $order, $templateData);
+                $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
+
+                return;
+            }
+
             if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
                 && !empty($templateData['esdOrderLineItems'])) {
                 $event = new EsdDownloadPaymentStatusPaidEvent($context, $order, $templateData);
@@ -93,6 +103,11 @@ class EsdMailService
 
         $templateData = $this->esdOrderService->mailTemplateData($order, $context);
         if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
+            && !empty($templateData['esdOrderLineItems'])) {
+            $buttons['download'] = true;
+        }
+
+        if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)
             && !empty($templateData['esdOrderLineItems'])) {
             $buttons['download'] = true;
         }

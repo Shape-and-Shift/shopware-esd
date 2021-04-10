@@ -25,6 +25,11 @@ class EsdMediaEntity extends Entity
      */
     protected $media;
 
+    /**
+     * @var int|null
+     */
+    protected $downloadLimitNumber;
+
     public function getId(): string
     {
         return $this->id;
@@ -63,6 +68,16 @@ class EsdMediaEntity extends Entity
     public function setMedia(?MediaEntity $media): void
     {
         $this->media = $media;
+    }
+
+    public function getDownloadLimitNumber(): ?int
+    {
+        return $this->downloadLimitNumber;
+    }
+
+    public function setDownloadLimitNumber($downloadLimitNumber): void
+    {
+        $this->downloadLimitNumber = $downloadLimitNumber;
     }
 
     public function getApiAlias(): string

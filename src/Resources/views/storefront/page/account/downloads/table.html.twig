@@ -1,6 +1,17 @@
 {% block page_account_sas_esd_download_table %}
+    {% set isEsdVideo = shopware.config.SasEsd.config.isEsdVideo %}
+    {% set isDisableZipFile = shopware.config.SasEsd.config.isDisableZipFile %}
+
     {% for esdOrder in esdOrders %}
-        {% set isEsdVideo = shopware.config.SasEsd.config.isEsdVideo %}
+        {% set videoCount = 0 %}
+        {% if esdVideoMediaByEsdIds[esdOrder.esdId] %}
+            {% for esdVideoMedia in esdVideoMediaByEsdIds[esdOrder.esdId] %}
+                {% if esdVideoMedia.media.mediaType.name == 'VIDEO' %}
+                    {% set videoCount = videoCount + 1 %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
         <div class="table sas-esd-table">
             <div class="sas-esd-wrapper">
                 <div class="sas-esd-item-header">
@@ -45,9 +56,11 @@
                             {% endblock %}
 
                             {% block page_account_sas_esd_download_table_header_cell_download_remaining %}
-                                <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
-                                    {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}
-                                </div>
+                                {% if not isDisableZipFile %}
+                                    <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
+                                        {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}
+                                    </div>
+                                {% endif %}
                             {% endblock %}
 
                             {% block page_account_sas_esd_download_table_header_cell_empty %}
@@ -104,61 +117,45 @@
                             {% endblock %}
 
                             {% block page_account_sas_esd_download_table_body_cell_download_remaining %}
-                                <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
-                                    <strong class="sas-esd-table-header-label">
-                                        {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
-                                    </strong>
-                                    <span class="sas-esd-table-body-value">
-                                        {% set isDisabledDownload = false %}
-                                        {% if downloadLimits[esdOrder.id] == null %}
-                                            {{ "sasEsd.account.downloadTable.unlimitedDownload"|trans|sw_sanitize }}
-                                        {% else %}
-                                            {% set downloadLimit = downloadLimits[esdOrder.id] %}
-                                            {% if esdOrder.countDownload >= downloadLimit %}
-                                                <span class="text-danger">0</span>
-                                                {% set isDisabledDownload = true %}
+                                {% if not isDisableZipFile %}
+                                    <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
+                                        <strong class="sas-esd-table-header-label">
+                                            {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
+                                        </strong>
+                                        <span class="sas-esd-table-body-value">
+                                            {% set isDisabledDownload = false %}
+                                            {% if downloadLimits[esdOrder.id] == null %}
+                                                {{ "sasEsd.account.downloadTable.unlimitedDownload"|trans|sw_sanitize }}
                                             {% else %}
-                                                {{ esdOrder.countDownload }} / {{ downloadLimit }}
+                                                {% set downloadLimit = downloadLimits[esdOrder.id] %}
+                                                {% if esdOrder.countDownload >= downloadLimit %}
+                                                    <span class="text-danger">0</span>
+                                                    {% set isDisabledDownload = true %}
+                                                {% else %}
+                                                    {{ esdOrder.countDownload }} / {{ downloadLimit }}
+                                                {% endif %}
                                             {% endif %}
-                                        {% endif %}
-                                    </span>
-                                </div>
+                                        </span>
+                                    </div>
+                                {% endif %}
                             {% endblock %}
 
                             {% block page_account_sas_esd_download_table_body_cell_toggle_order_details %}
                                 <div class="col-12 col-sm sas-esd-item sas-esd-item-actions sas-esd-table-header-order-table-body-cell">
                                     {% if esdOrder.esd.esdMedia|length %}
-                                        {% set videoCount = 0 %}
-                                        {% if esdVideoMediaByEsdIds[esdOrder.esdId] %}
-                                            {% for esdVideoMedia in esdVideoMediaByEsdIds[esdOrder.esdId] %}
-                                                {% if esdVideoMedia.media.mediaType.name == 'VIDEO' %}
-                                                    {% set videoCount = videoCount + 1 %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
+                                        {% block page_account_sas_esd_download_table_body_cell_toggle_button %}
+                                            <button class="btn btn-light btn-sm sas-esd-hide-btn collapsed"
+                                                    type="submit"
+                                                    data-toggle="collapse"
+                                                    data-target="#esdOrder{{ esdOrder.id }}"
+                                                    aria-expanded="false">
 
-                                        {% if isEsdVideo == false or videoCount == 0 %}
-                                            {% block page_account_sas_esd_download_table_body_cell_download_zip_button %}
-                                                <a class="btn btn-primary {% if isDisabledDownload %}disabled{% else %} {% if isReloadData %}js-esd-download-selector{% endif %}{% endif %}"
-                                                   href="{{ url('frontend.sas.esd.download', {esdOrderId: esdOrder.id}) }}">
-                                                    {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
-                                                </a>
-                                            {% endblock %}
-                                        {% else %}
-                                            {% block page_account_sas_esd_download_table_body_cell_toggle_button %}
-                                                <button class="btn btn-light btn-sm sas-esd-hide-btn collapsed"
-                                                        type="submit"
-                                                        data-toggle="collapse"
-                                                        data-target="#esdOrder{{ esdOrder.orderLineItem.order.orderNumber }}"
-                                                        aria-expanded="false">
-
-                                                    {% block page_account_sas_esd_download_table_body_cell_toggle_button_text %}
-                                                        <span class="sas-esd-hide-btn-text">{{ "sasEsd.account.downloadTable.hideFilesButton"|trans|sw_sanitize }}</span>
-                                                        <span class="sas-esd-view-btn-text">{{ "sasEsd.account.downloadTable.viewFilesButton"|trans|sw_sanitize }}</span>
-                                                    {% endblock %}
-                                                </button>
-                                            {% endblock %}
-                                        {% endif %}
+                                                {% block page_account_sas_esd_download_table_body_cell_toggle_button_text %}
+                                                    <span class="sas-esd-hide-btn-text">{{ "sasEsd.account.downloadTable.hideFilesButton"|trans|sw_sanitize }}</span>
+                                                    <span class="sas-esd-view-btn-text">{{ "sasEsd.account.downloadTable.viewFilesButton"|trans|sw_sanitize }}</span>
+                                                {% endblock %}
+                                            </button>
+                                        {% endblock %}
                                     {% endif %}
                                 </div>
                             {% endblock %}
@@ -166,9 +163,7 @@
                     {% endblock %}
                 </div>
 
-                {% if isEsdVideo == true %}
-                    {% sw_include '@SasEsd/storefront/page/account/downloads/video-table-detail.html.twig' %}
-                {% endif %}
+                {% sw_include '@SasEsd/storefront/page/account/downloads/video-table-detail.html.twig' %}
             </div>
         </div>
 

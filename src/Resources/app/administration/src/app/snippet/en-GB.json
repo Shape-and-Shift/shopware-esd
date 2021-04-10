@@ -2,7 +2,8 @@
     "global": {
         "businessEvents": {
             "esd_download_payment_status_paid": "ESD Download - Payment enters status paid",
-            "esd_serial_payment_status_paid": "ESD Serial - Payment enters status paid"
+            "esd_serial_payment_status_paid": "ESD Serial - Payment enters status paid",
+            "esd_download_disabled_zip_payment_status_paid" :  "ESD Download - Payment enters status paid with disabled zip"
         }
     }
 }
