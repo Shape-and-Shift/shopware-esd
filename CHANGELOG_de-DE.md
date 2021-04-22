@@ -1,3 +1,6 @@
+# 1.4.1
+* Korrigierte js-Kompressionsdatei für Version 1.4.0
+
 # 1.4.0
 * Deaktivieren der Komprimierung der Zip-Datei in der Plugin-Konfiguration hinzugefügt, um die Komprimierung der Zip-Datei deaktivieren zu können
 * Mail-Vorlage für den Mail-Download mit deaktivierter Komprimierung in der Zip-Datei hinzugefügt

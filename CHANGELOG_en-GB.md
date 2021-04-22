@@ -1,3 +1,6 @@
+# 1.4.1
+* Fixed js compress file for version 1.4.0
+
 # 1.4.0
 * Added disable compression to zip file into the plugin config to be able to disable compression to zip file
 * Add mail-template for the mail download with disable compression to zip file
