@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Subscriber;
 
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Service\EsdOrderService;
@@ -55,6 +56,7 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
         $this->esdOrderService = $esdOrderService;
         $this->systemConfigService = $systemConfigService;
         $this->eventDispatcher = $eventDispatcher;
+        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents()
@@ -102,6 +104,13 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
                 $event = new EsdSerialPaymentStatusPaidEvent($event->getContext(), $order, $templateData);
                 $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
             }
+
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)
+                && !empty($templateData['esdOrderLineItems'])) {
+                $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($event->getContext(), $order, $templateData);
+                $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
+            }
+
         }
     }
 

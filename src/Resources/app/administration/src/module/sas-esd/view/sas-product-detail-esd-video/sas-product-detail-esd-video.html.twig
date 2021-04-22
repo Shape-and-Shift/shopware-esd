@@ -74,7 +74,7 @@
                 </template>
 
                 <template #column-option="{ item, isInlineEdit }">
-                    <sw-select-field v-if="isInlineEdit && (item.media.fileExtension === 'mp4' || item.media.fileExtension === 'webp')"
+                    <sw-select-field v-if="isInlineEdit && (item.media.fileExtension.toLowerCase() === 'mp4' || item.media.fileExtension.toLowerCase() === 'webp')"
                                      class="sas-product-detail-esd__esd-list-select"
                                      size="small"
                                      :value="getEsdVideoOptionByMediaId(item)"

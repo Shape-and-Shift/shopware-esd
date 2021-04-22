@@ -1,3 +1,9 @@
+# 1.4.0
+* Deaktivieren der Komprimierung der Zip-Datei in der Plugin-Konfiguration hinzugefügt, um die Komprimierung der Zip-Datei deaktivieren zu können
+* Mail-Vorlage für den Mail-Download mit deaktivierter Komprimierung in der Zip-Datei hinzugefügt
+* Fehler bei der Identifizierung von ESD-Bestellungen behoben
+* Upload von Mediendateien behoben
+  
 # 1.3.3
 * Fehler der Bestellpositionen behoben, wodruch keine Email versendet worden ist.
 * Die lokale Sprache in der Download Tabellenspalte `Kaufdatum` auf der Seite `Account > Downloads` wurde angepasst.

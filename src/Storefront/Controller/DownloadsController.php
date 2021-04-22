@@ -78,21 +78,22 @@ class DownloadsController extends StorefrontController
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
 
-        $esdVideoMediaByEsdIds = [];
+        $esdMediaByEsdIds = [];
         $esdVideoByEsdIds = [];
-        if ($this->systemConfigService->get('SasEsd.config.isEsdVideo')) {
-            $esdIds = [];
-            /** @var EsdOrderEntity $esdOrder */
-            foreach ($esdOrdersCollection as $esdOrder) {
-                $esdIds[] = $esdOrder->getEsdId();
-            }
 
-            if (!empty($esdIds)) {
-                $esdVideoMediaByEsdIds = $this->esdService->getEsdVideoMediaByEsdIds($esdIds, $context->getContext());
+        $esdIds = [];
+        /** @var EsdOrderEntity $esdOrder */
+        foreach ($esdOrdersCollection as $esdOrder) {
+            $esdIds[] = $esdOrder->getEsdId();
+        }
 
+        if (!empty($esdIds)) {
+            $esdMediaByEsdIds = $this->esdService->getEsdMediaByEsdIds($esdIds, $context->getContext());
+
+            if ($this->systemConfigService->get('SasEsd.config.isEsdVideo')) {
                 $esdVideoIds = [];
-                foreach ($esdVideoMediaByEsdIds as $esdVideoMedia) {
-                    $esdVideoIds = array_merge($esdVideoIds, array_keys($esdVideoMedia));
+                foreach ($esdMediaByEsdIds as $esdMedia) {
+                    $esdVideoIds = array_merge($esdVideoIds, array_keys($esdMedia));
                 }
 
                 $esdVideoByEsdIds = $this->esdService->getEsdVideo(
@@ -102,13 +103,18 @@ class DownloadsController extends StorefrontController
             }
         }
 
+        $esdOrderIds = array_values($esdOrdersCollection->getIds());
+        $downloadLimitItems = $this->esdDownloadService->getDownloadRemainingItems($esdOrderIds, $context->getContext());
+
         return $this->renderStorefront(
             'storefront/page/account/downloads/index.html.twig',
             [
                 'page' => $page,
                 'esdOrders' => $esdOrders,
                 'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
-                'esdVideoMediaByEsdIds' => $esdVideoMediaByEsdIds,
+                'downloadLimitItems' => $downloadLimitItems,
+                'esdMediaByEsdIds' => $esdMediaByEsdIds,
+                'esdVideoMediaByEsdIds' => $esdMediaByEsdIds,
                 'esdVideoByEsdIds' => $esdVideoByEsdIds,
             ]
         );
@@ -130,6 +136,28 @@ class DownloadsController extends StorefrontController
             'page' => $page,
             'esdOrders' => $esdOrders,
             'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
+        ]);
+    }
+
+    /**
+     * @Route("/account/downloads/item/remaining", name="frontend.account.downloads.item-remaining", methods={"GET"}, options={"seo"="false"}, defaults={"XmlHttpRequest": true})
+     */
+    public function getItemDownloadRemaining(Request $request, SalesChannelContext $context): Response
+    {
+        $this->denyAccessUnlessLoggedIn();
+        $page = $this->genericLoader->load($request, $context);
+
+        $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
+        /** @var EsdOrderCollection $esdOrdersCollection */
+        $esdOrdersCollection = $esdOrders->getEntities();
+
+        $esdOrderIds = array_values($esdOrdersCollection->getIds());
+        $downloadRemainingItems = $this->esdDownloadService->getDownloadRemainingItems($esdOrderIds, $context->getContext());
+        return $this->renderStorefront('@Storefront/storefront/page/account/downloads/video-table-detail.html.twig', [
+            'page' => $page,
+            'esdOrders' => $esdOrders,
+            'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
+            'downloadLimitItems' => $downloadRemainingItems
         ]);
     }
 

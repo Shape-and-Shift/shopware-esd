@@ -85,7 +85,7 @@ Component.register('sas-product-detail-esd-video', {
     },
 
     methods: {
-        createMediaCollection() {
+        createEsdMediaCollection() {
             return new EntityCollection('/media', 'media', Shopware.Context.api);
         },
 
@@ -130,7 +130,7 @@ Component.register('sas-product-detail-esd-video', {
             this.esdMediaRepository.search(criteria, Shopware.Context.api).then((esdMedia) => {
                 this.product.extensions.esd.esdMedia = esdMedia;
 
-                const esdMediaList = this.createMediaCollection();
+                const esdMediaList = this.createEsdMediaCollection();
                 Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
                 esdMedia.forEach((esdMedia) => {
                     if (esdMedia.media.mediaType.name === 'VIDEO') {
@@ -173,7 +173,10 @@ Component.register('sas-product-detail-esd-video', {
                 return esdVideo.esdMediaId === item.id;
             });
 
-            if (foundEsdVideos.length >= 1 && (item.media.fileExtension === 'mp4' || item.media.fileExtension === 'webp')) {
+            if (foundEsdVideos.length >= 1 && (
+                item.media.fileExtension.toLowerCase() === 'mp4' ||
+                item.media.fileExtension.toLowerCase() === 'webp'
+            )) {
                 const esdVideo = foundEsdVideos[0];
 
                 return esdVideo.option.toString();
@@ -188,7 +191,9 @@ Component.register('sas-product-detail-esd-video', {
             });
 
             const option = parseInt(value);
-            if (esdMedia.media.fileExtension === 'mp4' || esdMedia.media.fileExtension === 'webp') {
+            if (
+                esdMedia.media.fileExtension.toLowerCase() === 'mp4' ||
+                esdMedia.media.fileExtension.toLowerCase() === 'webp') {
                 if (foundEsdVideos.length >= 1) {
                     const esdVideo = foundEsdVideos[0];
                     esdVideo.option = option;
@@ -200,7 +205,7 @@ Component.register('sas-product-detail-esd-video', {
         },
 
         async createNewEsdVideo(esdMedia, mediaItem, option) {
-            if (mediaItem.fileExtension === 'mp4' || mediaItem.fileExtension === 'webp') {
+            if (mediaItem.fileExtension.toLowerCase() === 'mp4' || mediaItem.fileExtension.toLowerCase() === 'webp') {
                 const esdVideo = this.esdVideoRepository.create(Shopware.Context.api);
                 esdVideo.esdMediaId = esdMedia.id;
                 esdVideo.option = option;
@@ -237,7 +242,7 @@ Component.register('sas-product-detail-esd-video', {
 
             this.product.extensions.esd.esdMedia.push(esdMedia);
 
-            if (mediaItem.fileExtension === 'mp4' || mediaItem.fileExtension === 'webp') {
+            if (mediaItem.fileExtension.toLowerCase() === 'mp4' || mediaItem.fileExtension.toLowerCase() === 'webp') {
                 await this.createNewEsdVideo(esdMedia, mediaItem, 0);
             }
 
@@ -263,7 +268,7 @@ Component.register('sas-product-detail-esd-video', {
         },
 
         getEsdMedia() {
-            const esdMedia = this.createMediaCollection();
+            const esdMedia = this.createEsdMediaCollection();
             Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMedia);
             this.product.extensions.esd.esdMedia.forEach((esdMedia) => {
                 if (esdMedia.media && esdMedia.mediaId) {

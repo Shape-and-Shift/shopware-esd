@@ -27,7 +27,8 @@ Component.register('sas-product-detail-esd', {
             uploadProcess: 0,
             fileNameUploading: '',
             isPublicMedia: true,
-            isEsdVideo: false
+            isEsdVideo: false,
+            isDisableZipFile: false
         };
     },
 
@@ -89,7 +90,7 @@ Component.register('sas-product-detail-esd', {
     methods: {
         createdComponent() {
             this.fetchMediaConfig();
-            this.fetchEsdVideoConfig();
+            this.fetchEsdConfig();
 
             if (this.product.id !== this.parentProduct.id) {
                 Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', false);
@@ -99,7 +100,7 @@ Component.register('sas-product-detail-esd', {
         },
 
         createMediaCollection() {
-            return new EntityCollection('/media', 'media', Shopware.Context.api);
+            return new EntityCollection('/esd-media', 'esd_media', Shopware.Context.api);
         },
 
         loadEsd() {
@@ -136,7 +137,7 @@ Component.register('sas-product-detail-esd', {
                 Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
                 esdMedia.forEach((esdMedia) => {
                     if (esdMedia.media.mediaType.name !== 'VIDEO') {
-                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
                     }
                 })
 
@@ -146,10 +147,22 @@ Component.register('sas-product-detail-esd', {
         },
 
         getMediaColumns() {
-            return [{
-                property: 'fileName',
-                label: 'sas-esd.media.fileName'
-            }];
+            let columns = [
+                {
+                    property: 'media.fileName',
+                    label: 'sas-esd.media.fileName'
+                }
+            ];
+
+            if (this.isDisableZipFile) {
+                columns.push({
+                    property: 'downloadLimit',
+                    label: 'sas-esd.media.downloadLimit',
+                    inlineEdit: 'string'
+                });
+            }
+
+            return columns;
         },
 
         async createEsdMediaAssoc(mediaItem) {
@@ -191,7 +204,7 @@ Component.register('sas-product-detail-esd', {
             this.product.extensions.esd.esdMedia.forEach((esdMedia) => {
                 if (esdMedia.media && esdMedia.mediaId) {
                     if (esdMedia.media.mediaType.name !== 'VIDEO') {
-                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia.media);
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
                     }
                 }
             });
@@ -249,16 +262,20 @@ Component.register('sas-product-detail-esd', {
             }
         },
 
-        fetchEsdVideoConfig() {
+        fetchEsdConfig() {
             this.systemConfigApiService.getValues('SasEsd.config')
                 .then(response => {
                     this.isEsdVideo = response['SasEsd.config.isEsdVideo'];
+                    this.isDisableZipFile = response['SasEsd.config.isDisableZipFile'];
                 });
         },
-
 
         onMediaUploadButtonOpenSidebar() {
             this.$root.$emit('sidebar-toggle-open');
         },
+
+        async onInlineEditSave(esdMedia) {
+            await this.esdMediaRepository.save(esdMedia, Shopware.Context.api);
+        }
     }
 })

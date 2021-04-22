@@ -1,3 +1,9 @@
+# 1.4.0
+* Added disable compression to zip file into the plugin config to be able to disable compression to zip file
+* Add mail-template for the mail download with disable compression to zip file
+* Fixed ESD order identification error
+* Fixed upload media files
+
 # 1.3.3
 * Fixed getting line items of an ESD order
 * Improved the language of `purchase date` column within account > downloads page

@@ -2,11 +2,14 @@
 
 namespace Sas\Esd\Service;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -25,6 +28,11 @@ class EsdDownloadService
     private $esdDownloadHistoryRepository;
 
     /**
+     * @var EntityRepositoryInterface
+     */
+    private $esdMediaDownloadHistoryRepository;
+
+    /**
      * @var SystemConfigService
      */
     private $systemConfigService;
@@ -32,10 +40,12 @@ class EsdDownloadService
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $esdDownloadHistoryRepository,
+        EntityRepositoryInterface $esdMediaDownloadHistoryRepository,
         SystemConfigService $systemConfigService
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdDownloadHistoryRepository = $esdDownloadHistoryRepository;
+        $this->esdMediaDownloadHistoryRepository = $esdMediaDownloadHistoryRepository;
         $this->systemConfigService = $systemConfigService;
     }
 
@@ -101,6 +111,62 @@ class EsdDownloadService
             [
                 'id' => $esdOrder->getId(),
                 'countDownload' => $esdOrder->getCountDownload() + 1,
+            ],
+        ], $context);
+    }
+
+    public function checkMediaDownloadHistory(
+        string $esdOrderId,
+        EsdMediaEntity $esdMedia,
+        EsdOrderEntity $esdOrder,
+        Context $context
+    ): void
+    {
+        // TODO Have to check should get from custom unlimited download or not
+        if ($esdOrder->getEsd()->getHasUnlimitedDownload()) {
+            return;
+        }
+
+        if (empty($esdMedia->getDownloadLimitNumber())) {
+            return;
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('esdOrderId', $esdOrderId));
+        $criteria->addFilter(new EqualsFilter('esdMediaId', $esdMedia->getId()));
+        $totalDownloaded = $this->esdMediaDownloadHistoryRepository->search($criteria, $context)->getTotal();
+        if ($totalDownloaded >= $esdMedia->getDownloadLimitNumber()) {
+            throw new NotFoundHttpException('You have limited downloads');
+        }
+    }
+
+    public function getDownloadRemainingItems(array $esdOrderIds, Context $context): array
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('esdOrderId', $esdOrderIds));
+        $downloadHistories = $this->esdMediaDownloadHistoryRepository->search($criteria, $context);
+
+        $mediaDownloadTotals = [];
+        /** @var EsdMediaDownloadHistoryEntity $downloadHistory */
+        foreach ($downloadHistories as $downloadHistory) {
+            if (empty($mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()])) {
+                $mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()] = 1;
+                continue;
+            }
+
+            $mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()] += 1;
+        }
+
+        return $mediaDownloadTotals;
+    }
+
+    public function addMediaDownloadHistory(string $orderLineItemId, string $esdMediaId, Context $context): void
+    {
+        $this->esdMediaDownloadHistoryRepository->create([
+            [
+                'id' => Uuid::randomHex(),
+                'esdOrderId' => $orderLineItemId,
+                'esdMediaId' => $esdMediaId,
             ],
         ], $context);
     }

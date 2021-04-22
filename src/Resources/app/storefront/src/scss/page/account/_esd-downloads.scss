@@ -97,4 +97,42 @@
         }
     }
 
+    .sas-esd-item-detail {
+        .esd-file-name {
+            @extend .col-10;
+            @extend .pl-0;
+        }
+
+        .esd-file-type,
+        .esd-file-download,
+        .esd-file-limit {
+            @extend .pl-3;
+            @extend .pr-3;
+        }
+
+        .sas-esd-item-detail-file-name {
+            @extend .col-md-10;
+        }
+
+        .sas-esd-item-download-button {
+            @extend .col-md-4;
+        }
+
+        .is-disable-zip {
+            &.sas-esd-item-download-button {
+                @extend .col-md-2;
+            }
+        }
+
+        &.is-show-download {
+            .esd-file-name {
+                @extend .col-6;
+            }
+
+            .sas-esd-item-detail-file-name {
+                @extend .col-md-6;
+                @extend .pr-1;
+            }
+        }
+    }
 }

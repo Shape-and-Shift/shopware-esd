@@ -14,9 +14,9 @@ use Shopware\Core\Framework\Event\MailActionInterface;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidEvent extends Event implements MailActionInterface, SalesChannelAware
+class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements MailActionInterface, SalesChannelAware
 {
-    public const EVENT_NAME = 'esd.download.payment.status.paid';
+    public const EVENT_NAME = 'esd.download.disabled.zip.payment.status.paid';
 
     /**
      * @var Context
@@ -53,15 +53,6 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements MailActionInter
         return $this->order;
     }
 
-    public function getEsdFiles(): array
-    {
-        if (empty($this->templateData['esdFiles'])) {
-            return [];
-        }
-
-        return $this->templateData['esdFiles'];
-    }
-
     public function getEsdOrderListIds(): array
     {
         if (empty($this->templateData['esdOrderListIds'])) {
@@ -71,11 +62,19 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements MailActionInter
         return $this->templateData['esdOrderListIds'];
     }
 
+    public function getEsdMediaFiles(): array
+    {
+        if (empty($this->templateData['esdMediaFiles'])) {
+            return [];
+        }
+
+        return $this->templateData['esdMediaFiles'];
+    }
+
     public static function getAvailableData(): EventDataCollection
     {
         return (new EventDataCollection())
             ->add('order', new EntityType(OrderDefinition::class))
-            ->add('esdFiles', new ArrayType(new ScalarValueType(ScalarValueType::TYPE_STRING)))
             ->add('esdOrderListIds', new ArrayType(new ScalarValueType(ScalarValueType::TYPE_STRING)))
             ->add('esdMediaFiles', new ArrayType(new ScalarValueType(ScalarValueType::TYPE_STRING)));
     }

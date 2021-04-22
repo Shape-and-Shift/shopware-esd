@@ -80,22 +80,26 @@ class EsdService
         $this->systemConfigService = $systemConfigService;
     }
 
-    public function compressFiles($productId): bool
+    public function compressFiles($productId): void
     {
+        if ($this->getSystemConfig('isDisableZipFile')) {
+            return;
+        }
+
         $esdMedia = $this->getEsdMediaByProductId($productId, Context::createDefaultContext());
         if (empty($esdMedia)) {
-            return false;
+            return;
         }
 
         if (!$this->checkExistAllFiles($esdMedia)) {
-            return false;
+            return;
         }
 
         $criteria = new Criteria([$productId]);
         /** @var ProductEntity $product */
         $product = $this->productRepository->search($criteria, Context::createDefaultContext())->first();
         if (empty($product)) {
-            return false;
+            return;
         }
 
         $outZipPath = $this->getPrivateFolder() . self::FOLDER_COMPRESS_NAME;
@@ -120,7 +124,7 @@ class EsdService
 
         $zip->close();
 
-        return true;
+        return;
     }
 
     public function getEsdMediaByProductId(string $productId, Context $context): ?EsdMediaCollection
@@ -144,6 +148,11 @@ class EsdService
 
     public function getEsdVideoMediaByEsdIds(array $esdIds, Context $context): array
     {
+        return $this->getEsdMediaByEsdIds($esdIds, $context);
+    }
+
+    public function getEsdMediaByEsdIds(array $esdIds, Context $context): array
+    {
         $criteria = new Criteria();
         $criteria->addAssociation('esdMedia.media');
         $criteria->addFilter(new EqualsAnyFilter('id', $esdIds));
@@ -156,10 +165,6 @@ class EsdService
         $esdMediaByEsdIds = [];
         /** @var EsdEntity $esd */
         foreach ($esdCollection as $esd) {
-            if (!$this->getSystemConfig('isEsdVideo')) {
-                continue;
-            }
-
             /** @var EsdMediaEntity $esdMedia */
             foreach ($esd->getEsdMedia() as $esdMedia) {
                 if (empty($esdMedia->getMedia())) {
@@ -194,6 +199,27 @@ class EsdService
 
     public function getVideoMedia(string $esdId, string $mediaId, Context $context): ?MediaEntity
     {
+        if ($this->getMedia($esdId, $mediaId, $context)) {
+            return $this->getMedia($esdId, $mediaId, $context)->getMedia();
+        }
+
+        return null;
+    }
+
+    public function getMediaByLineItemId(string $esdOrderId, Context $context): ?EsdOrderEntity
+    {
+        $criteria = new Criteria([$esdOrderId]);
+        $criteria->addAssociation('orderLineItem');
+        $criteria->addAssociation('esd');
+
+        /** @var EsdOrderEntity $esdOrder */
+        $esdOrder = $this->esdOrderRepository->search($criteria, $context)->first();
+
+        return $esdOrder;
+    }
+
+    public function getMedia(string $esdId, string $mediaId, Context $context): ?EsdMediaEntity
+    {
         $criteria = new Criteria();
         $criteria->addAssociation('esdMedia');
         $criteria->addFilter(new EqualsFilter('id', $esdId));
@@ -215,7 +241,7 @@ class EsdService
             return null;
         }
 
-        return $esdMedias->first()->getMedia();
+        return $esdMedias->first();
     }
 
     public function getPathVideoMedia(MediaEntity $media): string

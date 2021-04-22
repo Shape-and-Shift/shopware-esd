@@ -1,9 +1,9 @@
 {% block page_account_sas_esd_download_table_action_button %}
     {% set actionOption = 2 %}
-    {% if esdVideoMedia.media.fileExtension == 'mp4' or esdVideoMedia.media.fileExtension != 'webm' %}
-        {% if esdVideoByEsdIds[esdVideoMedia.id] %}
-            {% set esdVideo = esdVideoByEsdIds[esdVideoMedia.id] %}
-            {% set actionOption = esdVideo.option %}
+    {% if isEsdVideo and (esdMedia.media.fileExtension|lower == 'mp4' or esdMedia.media.fileExtension|lower == 'webm') %}
+        {% if esdMediaByEsdIds[esdOrder.esdId][esdMedia.id] %}
+            {% set esdMedia = esdMediaByEsdIds[esdOrder.esdId][esdMedia.id] %}
+            {% set actionOption = esdMedia.option %}
         {% endif %}
     {% endif %}
 
@@ -15,11 +15,11 @@
                             class="btn btn-primary esd-video-action-btn"
                             data-toggle="modal"
                             data-backdrop="static"
-                            data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}">
+                            data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}">
                         {{ "sasEsd.account.downloadTable.playButton"|trans|sw_sanitize }}
                     </button>
-                    <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}{% endif %}"
-                       href="{{ path('frontend.sas.esd.media.url', {'esdId': esdOrder.esdId, 'mediaId': esdVideoMedia.media.id }) }}">
+                    <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}js-esd-item-download-selector{% endif %}"
+                       href="{{ path('frontend.sas.lineItem.media.url', {'esdOrderId': esdOrder.id, 'mediaId': esdMedia.media.id }) }}">
                         {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
                     </a>
                 </div>
@@ -30,14 +30,14 @@
                         class="btn btn-primary esd-video-action-btn"
                         data-toggle="modal"
                         data-backdrop="static"
-                        data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}">
+                        data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}">
                     {{ "sasEsd.account.downloadTable.playButton"|trans|sw_sanitize }}
                 </button>
             {% endblock %}
         {% elseif actionOption == 2 %}
             {% block page_account_sas_esd_download_table_action_buttons_download %}
-                <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}{% endif %}"
-                   href="{{ path('frontend.sas.esd.media.url', {'esdId': esdOrder.esdId, 'mediaId': esdVideoMedia.media.id }) }}">
+                <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}js-esd-item-download-selector{% endif %}"
+                   href="{{ path('frontend.sas.lineItem.media.url', {'esdOrderId': esdOrder.id, 'mediaId': esdMedia.media.id }) }}">
                     {{ "sasEsd.account.downloadTable.downloadButton"|trans|sw_sanitize }}
                 </a>
             {% endblock %}
@@ -47,7 +47,7 @@
     {% block page_account_sas_esd_download_table_action_modal_esd_video %}
         {% if actionOption == 0 or actionOption == 1 %}
             <div class="modal fade esd-watch-video-modal"
-                 id="watchVideo{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}"
+                 id="watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}"
                  tabindex="-1"
                  role="dialog"
                  data-esd-video-player="true">
@@ -71,12 +71,11 @@
                         </div>
                         <div class="modal-body d-flex justify-content-center">
                             {% block page_account_sas_esd_download_table_action_modal_esd_video_player %}
-                                <video src="{{ path('frontend.sas.esd.video.url', {'esdId': esdOrder.esdId, 'mediaId': esdVideoMedia.media.id }) }}"
-                                       id="esd_video_{{ esdOrder.esdId }}_{{ esdVideoMedia.media.id }}"
+                                <video src="{{ path('frontend.sas.esd.video.url', {'esdId': esdOrder.esdId, 'mediaId': esdMedia.media.id }) }}"
+                                       id="esd_video_{{ esdOrder.esdId }}_{{ esdMedia.media.id }}"
                                        class="js-esd-player"
-                                       controls data-plyr-config='{ "title": "{{ esdVideoMedia.media.title }}" }'>
+                                       controls data-plyr-config='{ "title": "{{ esdMedia.media.title }}" }'>
                                 </video>
-
                             {% endblock %}
                         </div>
                     </div>

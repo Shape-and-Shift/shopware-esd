@@ -5,6 +5,7 @@ namespace Sas\Esd\Service;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
+use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -37,6 +38,7 @@ class EsdOrderService
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $esdSerialRepository,
         EsdService $esdService
+
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdSerialRepository = $esdSerialRepository;
@@ -113,6 +115,7 @@ class EsdOrderService
         $esdOrders = $this->esdOrderRepository->search($criteria, $context);
 
         $esdByLineItemIds = [];
+        $esdIds = [];
         /** @var EsdOrderEntity $esdOrder */
         foreach ($esdOrders->getEntities() as $esdOrder) {
             $esd = $esdOrder->getEsd();
@@ -122,6 +125,20 @@ class EsdOrderService
 
             $esdOrderLineItems[$esdOrder->getOrderLineItemId()] = $esdOrder->getOrderLineItem();
             $esdByLineItemIds[$esdOrder->getOrderLineItemId()] = $esd;
+            $esdIds[] = $esdOrder->getEsdId();
+        }
+
+        $templateData['esdMediaFiles'] = [];
+        $esdMedias = $this->esdService->getEsdMediaByEsdIds($esdIds, $context);
+        foreach ($esdOrders->getEntities() as $esdOrder) {
+            if (empty($esdMedias[$esdOrder->getEsdId()])) {
+                continue;
+            }
+
+            /** @var EsdMediaEntity $esdMedia */
+            foreach ($esdMedias[$esdOrder->getEsdId()] as $esdMedia) {
+                $templateData['esdMediaFiles'][$esdOrder->getId()][$esdMedia->getId()] = $esdMedia;
+            }
         }
 
         /** @var OrderLineItemEntity $orderLineItem */
@@ -147,9 +164,11 @@ class EsdOrderService
         $templateData['esdOrderLineItems'] = $esdOrderLineItems;
         $templateData['esdOrderListIds'] = $esdOrderListIds;
 
-        /** @var OrderLineItemEntity $lineItem */
-        foreach ($esdOrderLineItems as $lineItem) {
-            $templateData['esdFiles'][$lineItem->getProductId()] = $this->esdService->getFileSize($lineItem->getProductId());
+        if (!$this->esdService->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)) {
+            /** @var OrderLineItemEntity $lineItem */
+            foreach ($esdOrderLineItems as $lineItem) {
+                $templateData['esdFiles'][$lineItem->getProductId()] = $this->esdService->getFileSize($lineItem->getProductId());
+            }
         }
 
         $serialOfEsdOrders = $esdOrders->filter(function (EsdOrderEntity $esdOrderEntity) {
@@ -192,7 +211,7 @@ class EsdOrderService
             /** @var EsdEntity $esd */
             $esd = $lineItem->getProduct()->getExtension('esd');
             if (empty($esd)) {
-                return false;
+                continue;
             }
 
             $esdMedias = $esd->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) {

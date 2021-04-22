@@ -1,0 +1,23 @@
+Hallo {{order.orderCustomer.firstName}},
+vielen Dank für deine Bestellung.
+Nachstehend findest du die Details zu deinen digitalen Download mit der Bestellnummer {{order.orderNumber}}.
+
+{% set pos = 0 %}
+{% for lineItem in order.lineItems %}
+{% if lineItem.id in esdOrderListIds|keys %}
+{% set esdOrderIds = esdOrderListIds[lineItem.id] %}
+{% for esdOrderId in esdOrderIds %}
+{% set pos = pos + 1 %}
+Pos.: {{ pos }} | Name: {{ lineItem.label|u.wordwrap(80) }}
+Download links:
+{% for esdMedia in esdMediaFiles[esdOrderId] %}
+{% if order.orderCustomer.customer.guest %}
+    - {{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension}} | {{ rawUrl('frontend.sas.lineItem.media.url.guest', {esdOrderId: esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}
+{% else %}
+    - {{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension}} | {{ rawUrl('frontend.sas.lineItem.media.url', {esdOrderId: esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
