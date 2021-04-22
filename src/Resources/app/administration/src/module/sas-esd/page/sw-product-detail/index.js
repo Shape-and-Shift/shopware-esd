@@ -46,10 +46,6 @@ Component.override('sw-product-detail', {
             'isLoading'
         ]),
 
-        mediaRepository() {
-            return this.repositoryFactory.create('media');
-        },
-
         esdMediaRepository() {
             return this.repositoryFactory.create('sas_product_esd_media');
         },
