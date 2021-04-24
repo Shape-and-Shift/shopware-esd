@@ -70,15 +70,15 @@ class SasEsd extends Plugin
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
 
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
-        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd`');
-        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_order`');
-        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_serial`');
-        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_media`');
-        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_download_history`');
-        $connection->executeQuery('DROP TABLE IF EXISTS `sas_product_esd_video`');
-        $connection->executeUpdate('ALTER TABLE `product` DROP COLUMN `esd`');
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0;');
+        $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd_order`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd_serial`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd_media`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd_download_history`');
+        $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd_video`');
+        $connection->executeStatement('ALTER TABLE `product` DROP COLUMN `esd`');
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     private function rmdirRecursive($dir): void

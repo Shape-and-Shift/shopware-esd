@@ -2,19 +2,26 @@
 
 namespace Sas\Esd\Message;
 
-use Shopware\Core\Content\MailTemplate\Service\MailService;
+use Shopware\Core\Content\Mail\Service\MailService as MailService;
+use Shopware\Core\Content\MailTemplate\Service\MailService as MailServiceV63;
+
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 
 class SendMailHandler extends AbstractMessageHandler
 {
     /**
-     * @var MailService
+     * @var MailService|MailServiceV63|null
      */
     private $mailService;
 
-    public function __construct(MailService $mailService)
+    public function __construct(?MailService $mailService, ?MailServiceV63 $mailServiceV63)
     {
-        $this->mailService = $mailService;
+        if ($mailServiceV63) {
+            $this->mailService = $mailServiceV63;
+        } else {
+            $this->mailService = $mailService;
+        }
+
     }
 
     /**

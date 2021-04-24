@@ -71,6 +71,15 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements MailActionInter
         return $this->templateData['esdOrderListIds'];
     }
 
+    public function getEsdMediaFiles(): array
+    {
+        if (empty($this->templateData['esdMediaFiles'])) {
+            return [];
+        }
+
+        return $this->templateData['esdMediaFiles'];
+    }
+
     public static function getAvailableData(): EventDataCollection
     {
         return (new EventDataCollection())
