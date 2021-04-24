@@ -1,13 +1,21 @@
-name: Create zip
+name: PackPlugin
 on:
     push:
+        branches:
+            - master
         tags:
             - '*'
+
+env:
+    PLUGIN_NAME: SasEsd
+    ACCOUNT_USER: ${{ secrets.ACCOUNT_USER }}
+    ACCOUNT_PASSWORD: ${{ secrets.ACCOUNT_PASSWORD }}
+    PLUGIN_UPLOADER_VERSION: 0.3.2
 
 jobs:
     CreateZip:
         runs-on: ubuntu-latest
-        container: ghcr.io/friendsofshopware/platform-plugin-dev:v6.3.1
+        container: ghcr.io/friendsofshopware/platform-plugin-dev:v6.3.2
         steps:
             -   name: Get the version
                 id: get_version
@@ -16,17 +24,28 @@ jobs:
             -   name: Checkout
                 uses: actions/checkout@v2.3.1
                 with:
-                    path: SasEsd
+                    path: ${{ env.PLUGIN_NAME }}
 
             -   name: Build & create zip
                 run: |
-                    cp -r "./SasEsd" "/plugins/SasEsd"
-                    npm install --prefix /plugins/SasEsd/src/Resources/app/administration
-                    COMPOSER="composer-ci.json" composer install -d "/plugins/SasEsd" --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --no-suggest --optimize-autoloader --ignore-platform-reqs
+                    npm install --prefix "./${PLUGIN_NAME}/src/Resources/app/storefront/"
+                    npm install --prefix "./${PLUGIN_NAME}/src/Resources/app/administration/"
+                    cp -r "./${PLUGIN_NAME}" "/plugins/${PLUGIN_NAME}"
                     start-mysql
-                    pack-plugin "SasEsd"
+                    pack-plugin "${PLUGIN_NAME}"
+            -   name: Upload Artefact
+                uses: actions/upload-artifact@v2
+                with:
+                    name: ${{ env.PLUGIN_NAME }}
+                    path: ${{ env.PLUGIN_NAME }}.zip
 
-            -   name: Create Release
+            -   name: getPluginUploader
+                run: wget 'https://github.com/FriendsOfShopware/FroshPluginUploader/releases/download/${{ env.PLUGIN_UPLOADER_VERSION }}/frosh-plugin-upload.phar' -O frosh-plugin-upload.phar
+
+            -   name: Validate Zip
+                run: php frosh-plugin-upload.phar ext:validate $(pwd)/${PLUGIN_NAME}.zip
+
+            -   name: Create Release in github
                 if: startsWith(github.ref, 'refs/tags/')
                 id: create_release
                 uses: actions/create-release@v1.0.0
@@ -38,7 +57,7 @@ jobs:
                     draft: false
                     prerelease: false
 
-            -   name: Upload Release Asset
+            -   name: Upload Release Asset to github
                 if: startsWith(github.ref, 'refs/tags/')
                 id: upload_release_asset
                 uses: actions/upload-release-asset@v1.0.2
@@ -46,6 +65,6 @@ jobs:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
-                    asset_path: SasEsd.zip
-                    asset_name: SasEsd.zip
+                    asset_path: ${{ env.PLUGIN_NAME }}.zip
+                    asset_name: ${{ env.PLUGIN_NAME }}-${{ steps.get_version.outputs.VERSION }}.zip
                     asset_content_type: application/zip
