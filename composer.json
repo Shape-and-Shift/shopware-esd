@@ -30,8 +30,8 @@
             "en-GB":"ESD plugin"
         },
         "description": {
-            "en-GB": "The ESD / Download Plugin allows you to offer digital downloads and serial numbers in your Shopware 6 shop.",
-            "de-DE": "Das ESD / Download Plugin gibt dir die Möglichkeit in deinem Shopware 6 Shop digitale Downloads anzubieten sowie Seriennummern."
+            "en-GB": "The Shopware ESD / Digital Download Plugin gives you the possibility to sell digital downloads in your Shopware 6 store as well as serial numbers, which your customer can download.",
+            "de-DE": "Das Shopware ESD / Digital Download Plugin gibt dir die Möglichkeit in deinem Shopware 6 Shop digitale Downloads zu verkaufen sowie Seriennummern, welche dein Kunde downloaden kann."
         },
         "manufacturerLink": {
             "en-GB": "https://shapeandshift.dev",
