@@ -61,6 +61,9 @@ class EsdOrderService
                 /** @var EsdEntity $esd */
                 $esd = $product->getExtension('esd');
             } else {
+                if (!$orderLineItem->getProduct()) {
+                    continue;
+                }
                 /** @var EsdEntity $esd */
                 $esd = $orderLineItem->getProduct()->getExtension('esd');
             }
