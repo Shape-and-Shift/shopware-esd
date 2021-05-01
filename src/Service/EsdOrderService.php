@@ -211,6 +211,9 @@ class EsdOrderService
     public function isEsdOrder(OrderEntity $order): bool
     {
         foreach ($order->getLineItems() as $lineItem) {
+            if (!$lineItem->getProduct()) {
+                continue;
+            }
             /** @var EsdEntity $esd */
             $esd = $lineItem->getProduct()->getExtension('esd');
             if (empty($esd)) {
