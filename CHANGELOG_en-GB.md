@@ -1,3 +1,7 @@
+# 1.4.2
+* Upgraded to be compatible with version 6.4
+* Fixed send mail
+
 # 1.4.1
 * Fixed js compress file for version 1.4.0
 

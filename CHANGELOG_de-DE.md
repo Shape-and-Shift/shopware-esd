@@ -1,3 +1,7 @@
+# 1.4.2
+* Aktualisiert, um mit Version 6.4 kompatibel zu sein.
+* Mail senden behoben
+
 # 1.4.1
 * Korrigierte js-Kompressionsdatei für Version 1.4.0
 

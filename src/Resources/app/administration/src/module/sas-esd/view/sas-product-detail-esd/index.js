@@ -236,8 +236,10 @@ Component.register('sas-product-detail-esd', {
         },
 
         onDeleteSelectedMedia() {
-            Object.keys(this.selectedItems).forEach((mediaId) => {
-                this.onDeleteMediaItem(mediaId);
+            Object.values(this.selectedItems).forEach((item) => {
+                if (item.media && item.media.id) {
+                    this.onDeleteMediaItem(item.media.id);
+                }
             });
         },
 

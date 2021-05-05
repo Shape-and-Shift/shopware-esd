@@ -28,7 +28,7 @@
                           :allowColumnEdit="true"
                           :allowInlineEdit="true"
                           :compactMode="false"
-                          @selection-change="onSelectionChanged"
+                          @selection-change="(esdMedia) => onSelectionChanged(esdMedia)"
                           @inline-edit-save="onInlineEditSave"
                           :isLoading="isStoreLoading || isLoading">
                 <template #preview-fileName="{ item }">
@@ -53,7 +53,7 @@
                 </template>
 
                 <template #actions="{ item }">
-                    <sw-context-menu-item variant="danger" @click="onDeleteMediaItem(item.id)">
+                    <sw-context-menu-item variant="danger" @click="onDeleteMediaItem(item.media.id)">
                         {{ $tc('global.default.delete') }}
                     </sw-context-menu-item>
                 </template>
