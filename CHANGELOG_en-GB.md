@@ -1,3 +1,6 @@
+# 1.5.0
+* Updated to remove the api version in the router
+
 # 1.4.2
 * Upgraded to be compatible with version 6.4
 * Fixed send mail

@@ -27,7 +27,7 @@ class EsdSendMailController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/esd-mail/download", name="api.action.sas-esd.send-mail-download", methods={"POST"})
+     * @Route("/api/esd-mail/download", name="api.action.sas-esd.send-mail-download", methods={"POST"})
      */
     public function sendMailDownload(Request $request, Context $context): Response
     {
@@ -42,7 +42,7 @@ class EsdSendMailController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/esd-mail/serial", name="api.action.sas-esd.send-mail-serial", methods={"POST"})
+     * @Route("/api/esd-mail/serial", name="api.action.sas-esd.send-mail-serial", methods={"POST"})
      */
     public function sendMailSerial(Request $request, Context $context): Response
     {
@@ -57,7 +57,7 @@ class EsdSendMailController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/esd-mail/{orderId}/buttons", name="api.action.sas-esd.mail-buttons", methods={"GET"})
+     * @Route("/api/esd-mail/{orderId}/buttons", name="api.action.sas-esd.mail-buttons", methods={"GET"})
      */
     public function getAllowMailButtons(string $orderId, Context $context): JsonResponse
     {

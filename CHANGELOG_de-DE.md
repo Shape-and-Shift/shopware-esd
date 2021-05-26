@@ -1,3 +1,6 @@
+# 1.5.0
+* Aktualisiert, um die Api-Version im Router zu entfernen
+
 # 1.4.2
 * Aktualisiert, um mit Version 6.4 kompatibel zu sein.
 * Mail senden behoben

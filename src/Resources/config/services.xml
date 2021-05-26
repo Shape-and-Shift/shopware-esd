@@ -86,6 +86,9 @@
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
@@ -95,10 +98,16 @@
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Sas\Esd\Api\Controller\EsdSendMailController" public="true">
             <argument type="service" id="Sas\Esd\Service\EsdMailService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <!-- Language Snippets -->
