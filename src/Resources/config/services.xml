@@ -152,8 +152,7 @@
 
         <!-- Message -->
         <service id="Sas\Esd\Message\SendMailHandler">
-            <argument type="service" id="Shopware\Core\Content\MailTemplate\Service\MailService" on-invalid="null"/>
-            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService" on-invalid="null"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
             <tag name="messenger.message_handler"/>
         </service>
 
