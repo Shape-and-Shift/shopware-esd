@@ -19,26 +19,16 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class EsdOrderService
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdOrderRepository;
+    private EntityRepositoryInterface $esdOrderRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdSerialRepository;
+    private EntityRepositoryInterface $esdSerialRepository;
 
-    /**
-     * @var EsdService
-     */
-    private $esdService;
+    private EsdService $esdService;
 
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $esdSerialRepository,
         EsdService $esdService
-
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->esdSerialRepository = $esdSerialRepository;

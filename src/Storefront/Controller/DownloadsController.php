@@ -24,30 +24,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DownloadsController extends StorefrontController
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdOrderRepository;
+    private EntityRepositoryInterface $esdOrderRepository;
 
-    /**
-     * @var EsdService
-     */
-    private $esdService;
+    private EsdService $esdService;
 
-    /**
-     * @var EsdDownloadService
-     */
-    private $esdDownloadService;
+    private EsdDownloadService $esdDownloadService;
 
-    /**
-     * @var GenericPageLoaderInterface
-     */
-    private $genericLoader;
+    private GenericPageLoaderInterface $genericLoader;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
@@ -65,8 +50,6 @@ class DownloadsController extends StorefrontController
 
     /**
      * @Route("/account/downloads", name="frontend.account.downloads.page", options={"seo"="false"}, methods={"GET"})
-     *
-     * @throws CustomerNotLoggedInException
      */
     public function getAccountDownloads(Request $request, SalesChannelContext $context): Response
     {
@@ -153,17 +136,15 @@ class DownloadsController extends StorefrontController
 
         $esdOrderIds = array_values($esdOrdersCollection->getIds());
         $downloadRemainingItems = $this->esdDownloadService->getDownloadRemainingItems($esdOrderIds, $context->getContext());
+
         return $this->renderStorefront('@Storefront/storefront/page/account/downloads/video-table-detail.html.twig', [
             'page' => $page,
             'esdOrders' => $esdOrders,
             'downloadLimits' => $this->esdDownloadService->getLimitDownloadNumberList($esdOrdersCollection),
-            'downloadLimitItems' => $downloadRemainingItems
+            'downloadLimitItems' => $downloadRemainingItems,
         ]);
     }
 
-    /**
-     * @throws CustomerNotLoggedInException
-     */
     protected function denyAccessUnlessLoggedIn(bool $allowGuest = false): void
     {
         /** @var RequestStack $requestStack */

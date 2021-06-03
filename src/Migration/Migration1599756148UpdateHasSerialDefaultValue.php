@@ -14,7 +14,7 @@ class Migration1599756148UpdateHasSerialDefaultValue extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             ALTER TABLE `sas_product_esd`
             ALTER `has_serial` SET DEFAULT \'0\'
         ');

@@ -14,7 +14,7 @@ class Migration1603995725CreateEsdVideoEntity extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             CREATE TABLE IF NOT EXISTS `sas_product_esd_video` (
               `id` binary(16) NOT NULL,
               `esd_media_id` binary(16) NOT NULL,

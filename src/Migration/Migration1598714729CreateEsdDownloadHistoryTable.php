@@ -14,7 +14,7 @@ class Migration1598714729CreateEsdDownloadHistoryTable extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             CREATE TABLE IF NOT EXISTS `sas_product_esd_download_history` (
                 `id` binary(16) NOT NULL,
                 `esd_order_id` binary(16) NOT NULL,

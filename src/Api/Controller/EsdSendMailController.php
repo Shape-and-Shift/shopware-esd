@@ -16,10 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class EsdSendMailController extends AbstractController
 {
-    /**
-     * @var EsdMailService
-     */
-    private $esdMailService;
+    private EsdMailService $esdMailService;
 
     public function __construct(EsdMailService $esdMailService)
     {

@@ -17,25 +17,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EsdDownloadService
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdOrderRepository;
+    private EntityRepositoryInterface $esdOrderRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdDownloadHistoryRepository;
+    private EntityRepositoryInterface $esdDownloadHistoryRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdMediaDownloadHistoryRepository;
+    private EntityRepositoryInterface $esdMediaDownloadHistoryRepository;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
@@ -120,9 +108,7 @@ class EsdDownloadService
         EsdMediaEntity $esdMedia,
         EsdOrderEntity $esdOrder,
         Context $context
-    ): void
-    {
-        // TODO Have to check should get from custom unlimited download or not
+    ): void {
         if ($esdOrder->getEsd()->getHasUnlimitedDownload()) {
             return;
         }
@@ -151,10 +137,11 @@ class EsdDownloadService
         foreach ($downloadHistories as $downloadHistory) {
             if (empty($mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()])) {
                 $mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()] = 1;
+
                 continue;
             }
 
-            $mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()] += 1;
+            ++$mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()];
         }
 
         return $mediaDownloadTotals;

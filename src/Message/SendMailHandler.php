@@ -3,7 +3,6 @@
 namespace Sas\Esd\Message;
 
 use Shopware\Core\Content\Mail\Service\MailService;
-
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 
 class SendMailHandler extends AbstractMessageHandler
