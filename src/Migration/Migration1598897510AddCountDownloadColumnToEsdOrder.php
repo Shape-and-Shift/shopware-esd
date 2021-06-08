@@ -14,7 +14,7 @@ class Migration1598897510AddCountDownloadColumnToEsdOrder extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             ALTER TABLE `sas_product_esd_order`
             ADD COLUMN `count_download` INT(11) NOT NULL DEFAULT 0 AFTER `serial_id`
         ');

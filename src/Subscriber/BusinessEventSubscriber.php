@@ -11,17 +11,14 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BusinessEventSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var BusinessEventCollector
-     */
-    private $businessEventCollector;
+    private BusinessEventCollector $businessEventCollector;
 
     public function __construct(BusinessEventCollector $businessEventCollector)
     {
         $this->businessEventCollector = $businessEventCollector;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             BusinessEventCollectorEvent::NAME => 'onRegisterEvent',

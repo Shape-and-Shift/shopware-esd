@@ -12,7 +12,7 @@ use Twig\TwigFunction;
 
 class EsdExtension extends AbstractExtension
 {
-    private $esdRepository;
+    private EntityRepositoryInterface $esdRepository;
 
     public function __construct(EntityRepositoryInterface $esdRepository)
     {

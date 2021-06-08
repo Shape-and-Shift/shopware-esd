@@ -28,7 +28,7 @@ class Migration1597597704CreateEsdMediaTable extends MigrationStep
                 REFERENCES `media` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
-        $connection->exec($query);
+        $connection->executeStatement($query);
     }
 
     public function updateDestructive(Connection $connection): void

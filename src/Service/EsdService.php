@@ -27,40 +27,19 @@ class EsdService
 {
     public const FOLDER_COMPRESS_NAME = 'esd-compress';
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdProductRepository;
+    private EntityRepositoryInterface $esdProductRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdOrderRepository;
+    private EntityRepositoryInterface $esdOrderRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
+    private EntityRepositoryInterface $productRepository;
 
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
-    /**
-     * @var FilesystemInterface
-     */
-    private $filesystemPrivate;
+    private FilesystemInterface $filesystemPrivate;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdVideoRepository;
+    private EntityRepositoryInterface $esdVideoRepository;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepositoryInterface $esdProductRepository,
@@ -123,8 +102,6 @@ class EsdService
         }
 
         $zip->close();
-
-        return;
     }
 
     public function getEsdMediaByProductId(string $productId, Context $context): ?EsdMediaCollection
@@ -321,7 +298,7 @@ class EsdService
 
     public function getPrivateFolder(): string
     {
-        return dirname(__DIR__, 5) . '/files/';
+        return \dirname(__DIR__, 5) . '/files/';
     }
 
     public function getFileSize(string $productId): string

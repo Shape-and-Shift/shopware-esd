@@ -9,10 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ProductSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var EsdService
-     */
-    private $esdService;
+    private EsdService $esdService;
 
     public function __construct(EsdService $esdService)
     {

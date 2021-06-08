@@ -41,12 +41,15 @@ class SasEsd extends Plugin
         /** @var EntityRepositoryInterface $mailTemplateRepository */
         $mailTemplateRepository = $this->container->get('mail_template.repository');
 
+        /** @var EntityRepositoryInterface $eventActionRepository */
+        $eventActionRepository = $this->container->get('event_action.repository');
         (new InstallUninstall(
             $mailTemplateTypeRepository,
-            $mailTemplateRepository
+            $mailTemplateRepository,
+            $eventActionRepository
         ))->uninstall($context->getContext());
 
-        $dirCompress = dirname(__DIR__, 4) . '/files/' . EsdService::FOLDER_COMPRESS_NAME;
+        $dirCompress = \dirname(__DIR__, 4) . '/files/' . EsdService::FOLDER_COMPRESS_NAME;
         if (is_dir($dirCompress)) {
             $this->rmdirRecursive($dirCompress);
         }
@@ -70,7 +73,7 @@ class SasEsd extends Plugin
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
 
-        if (method_exists($connection,'executeStatement')) {
+        if (method_exists($connection, 'executeStatement')) {
             $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0;');
             $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd`');
             $connection->executeStatement('DROP TABLE IF EXISTS `sas_product_esd_order`');

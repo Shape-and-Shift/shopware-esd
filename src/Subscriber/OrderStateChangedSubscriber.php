@@ -56,10 +56,9 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
         $this->esdOrderService = $esdOrderService;
         $this->systemConfigService = $systemConfigService;
         $this->eventDispatcher = $eventDispatcher;
-        $this->systemConfigService = $systemConfigService;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'state_enter.order_transaction.state.paid' => 'orderStatePaid',
@@ -78,9 +77,9 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($this->esdOrderService->isEsdOrder($order) &&
-            !empty($order->getLineItems()) &&
-            $order->getAmountTotal() > 0
+        if ($this->esdOrderService->isEsdOrder($order)
+            && !empty($order->getLineItems())
+            && $order->getAmountTotal() > 0
         ) {
             $orderLineItemIds = array_filter($order->getLineItems()->fmap(static function (OrderLineItemEntity $orderLineItem) {
                 return $orderLineItem->getId();
@@ -110,7 +109,6 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
                 $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($event->getContext(), $order, $templateData);
                 $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
             }
-
         }
     }
 

@@ -3,7 +3,7 @@
 namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1617469293CreateMediaDownload extends MigrationStep
@@ -16,7 +16,7 @@ class Migration1617469293CreateMediaDownload extends MigrationStep
     public function update(Connection $connection): void
     {
         try {
-            $connection->executeUpdate('
+            $connection->executeStatement('
                 ALTER TABLE `sas_product_esd_media`
                 ADD COLUMN `download_limit_number` INT(11) DEFAULT NULL AFTER `media_id`
             ');
@@ -24,7 +24,7 @@ class Migration1617469293CreateMediaDownload extends MigrationStep
         }
 
         try {
-            $connection->executeUpdate('
+            $connection->executeStatement('
                 CREATE TABLE IF NOT EXISTS `sas_product_esd_media_download_history` (
                     `id` binary(16) NOT NULL,
                     `esd_order_id` binary(16) NOT NULL,
@@ -38,7 +38,7 @@ class Migration1617469293CreateMediaDownload extends MigrationStep
                         REFERENCES `sas_product_esd_media` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ');
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
         }
     }
 

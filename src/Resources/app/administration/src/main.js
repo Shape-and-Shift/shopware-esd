@@ -11,29 +11,3 @@ Application.addServiceProvider('esdSendMailService', (container) => {
 
     return new EsdSendMailService(initContainer.httpClient, container.loginService);
 });
-
-Shopware.Module.register('sas-esd-tab', {
-    routeMiddleware(next, currentRoute) {
-        if (currentRoute.name === 'sw.product.detail') {
-            currentRoute.children.push({
-                name: 'sas.product.detail.esd',
-                path: '/sw/product/detail/:id/esd',
-                component: 'sas-product-detail-esd',
-                meta: {
-                    parentPath: "sw.product.index"
-                }
-            });
-
-            currentRoute.children.push({
-                name: 'sas.product.detail.esd.video',
-                path: '/sw/product/detail/:id/esd-video',
-                component: 'sas-product-detail-esd-video',
-                meta: {
-                    parentPath: "sw.product.index"
-                }
-            });
-        }
-        next(currentRoute);
-    }
-});
-

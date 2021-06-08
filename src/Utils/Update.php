@@ -38,7 +38,7 @@ class Update
         $query->where($query->expr()->isNotNull('media_id'));
         $query->from(EsdDefinition::ENTITY_NAME);
 
-        $esdList = $query->execute()->fetchAll();
+        $esdList = $query->execute()->fetchAllAssociative();
         foreach ($esdList as $esd) {
             $id = Uuid::fromHexToBytes(Uuid::randomHex());
             $connection->insert(EsdMediaDefinition::ENTITY_NAME, [

@@ -35,7 +35,7 @@ class EsdMediaDownloadHistoryDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->setFlags(new Required(), new PrimaryKey()),
             (new FkField('esd_order_id', 'esdOrderId', EsdOrderDefinition::class))->addFlags(new Required()),
-            (new FkField('esd_media_id', 'esdMediaId', EsdMediaDefinition::class))->addFlags(new Required())
+            (new FkField('esd_media_id', 'esdMediaId', EsdMediaDefinition::class))->addFlags(new Required()),
         ]);
     }
 }

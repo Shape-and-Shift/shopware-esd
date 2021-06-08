@@ -4,10 +4,7 @@ namespace Sas\Esd\Message;
 
 class SendMailMessage
 {
-    /**
-     * @var array
-     */
-    private $mail = [];
+    private array $mail = [];
 
     public function setMail(array $mail): void
     {

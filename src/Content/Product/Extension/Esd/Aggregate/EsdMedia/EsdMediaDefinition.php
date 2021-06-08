@@ -44,7 +44,7 @@ class EsdMediaDefinition extends EntityDefinition
             (new FkField('media_id', 'mediaId', MediaDefinition::class)),
             (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
 
-            new IntField('download_limit_number', 'downloadLimitNumber')
+            new IntField('download_limit_number', 'downloadLimitNumber'),
         ]);
     }
 }

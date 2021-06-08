@@ -16,25 +16,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EsdMailService
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
+    private EntityRepositoryInterface $orderRepository;
 
-    /**
-     * @var EsdService
-     */
-    private $esdOrderService;
+    private EsdOrderService $esdOrderService;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         EntityRepositoryInterface $orderRepository,
@@ -92,7 +80,7 @@ class EsdMailService
 
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
-        /** @var OrderLineItemEntity $lineItem */
+        /* @var OrderLineItemEntity $lineItem */
         if (!$order) {
             return $buttons;
         }

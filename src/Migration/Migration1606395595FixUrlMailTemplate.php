@@ -18,18 +18,18 @@ class Migration1606395595FixUrlMailTemplate extends MigrationStep
         $templateTypeId = $connection->executeQuery(
             'SELECT `id` from `mail_template_type` WHERE `technical_name` = :type',
             ['type' => EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_TECHNICAL_NAME]
-        )->fetchColumn();
+        )->fetchOne();
 
         $templateId = $connection->executeQuery(
             'SELECT `id` from `mail_template` WHERE `mail_template_type_id` = :typeId',
             ['typeId' => $templateTypeId]
-        )->fetchColumn();
+        )->fetchOne();
 
         if (!empty($templateId)) {
             $mailTemplateTranslations = $connection->executeQuery(
                 'SELECT `language_id`, `content_html`, `content_plain` from `mail_template_translation` WHERE `mail_template_id` = :templateId',
                 ['templateId' => $templateId]
-            )->fetchAll();
+            )->fetchAllAssociative();
 
             foreach ($mailTemplateTranslations as $mailTemplateTranslation) {
                 $contentHtml = $this->replaceUrlToRawUrl($mailTemplateTranslation['content_html']);
@@ -50,7 +50,7 @@ class Migration1606395595FixUrlMailTemplate extends MigrationStep
         UPDATE `mail_template_translation`
         SET `content_html` = :contentHtml, `content_plain` = :contentPlain
         WHERE `mail_template_id`= :templateId AND `language_id` = :langId';
-        $connection->executeUpdate($sqlString, [
+        $connection->executeStatement($sqlString, [
             'contentHtml' => $contentHtml,
             'contentPlain' => $contentPlain,
             'templateId' => $templateId,

@@ -3,7 +3,7 @@
 namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Content\MailTemplate\MailTemplateActions;
 use Shopware\Core\Defaults;
@@ -85,7 +85,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
             $connection
         );
 
-        if (!in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
+        if (!\in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
             $connection->insert(
                 'mail_template_type_translation',
                 [
@@ -159,7 +159,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
             'language_id' => $germanLanguageId,
         ];
 
-        if (!in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
+        if (!\in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
             $connection->insert(
                 'mail_template_translation',
                 $englishMailTemplate + ['language_id' => $defaultLanguageId]
@@ -184,7 +184,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
     private function fetchTemplateTypeId(string $technicalName, Connection $connection): ?string
     {
         try {
-            return (string) $connection->fetchColumn(
+            return (string) $connection->fetchOne(
                 'SELECT `id`
             FROM `mail_template_type`
             WHERE `technical_name` = :technical_name LIMIT 1;',
@@ -192,7 +192,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
                     'technical_name' => $technicalName,
                 ]
             );
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -200,7 +200,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
     private function fetchTemplateId(string $templateTypeId, Connection $connection): ?string
     {
         try {
-            return (string) $connection->fetchColumn(
+            return (string) $connection->fetchOne(
                 'SELECT `id`
             FROM `mail_template`
             WHERE `mail_template_type_id` = :mail_template_type_id LIMIT 1',
@@ -208,7 +208,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
                     'mail_template_type_id' => $templateTypeId,
                 ]
             );
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -216,11 +216,11 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
     private function fetchLanguageIdByName(string $languageName, Connection $connection): ?string
     {
         try {
-            return (string) $connection->fetchColumn(
+            return (string) $connection->fetchOne(
                 'SELECT id FROM `language` WHERE `name` = :languageName',
                 ['languageName' => $languageName]
             );
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

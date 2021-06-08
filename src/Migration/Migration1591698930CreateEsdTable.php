@@ -3,7 +3,7 @@
 namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\InheritanceUpdaterTrait;
@@ -21,7 +21,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             CREATE TABLE IF NOT EXISTS `sas_product_esd` (
               `id` binary(16) NOT NULL,
               `product_id` binary(16) NOT NULL,
@@ -38,7 +38,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
-        $connection->executeUpdate('
+        $connection->executeStatement('
         CREATE TABLE IF NOT EXISTS `sas_product_esd_order` (
               `id` binary(16) NOT NULL,
               `esd_id` binary(16) NOT NULL,
@@ -53,7 +53,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
-        $connection->executeUpdate('
+        $connection->executeStatement('
         CREATE TABLE IF NOT EXISTS `sas_product_esd_serial` (
           `id` binary(16) NOT NULL,
           `esd_id` binary(16) NOT NULL,
@@ -75,7 +75,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'entity' => EsdDefinition::ENTITY_NAME,
                 'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
         }
 
         $mediaFolderConfigurationId = Uuid::randomBytes();
@@ -88,7 +88,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'private' => 0,
                 'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
         }
 
         try {
@@ -99,7 +99,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'name' => 'ESD Media',
                 'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
         }
 
         $this->updateInheritance($connection, 'product', 'esd');

@@ -20,25 +20,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderPlacedSubscriber
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
+    private EntityRepositoryInterface $productRepository;
 
-    /**
-     * @var EsdOrderService
-     */
-    private $esdOrderService;
+    private EsdOrderService $esdOrderService;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         EntityRepositoryInterface $productRepository,

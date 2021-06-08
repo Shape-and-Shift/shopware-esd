@@ -28,35 +28,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class StreamDownloadController extends StorefrontController
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $esdOrderRepository;
+    private EntityRepositoryInterface $esdOrderRepository;
 
-    /**
-     * @var FilesystemInterface
-     */
-    private $filesystemPrivate;
+    private FilesystemInterface $filesystemPrivate;
 
-    /**
-     * @var FilesystemInterface
-     */
-    private $filesystemPublic;
+    private FilesystemInterface $filesystemPublic;
 
-    /**
-     * @var EsdService
-     */
-    private $esdService;
+    private EsdService $esdService;
 
-    /**
-     * @var EsdDownloadService
-     */
-    private $esdDownloadService;
+    private EsdDownloadService $esdDownloadService;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
@@ -91,8 +73,6 @@ class StreamDownloadController extends StorefrontController
 
     /**
      * @Route("/esd/download/guest/{esdOrderId}", name="frontend.sas.esd.download.guest", options={"seo"="false"}, methods={"GET"})
-     *
-     * @return Response
      */
     public function downloadByGuest(SalesChannelContext $context, string $esdOrderId): Response
     {
@@ -106,8 +86,6 @@ class StreamDownloadController extends StorefrontController
 
     /**
      * @Route("/esd/item/{esdOrderId}/{mediaId}", name="frontend.sas.lineItem.media.url", options={"seo"="false"}, methods={"GET"})
-     *
-     * @return StreamedResponse
      */
     public function streamMediaLineItemByUser(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
@@ -118,8 +96,6 @@ class StreamDownloadController extends StorefrontController
 
     /**
      * @Route("/esd/item/guest/{esdOrderId}/{mediaId}", name="frontend.sas.lineItem.media.url.guest", options={"seo"="false"}, methods={"GET"})
-     *
-     * @return StreamedResponse
      */
     public function streamMediaLineItemByGuest(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
@@ -129,6 +105,70 @@ class StreamDownloadController extends StorefrontController
         }
 
         return $this->streamMediaLineItem($context, $esdOrderId, $mediaId);
+    }
+
+    /**
+     * @Route("/esd/video/{esdId}/{mediaId}", name="frontend.sas.esd.video.url", options={"seo"="false"}, methods={"GET"})
+     */
+    public function streamVideo(SalesChannelContext $context, string $esdId, string $mediaId): ?StreamedResponse
+    {
+        $this->denyAccessUnlessLoggedIn();
+
+        $esdVideoPath = $this->esdService->getVideoMedia($esdId, $mediaId, $context->getContext());
+        if (empty($esdVideoPath)) {
+            throw new NotFoundHttpException('Esd video cannot be found');
+        }
+
+        $response = $this->mediaProcess($esdVideoPath);
+        $response->headers->set('Content-Type', $esdVideoPath->getMimeType());
+
+        return $response;
+    }
+
+    public function getEsdOrder(string $esdId, SalesChannelContext $context): EsdOrderEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('orderLineItem.order');
+        $criteria->addAssociation('esd');
+        $criteria->addFilter(new EqualsFilter('esdId', $esdId));
+        $criteria->addFilter(
+            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId())
+        );
+
+        /** @var EsdOrderEntity $esdOrder */
+        $esdOrder = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
+
+        return $esdOrder;
+    }
+
+    /**
+     * @throws CustomerNotLoggedInException
+     */
+    protected function denyAccessUnlessLoggedIn(bool $allowGuest = false): void
+    {
+        /** @var RequestStack $requestStack */
+        $requestStack = $this->get('request_stack');
+        $request = $requestStack->getCurrentRequest();
+
+        if (!$request) {
+            throw new CustomerNotLoggedInException();
+        }
+
+        /** @var SalesChannelContext|null $context */
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+
+        if (
+            $context
+            && $context->getCustomer()
+            && (
+                $allowGuest === true
+                || $context->getCustomer()->getGuest() === false
+            )
+        ) {
+            return;
+        }
+
+        throw new CustomerNotLoggedInException();
     }
 
     private function streamMediaLineItem(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
@@ -162,60 +202,11 @@ class StreamDownloadController extends StorefrontController
         return $response;
     }
 
-    /**
-     * @Route("/esd/video/{esdId}/{mediaId}", name="frontend.sas.esd.video.url", options={"seo"="false"}, methods={"GET"})
-     *
-     * @return StreamedResponse
-     */
-    public function streamVideo(SalesChannelContext $context, string $esdId, string $mediaId): ?StreamedResponse
-    {
-        $this->denyAccessUnlessLoggedIn();
-
-        $esdVideoPath = $this->esdService->getVideoMedia($esdId, $mediaId, $context->getContext());
-        if (empty($esdVideoPath)) {
-            throw new NotFoundHttpException('Esd video cannot be found');
-        }
-
-        $response = $this->mediaProcess($esdVideoPath);
-        $response->headers->set('Content-Type', $esdVideoPath->getMimeType());
-
-        return $response;
-    }
-
-    /**
-     * @throws CustomerNotLoggedInException
-     */
-    protected function denyAccessUnlessLoggedIn(bool $allowGuest = false): void
-    {
-        /** @var RequestStack $requestStack */
-        $requestStack = $this->get('request_stack');
-        $request = $requestStack->getCurrentRequest();
-
-        if (!$request) {
-            throw new CustomerNotLoggedInException();
-        }
-
-        /** @var SalesChannelContext|null $context */
-        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-
-        if (
-            $context
-            && $context->getCustomer()
-            && (
-                $allowGuest === true
-                || $context->getCustomer()->getGuest() === false
-            )
-        ) {
-            return;
-        }
-
-        throw new CustomerNotLoggedInException();
-    }
-
     private function mediaProcess(MediaEntity $media): ?StreamedResponse
     {
         $fileSystem = $this->filesystemPublic;
         $path = $this->esdService->getPathVideoMedia($media);
+
         return new StreamedResponse(function () use ($fileSystem, $path): void {
             $outputStream = fopen('php://output', 'rb');
             $fileStream = $fileSystem->readStream($path);
@@ -259,21 +250,5 @@ class StreamDownloadController extends StorefrontController
         readfile($path);
 
         return $response;
-    }
-
-    public function getEsdOrder(string $esdId, SalesChannelContext $context): EsdOrderEntity
-    {
-        $criteria = new Criteria();
-        $criteria->addAssociation('orderLineItem.order');
-        $criteria->addAssociation('esd');
-        $criteria->addFilter(new EqualsFilter('esdId', $esdId));
-        $criteria->addFilter(
-            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId())
-        );
-
-        /** @var EsdOrderEntity $esdOrder */
-        $esdOrder = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
-
-        return $esdOrder;
     }
 }
