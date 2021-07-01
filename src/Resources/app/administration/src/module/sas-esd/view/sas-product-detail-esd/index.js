@@ -69,7 +69,55 @@ Component.register('sas-product-detail-esd', {
 
         productRepository() {
             return this.repositoryFactory.create('product');
-        }
+        },
+
+        productCriteria() {
+            const criteria = new Criteria();
+
+            criteria.getAssociation('media')
+                .addSorting(Criteria.sort('position', 'ASC'));
+
+            criteria.getAssociation('properties')
+                .addSorting(Criteria.sort('name', 'ASC'));
+
+            criteria.getAssociation('prices')
+                .addSorting(Criteria.sort('quantityStart', 'ASC', true));
+
+            criteria.getAssociation('tags')
+                .addSorting(Criteria.sort('name', 'ASC'));
+
+            criteria.getAssociation('seoUrls')
+                .addFilter(Criteria.equals('isCanonical', true));
+
+            criteria.getAssociation('crossSellings')
+                .addSorting(Criteria.sort('position', 'ASC'))
+                .getAssociation('assignedProducts')
+                .addSorting(Criteria.sort('position', 'ASC'))
+                .addAssociation('product')
+                .getAssociation('product')
+                .addAssociation('options.group');
+
+            criteria
+                .addAssociation('cover')
+                .addAssociation('categories')
+                .addAssociation('visibilities.salesChannel')
+                .addAssociation('options')
+                .addAssociation('configuratorSettings.option')
+                .addAssociation('unit')
+                .addAssociation('productReviews')
+                .addAssociation('seoUrls')
+                .addAssociation('mainCategories')
+                .addAssociation('options.group')
+                .addAssociation('customFieldSets')
+                .addAssociation('featureSet')
+                .addAssociation('cmsPage')
+                .addAssociation('featureSet');
+
+            criteria.getAssociation('manufacturer')
+                .addAssociation('media');
+
+            return criteria;
+        },
     },
 
     watch: {
@@ -113,14 +161,26 @@ Component.register('sas-product-detail-esd', {
                     /* if not, create the relationship, so extensions.esd is available */
                     const esdExtension = this.esdRepository.create(this.context);
                     esdExtension.productId = this.product.id;
+                    esdExtension.hasSerial = false;
                     this.product.extensions.esd = esdExtension;
-                    this.isLoading = false;
+
+                    this.productRepository.save(this.product, Shopware.Context.api).then(() => {
+                        this.loadProduct();
+                        this.isLoading = false;
+                    });
                 }
             }
 
             if (typeof this.product.extensions.esd !== 'undefined') {
                 this.isLoadedEsd = true;
             }
+        },
+
+        loadProduct() {
+            this.productRepository.get(this.product.id, Shopware.Context.api, this.productCriteria)
+                .then((res) => {
+                    Shopware.State.commit('swProductDetail/setProduct', res);
+                });
         },
 
         loadMedia() {
@@ -278,6 +338,6 @@ Component.register('sas-product-detail-esd', {
 
         async onInlineEditSave(esdMedia) {
             await this.esdMediaRepository.save(esdMedia, Shopware.Context.api);
-        }
+        },
     }
 })

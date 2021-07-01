@@ -78,16 +78,16 @@
 
         <sw-card :title="$tc('sas-esd.serialModal.title')"
                  v-if="esdMedia">
-            <sw-switch-field :disabled="esdMedia.length === 0"
-                             :label="$tc('sas-esd.serialModal.serialSwitch')"
-                             v-model="product.extensions.esd.hasSerial">
-            </sw-switch-field>
+            <sw-switch-field
+                :label="$tc('sas-esd.serialModal.serialSwitch')"
+                v-model="product.extensions.esd.hasSerial"
+            />
 
             <div v-if="product.extensions.esd.hasSerial"
                  class="sas-esd-serial-overview">
                 <sas-esd-serial-overview
                     @serial-open="openModal('serialModal')"
-                ></sas-esd-serial-overview>
+                />
             </div>
         </sw-card>
 
