@@ -1,3 +1,6 @@
+# 1.5.1
+* Paginierung für Serien hinzugefügt und Auswahl für Massenlöschung hinzugefügt.
+
 # 1.5.0
 * Aktualisiert, um die Api-Version im Router zu entfernen
 

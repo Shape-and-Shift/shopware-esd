@@ -65,6 +65,12 @@
                 "placeholder": "Neue Zeile für jede Seriennummer"
             }
         },
+        "serial": {
+            "messageDeleteSuccess": "Die Auswahlserie wurde gelöscht.",
+            "messageDeleteError": "Die Selektionsserie konnte nicht gelöscht werden.",
+            "deleteModalTitle": "Löschbestätigung",
+            "deleteModalMessage": "Wollen Sie diese Serie wirklich löschen?"
+        },
         "downloadLimit": {
             "title": "Download Limit",
             "customLimitToggle": "Benutzerdefiniertes Download Limit",

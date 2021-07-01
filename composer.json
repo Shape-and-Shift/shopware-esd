@@ -3,7 +3,7 @@
     "description":"ESD / Download plugin",
     "type":"shopware-platform-plugin",
     "keywords": ["esd", "download"],
-    "version":"1.5.0",
+    "version":"1.5.1",
     "license":"proprietary",
     "authors":[
         {

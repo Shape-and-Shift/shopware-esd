@@ -66,6 +66,12 @@
                 "placeholder": "New line for each serial number"
             }
         },
+        "serial": {
+            "messageDeleteSuccess": "The Selection series has been deleted.",
+            "messageDeleteError": "The Selection series could not be deleted.",
+            "deleteModalTitle": "Delete confirmation",
+            "deleteModalMessage": "Do you really want to delete this serials?"
+        },
         "downloadLimit": {
             "title": "Download limit",
             "customLimitToggle": "Custom download limit",
