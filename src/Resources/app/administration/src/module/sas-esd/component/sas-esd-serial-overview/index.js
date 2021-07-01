@@ -11,7 +11,8 @@ Component.register('sas-esd-serial-overview', {
     inject: ['repositoryFactory'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
+        Mixin.getByName('listing'),
     ],
 
     data() {
@@ -19,19 +20,22 @@ Component.register('sas-esd-serial-overview', {
             serials: [],
             activeModal: "",
             showDeleteModal: false,
+            showDeleteListModal: false,
             modalLoading: false,
-            csv: []
+            sortBy: 'serial',
+            sortDirection: 'ASC',
+            csv: [],
         };
     },
 
     computed: {
         ...mapState('swProductDetail', [
             'product',
-            'variants'
+            'variants',
         ]),
 
         ...mapGetters('swProductDetail', [
-            'isLoading'
+            'isLoading',
         ]),
 
         esdSerialRepository() {
@@ -43,35 +47,44 @@ Component.register('sas-esd-serial-overview', {
                 {
                     property: 'serial',
                     label: 'Serial',
-                    allowResize: true
+                    allowResize: true,
+                    sortable: true,
                 },
                 {
                     property: 'customer',
                     label: 'Assigned client',
-                    allowResize: true
+                    allowResize: true,
+                    sortable: true,
                 }
             ];
         },
     },
 
     created() {
-        this.getSerials();
+        this.getList();
     },
 
     methods: {
+        getList()  {
+            this.getSerials();
+        },
+
         getSerials() {
-            const criteria = new Criteria(1, 10);
+            const criteria = new Criteria(this.page, this.limit);
+            criteria.setTerm(this.term);
             criteria.addFilter(Criteria.equals('esdId', this.product.extensions.esd.id));
+            criteria.addSorting(Criteria.sort(this.sortBy, this.sortDirection));
             criteria.addAssociation('esdOrder.orderLineItem.order.orderCustomer');
 
             this.esdSerialRepository.search(criteria, Shopware.Context.api).then((serials) => {
+                this.total = serials.total;
                 this.serials = serials;
             });
         },
 
         updateSerials() {
             this.activeModal = '';
-            this.getSerials();
+            this.getList();
         },
 
         onEsdDelete(item) {
@@ -90,12 +103,47 @@ Component.register('sas-esd-serial-overview', {
                 this.modalLoading = false;
 
                 this.createNotificationSuccess({
-                    title: this.$tc('sw-product.variations.generatedListTitleDeleteError'),
-                    message: this.$tc('sw-product.variations.generatedListMessageDeleteSuccess')
+                    message: this.$tc('sas-esd.serial.messageDeleteSuccess'),
                 });
 
-                this.getSerials();
+                this.getList();
+            }).catch(() => {
+                this.modalLoading = false;
+
+                this.createNotificationError({
+                    message: this.$tc('sas-esd.serial.messageDeleteError'),
+                });
             });
+        },
+
+        onConfirmDeleteItems() {
+            const promises = [];
+            this.modalLoading = true;
+            this.showDeleteListModal = false;
+
+            Object.values(this.selectedItems).forEach((selectedItem) => {
+                promises.push(this.esdSerialRepository.delete(selectedItem.id, Shopware.Context.api));
+            });
+
+            return Promise.all(promises).then(() => {
+                this.modalLoading = false;
+
+                this.createNotificationSuccess({
+                    message: this.$tc('sas-esd.serial.messageDeleteSuccess'),
+                });
+
+                this.getList();
+            }).catch(() => {
+                this.modalLoading = false;
+
+                this.createNotificationError({
+                    message: this.$tc('sas-esd.serial.messageDeleteError'),
+                });
+            });
+        },
+
+        onSelectionChanged(selection) {
+            this.selectedItems = selection;
         },
 
         openModal(value) {

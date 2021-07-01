@@ -26,6 +26,10 @@
                 :columns="serialColumns"
                 :isLoading="isLoading"
                 :showSettings="true"
+                :sortBy="sortBy"
+                :sortDirection="sortDirection"
+                @column-sort="onSortColumn"
+                @selection-change="onSelectionChanged"
                 identifier="sas-esd-overview">
 
                 {% block sw_product_variants_overview_data_grid_column_stock %}
@@ -42,11 +46,11 @@
                 <template slot="action-modals" slot-scope="{ item }">
                     <sw-modal v-if="showDeleteModal === item.id"
                               @modal-close="onCloseDeleteModal"
-                              :title="$tc('sw-product.variations.generatedListDeleteModalTitle')"
+                              :title="$tc('sas-esd.serial.deleteModalTitle')"
                               variant="small">
 
                         <p class="sw-product-variants-overview__modal--confirm-delete-text">
-                            {{ $tc('sw-product.variations.generatedListDeleteModalMessage') }}
+                            {{ $tc('sas-esd.serial.deleteModalMessage') }}
                         </p>
 
                         <template slot="modal-footer">
@@ -54,15 +58,47 @@
                                 <sw-button @click="onCloseDeleteModal"
                                            size="small"
                                            :disabled="modalLoading">
-                                    {{ $tc('sw-product.variations.generatedListDeleteModalButtonCancel') }}
+                                    {{ $tc('global.default.cancel') }}
                                 </sw-button>
                                 <sw-button @click="onConfirmDelete(item)"
                                            variant="primary"
                                            size="small"
                                            :disabled="modalLoading">
-                                    {{ $tc('sw-product.variations.generatedListDeleteModalButtonDelete') }}
+                                    {{ $tc('global.default.delete') }}
                                 </sw-button>
                             {% endblock %}
+                        </template>
+                    </sw-modal>
+                </template>
+
+                <template #bulk-modals>
+                    <sw-modal v-if="showDeleteListModal"
+                              key="modalDeleteList"
+                              :title="$tc('sas-esd.serial.deleteModalTitle')"
+                              @modal-close="onCloseDeleteModal"
+                              variant="small">
+
+                        <p class="sw-product-variants-overview__modal--confirm-delete-text">
+                            {{ $tc('sas-esd.serial.deleteModalMessage') }}
+                        </p>
+
+                        <template #modal-footer>
+                            <slot name="bulk-modal-cancel">
+                                <sw-button @click="showDeleteListModal = false"
+                                           size="small"
+                                           :disabled="modalLoading">
+                                    {{ $tc('global.default.cancel') }}
+                                </sw-button>
+                            </slot>
+
+                            <slot name="bulk-modal-delete-items">
+                                <sw-button @click="onConfirmDeleteItems()"
+                                           variant="primary"
+                                           size="small"
+                                           :disabled="modalLoading">
+                                    {{ $tc('global.default.delete') }}
+                                </sw-button>
+                            </slot>
                         </template>
                     </sw-modal>
                 </template>
@@ -79,8 +115,7 @@
                 {% endblock %}
 
                 {% block ssas_esd_serial_overview_data_grid_pagination %}
-                <!--
-                    <template slot="pagination">
+                    <template #pagination>
                         <sw-pagination :page="page"
                                        :limit="limit"
                                        :total="total"
@@ -88,12 +123,15 @@
                                        @page-change="onPageChange">
                         </sw-pagination>
                     </template>
-                    -->
                 {% endblock %}
 
+                <template #bulk>
+                    <a class="link link-danger" @click="showDeleteListModal = true">
+                        {{ $tc('global.default.delete') }}
+                    </a>
+                </template>
             </sw-data-grid>
         {% endblock %}
-
     </div>
 
     {% block sas_esd_serial_overview_empty_state %}

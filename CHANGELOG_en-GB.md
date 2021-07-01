@@ -1,3 +1,6 @@
+# 1.5.1
+* Added pagination for serials and added bulk delete selection.
+
 # 1.5.0
 * Updated to remove the api version in the router
 
