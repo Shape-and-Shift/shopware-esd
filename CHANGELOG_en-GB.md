@@ -1,5 +1,7 @@
 # 1.5.1
 * Added pagination for serials and added bulk delete selection.
+* Bump lodash from 4.17.20 to 4.17.21 
+* Missing compiled JS storefront files are now served
 
 # 1.5.0
 * Updated to remove the api version in the router

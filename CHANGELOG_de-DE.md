@@ -1,5 +1,7 @@
 # 1.5.1
 * Paginierung für Serien hinzugefügt und Auswahl für Massenlöschung hinzugefügt.
+* Bump lodash from 4.17.20 to 4.17.21 
+* Missing compiled JS storefront files are now served
 
 # 1.5.0
 * Aktualisiert, um die Api-Version im Router zu entfernen
