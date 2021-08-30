@@ -111,6 +111,102 @@ Full **POST** example to the endpoint `/api/v2/sas-product-esd-serial`:
  <img src="https://res.cloudinary.com/dtgdh7noz/image/upload/v1593785530/Bildschirmfoto_2020-07-03_um_16.58.39_df5vpr.png">
 </details>
 
+## Add your digital media to the product
+To add the digital media to the product, we will use the [Bulk Edit API](https://shopware.stoplight.io/docs/admin-api/adminapi.json/paths/~1_action~1sync/post) to do it.
+
+First, we need to upload a media file if it doesn't exist in our store, you can take a look at the Admin-API how to add a media file [here](https://shopware.stoplight.io/docs/admin-api/docs/guides/media-handling.md#upload-the-resource-directly).
+
+After finished adding the media you've got the mediaId, we will use it to add to the product through the Bulk Edit API with my example below.
+
+Full **POST** example to the endpoint `/api/_action/syncl`:
+```
+[
+  {
+    "key": "write",
+    "action": "upsert",
+    "entity": "product",
+    "payload": [
+      {
+        "id": "d930fd29db604957bc18f98530e06c47",
+        "versionId": "0fa91ce3e96a4bc2be4bd9ce752c3425",
+        "esd": {
+          "id": "4b3f70ce628949fcb6d4e8a2d295f5cc",
+          "esdMedia": [
+            {
+              "mediaId": "01bb489a85e14f1085cf814c110f5f85"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
+```
+Explain:
+- `payload.id` is productId
+- `payload.versionId` is product.versionId
+- `esd.id` is the esd id of this product, and if your product doesn't have it, you can generate a new one
+- `esd.esdMedia.mediaId` is the media ID you want to add to the product
+
+<details>
+ <summary>So a fully working request would look like this example with testing tool</summary>
+ <img src="https://res.cloudinary.com/dlp4wd3ng/image/upload/v1630293471/Screenshot_from_2021-08-30_10-16-32_iukiwm.png">
+</details>
+
+<details>
+  <summary>A practice for creating a product with digital media attached</summary>
+  <pre><code>[
+  {
+    "key": "write",
+    "action": "upsert",
+    "entity": "product",
+    "payload": [
+      {
+        "id": "d47aa1700fa248e5b147861c54aab3f5",
+        "taxId": "c4ccbc056e41461bbd0f07a1f68d7013",
+        "featureSetId": "4a6d48155744418e889cdc6ba132df79",
+        "price": [
+          {
+            "currencyId": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
+            "net": 84.033613445378,
+            "linked": true,
+            "gross": 100
+          }
+        ],
+        "productNumber": "SW10000",
+        "stock": 100,
+        "active": true,
+        "purchasePrices": [
+          {
+            "currencyId": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
+            "net": 0,
+            "linked": true,
+            "gross": 0
+          }
+        ],
+        "name": "esd product",
+        "visibilities": [
+          {
+            "id": "8480748ab62a43e89d674eef687c8bab",
+            "productId": "d47aa1700fa248e5b147861c54aab3f5",
+            "salesChannelId": "f864c45dcb0c4e8bba36287f9bd29a0a",
+            "visibility": 30
+          }
+        ],
+        "esd": {
+          "id": "7921470085d740ec88f0daa912a93d70",
+          "esdMedia": [
+            {
+              "mediaId": "01bb489a85e14f1085cf814c110f5f85"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]</code></pre>
+</details>
+
 ## Re-Send ESD mail for an order
 In version `1.2.11` we added the ability to send the ESD mail again from an order.
 Just go to your order and scroll a bit down until the **ESD Mail Service** section,
@@ -130,3 +226,4 @@ You will find now two new business events from the ESD plugin.
 
 ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1607271463/ESD%20Docs/Bildschirmfoto_2020-12-06_um_18.11.02_bkgm2p.png)
 *Business events sales channel*
+
