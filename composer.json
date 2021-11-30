@@ -13,7 +13,7 @@
         }
     ],
     "require":{
-        "shopware/core": "~6.4.0",
+        "shopware/core": "~6.4.6",
         "shopware/storefront":"*"
     },
     "autoload":{
