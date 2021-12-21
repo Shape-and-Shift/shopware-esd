@@ -1,6 +1,7 @@
 # 1.5.2
 * Die Ereignisdatei wurde aktualisiert, damit sie mit dem Flow Builder der Shopware-Plattformversion >= 6.4.6 kompatibel ist.
-
+* Import der Kernbibliotheken behoben
+* 
 # 1.5.1
 * Paginierung für Serien hinzugefügt und Auswahl für Massenlöschung hinzugefügt.
 * Bump lodash from 4.17.20 to 4.17.21 

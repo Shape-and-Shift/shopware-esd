@@ -1,12 +1,7 @@
-import { UploadEvents } from 'src/core/service/api/media.api.service';
-import { UploadEventProcess } from '../../../../core/service/api/sas.media.api.service'
+import { UploadEventProcess } from '../../../../core/service/api/sas.media.api.service';
+import { UploadEvents } from '../../../../core/service/api/sas.media.api.service';
 
-const { Component, Mixin, Context } = Shopware;
-const utils = Shopware.Utils;
-
-/**
- * @private
- */
+const { Component, Mixin, Context, Utils } = Shopware;
 
 function isIllegalFileNameException(error) {
     return error.response.data.errors.some((err) => {
@@ -58,7 +53,7 @@ Component.register('sas-upload-listener', {
 
     data() {
         return {
-            id: utils.createId(),
+            id: Utils.createId(),
             notificationId: null
         };
     },

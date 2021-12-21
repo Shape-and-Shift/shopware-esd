@@ -1,5 +1,6 @@
 # 1.5.2
 * Updated events file to compatible with the flow builder of shopware platform version >= 6.4.6.
+* Fixed import of the core libraries
 
 # 1.5.1
 * Added pagination for serials and added bulk delete selection.
