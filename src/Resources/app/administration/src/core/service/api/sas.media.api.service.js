@@ -1,9 +1,14 @@
-import { fileReader, array } from 'src/core/service/util.service';
-import ApiService from 'src/core/service/api.service';
-import MediaApiService  from 'src/core/service/api/media.api.service';
-import { UploadEvents } from 'src/core/service/api/media.api.service';
-
+const ApiService = Shopware.Classes.ApiService;
+const MediaApiService = Shopware.ApiService.getByName('mediaService');
+const { fileReader, array } = Shopware.Utils;
 const UploadEventProcess = 'media-upload-process';
+
+export const UploadEvents = {
+    UPLOAD_ADDED: 'media-upload-add',
+    UPLOAD_FINISHED: 'media-upload-finish',
+    UPLOAD_FAILED: 'media-upload-fail',
+    UPLOAD_CANCELED: 'media-upload-cancel',
+};
 
 /**
  * Gateway for the API end point "media"
