@@ -1,6 +1,6 @@
 {% block page_account_sas_esd_download_table %}
-    {% set isEsdVideo = shopware.config.SasEsd.config.isEsdVideo %}
-    {% set isDisableZipFile = shopware.config.SasEsd.config.isDisableZipFile %}
+    {% set isEsdVideo = config('SasEsd.config.isEsdVideo') %}
+    {% set isDisableZipFile = config('SasEsd.config.isDisableZipFile') %}
 
     {% for esdOrder in esdOrders %}
         {% set videoCount = 0 %}

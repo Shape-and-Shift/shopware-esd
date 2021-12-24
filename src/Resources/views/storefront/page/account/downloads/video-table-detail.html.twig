@@ -1,6 +1,6 @@
 {% block page_account_sas_esd_download_item_detail_overview %}
-    {% set isEsdVideo = shopware.config.SasEsd.config.isEsdVideo %}
-    {% set isDisableZipFile = shopware.config.SasEsd.config.isDisableZipFile %}
+    {% set isEsdVideo = config('SasEsd.config.isEsdVideo') %}
+    {% set isDisableZipFile = config('SasEsd.config.isDisableZipFile') %}
 
     {% set isShowDownload = false %}
     {% if isDisableZipFile %}
@@ -99,7 +99,7 @@
                     {% endif %}
                 </div>
 
-                {% if not shopware.config.SasEsd.config.isDisableZipFile %}
+                {% if not isDisableZipFile %}
                     <div class="sas-esd-detail-content-footer">
                         <div class="sas-esd-item-detail-footer">
                             <div class="row no-gutters">
