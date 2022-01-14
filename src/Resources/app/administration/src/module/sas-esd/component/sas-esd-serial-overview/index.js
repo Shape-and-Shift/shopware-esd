@@ -51,7 +51,7 @@ Component.register('sas-esd-serial-overview', {
                     sortable: true,
                 },
                 {
-                    property: 'customer',
+                    property: 'esdOrder.orderLineItem.order.orderCustomer.firstName',
                     label: 'Assigned client',
                     allowResize: true,
                     sortable: true,
