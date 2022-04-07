@@ -2,15 +2,8 @@
     {% parent %}
 
     <sw-tabs-item
-        v-if="!isShowTheEsdVideo"
         :route="{ name: 'sas.product.detail.esd', params: { id: $route.params.id } }"
         :title="$tc('sas-esd.general.tabLabel')">
-        {{ $tc('sas-esd.general.tabLabel') }}
-    </sw-tabs-item>
-    <sw-tabs-item
-        v-else
-        :route="{ name: 'sas.product.detail.esd.video', params: { id: $route.params.id } }"
-        :title="$tc('sas-esd.general.videoTabLabel')">
         {{ $tc('sas-esd.general.tabLabel') }}
     </sw-tabs-item>
 {% endblock %}
