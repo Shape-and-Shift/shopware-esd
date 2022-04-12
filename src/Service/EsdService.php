@@ -86,8 +86,7 @@ class EsdService
             mkdir($outZipPath, 0777);
         }
 
-        $zip = new \ZipArchive();
-        $zip->open($this->getCompressFile($productId), \ZipArchive::OVERWRITE | \ZipArchive::CREATE);
+        $zipFiles = [];
 
         foreach ($esdMedia as $media) {
             if (empty($media->getMedia())) {
@@ -97,11 +96,19 @@ class EsdService
             $filePath = $this->urlGenerator->getRelativeMediaUrl($media->getMedia());
             $folderName = $this->convertFileName($product->getName());
             $localName = $folderName . '/' . $media->getMedia()->getFileName() . '.' . $media->getMedia()->getFileExtension();
-
-            $zip->addFile($filePath, $localName);
+            $zipFiles[$filePath] = $localName;
         }
 
-        $zip->close();
+        if (count($zipFiles) > 0) {
+            $zip = new \ZipArchive();
+            $zip->open($this->getCompressFile($productId), \ZipArchive::OVERWRITE | \ZipArchive::CREATE);
+
+            foreach ($zipFiles as $filePath => $localName) {
+                $zip->addFile($filePath, $localName);
+            }
+
+            $zip->close();
+        }
     }
 
     public function getEsdMediaByProductId(string $productId, Context $context): ?EsdMediaCollection
@@ -308,11 +315,11 @@ class EsdService
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
 
         return number_format(
-            $size / pow(1024, $power),
-            2,
-            '.',
-            ','
-        ) . ' ' . $units[$power];
+                $size / pow(1024, $power),
+                2,
+                '.',
+                ','
+            ) . ' ' . $units[$power];
     }
 
     public function getSystemConfig(string $name): bool
