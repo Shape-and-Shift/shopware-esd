@@ -33,7 +33,7 @@
                 identifier="sas-esd-overview">
 
                 {% block sw_product_variants_overview_data_grid_column_stock %}
-                    <template slot="column-customer" slot-scope="{ item }">
+                    <template slot="column-esdOrder.orderLineItem.order.orderCustomer.firstName" slot-scope="{ item }">
                         <span v-if="item.esdOrder">
                             <router-link :to="{ name: 'sw.customer.detail', params: { id: item.esdOrder.orderLineItem.order.orderCustomer.customerId } }">
                                 {{ item.esdOrder.orderLineItem.order.orderCustomer.firstName }} {{ item.esdOrder.orderLineItem.order.orderCustomer.lastName }}
