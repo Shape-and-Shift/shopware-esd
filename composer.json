@@ -14,11 +14,17 @@
     ],
     "require":{
         "shopware/core": "~6.4.6",
-        "shopware/storefront":"*"
+        "shopware/storefront":"*",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload":{
         "psr-4":{
             "Sas\\Esd\\":"src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sas\\Esd\\Tests\\":"tests/PHPUnit/"
         }
     },
     "extra":{
