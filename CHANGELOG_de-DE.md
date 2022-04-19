@@ -1,5 +1,6 @@
 # 1.5.3
 * Behoben, um die Seriennummern nach zugewiesenem Client sortieren zu können.
+* Problem mit der Rücknahme von Anzeigen behoben.
 * 
 # 1.5.2
 * Events wurden aktualisiert, damit sie mit dem Flow Builder der Shopware-Plattformversion >= 6.4.6 kompatibel sind.

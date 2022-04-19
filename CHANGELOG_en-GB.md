@@ -1,5 +1,6 @@
 # 1.5.3
 * Fixed to be able to sort the serials by Assigned client
+* Fixed issue of show withdrawal
 
 # 1.5.2
 * Updated events file to compatible with the flow builder of shopware platform version >= 6.4.6.
