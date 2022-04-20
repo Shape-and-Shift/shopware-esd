@@ -110,6 +110,10 @@
             "changeButton": "Change",
             "closeButton": "Cancel",
             "messageChangeSuccess": "Your change has been completed"
+        },
+        "orderStatusChange": {
+            "errorTitle": "Change status failed",
+            "errorMessage": "Please add more serial keys."
         }
     }
 }

@@ -1,0 +1,30 @@
+{% sw_extends '@Storefront/storefront/component/delivery-information.html.twig' %}
+
+{% block component_delivery_information %}
+    {# @var product \Shopware\Core\Content\Product\ProductEntity #}
+    {% if page is defined and page.product is defined %}
+        {% set product = page.product %}
+    {% endif %}
+
+    {% set productEsd = product.extensions.esd %}
+
+    {% if productEsd is null or (productEsd and (not productEsd.hasSerial or productEsd.serial is null)) %}
+        {{ parent() }}
+    {% else %}
+        {% set totalSerialAvailable = productEsd.serial|filter(item => item.esdOrder is null)|length %}
+
+        {% if productEsd.serial|length <= 0 or totalSerialAvailable > 0 %}
+            {{ parent() }}
+        {% else %}
+            {% block component_delivery_information_serial_soldout %}
+                <div class="product-delivery-information">
+                    <link itemprop="availability" href="http://schema.org/LimitedAvailability"/>
+                    <p class="delivery-information delivery-soldout">
+                        <span class="delivery-status-indicator bg-danger"></span>
+                        {{ "detail.soldOut"|trans|sw_sanitize }}
+                    </p>
+                </div>
+            {% endblock %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

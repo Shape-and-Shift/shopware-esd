@@ -110,6 +110,19 @@
             </call>
         </service>
 
+        <service id="Sas\Esd\Storefront\Controller\CheckoutControllerDecorator" decorates="Shopware\Storefront\Controller\CheckoutController">
+            <argument type="service" id="Sas\Esd\Storefront\Controller\CheckoutControllerDecorator.inner"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Sas\Esd\Service\EsdCartService"/>
+            <tag name="controller.service_arguments" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
+
         <!-- Language Snippets -->
         <service id="Sas\Esd\Resources\snippet\en_GB\SnippetFile_en_GB">
             <tag name="shopware.snippet.file"/>
@@ -150,6 +163,10 @@
             <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
         </service>
 
+        <service id="Sas\Esd\Service\EsdCartService">
+            <argument type="service" id="product.repository"/>
+        </service>
+
         <!-- Message -->
         <service id="Sas\Esd\Message\SendMailHandler">
             <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
@@ -164,5 +181,14 @@
 
         <!-- Validation -->
         <service id="Sas\Esd\Checkout\Order\Validation\EsdOrderValidationFactory"/>
+
+        <service id="Sas\Esd\Subscriber\CartSubscriber">
+            <argument type="service" id="Sas\Esd\Service\EsdCartService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Sas\Esd\Subscriber\ProductListingSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>

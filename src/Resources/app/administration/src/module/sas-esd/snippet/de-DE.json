@@ -106,6 +106,10 @@
             "confirmChangeTitle": "Confirm switch ESD type",
             "confirmChangeToVideoMessage": "Do you really want to change over to ESD Video?",
             "confirmChangeToNormalMessage": "Do you really want to change over to ESD Normal?"
+        },
+        "orderStatusChange": {
+            "errorTitle": "Change status failed",
+            "errorMessage": "Please add more serial keys."
         }
     }
 }
