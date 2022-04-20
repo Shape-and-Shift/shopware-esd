@@ -3,6 +3,7 @@
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -61,6 +62,11 @@ class EsdEntity extends Entity
      * @var int|null
      */
     protected $downloadLimitNumber;
+
+    /**
+     * @var EsdSerialCollection|null
+     */
+    protected $serial;
 
     public function getId(): string
     {
@@ -160,6 +166,16 @@ class EsdEntity extends Entity
     public function setHasUnlimitedDownload($hasUnlimitedDownload): void
     {
         $this->hasUnlimitedDownload = $hasUnlimitedDownload;
+    }
+
+    public function getSerial(): ?EsdSerialCollection
+    {
+        return $this->serial;
+    }
+
+    public function setSerial(?EsdSerialCollection $serial): void
+    {
+        $this->serial = $serial;
     }
 
     public function getApiAlias(): string

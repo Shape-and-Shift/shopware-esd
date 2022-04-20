@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/buy-widget-form.html.twig' %}
+
+{% block page_product_detail_buy_container %}
+    {% set productEsd = product.extensions.esd %}
+
+    {% if productEsd is null or (productEsd and (not productEsd.hasSerial or productEsd.serial is null)) %}
+        {{ parent() }}
+    {% else %}
+        {% set totalSerialAvailable = productEsd.serial|filter(item => item.esdOrder is null)|length %}
+
+        {% if productEsd.serial|length <= 0 or totalSerialAvailable > 0 %}
+            {{ parent() }}
+        {% endif %}
+    {% endif %}
+{% endblock %}

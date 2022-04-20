@@ -4,6 +4,7 @@ namespace Sas\Esd\Content\Product\Extension\Esd;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -61,6 +62,8 @@ class EsdDefinition extends EntityDefinition
             new IntField('download_limit_number', 'downloadLimitNumber'),
 
             new CreatedAtField(),
+
+            (new OneToManyAssociationField('serial', EsdSerialDefinition::class, 'esd_id')),
         ]);
     }
 }
