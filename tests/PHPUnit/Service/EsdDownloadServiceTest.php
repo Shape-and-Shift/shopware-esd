@@ -4,33 +4,31 @@ namespace Sas\Esd\Tests\Service;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory\EsdDownloadHistoryDefinition;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory\EsdDownloadHistoryEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
-use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryDefinition;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
-use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Service\EsdDownloadService;
-use Sas\Esd\Tests\Fakes\FakeEntityRepository;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EsdDownloadServiceTest extends TestCase
 {
-    /** @var EntityRepositoryInterface */
-    private $esdOrderRepository;
+    private EntityRepositoryInterface $esdOrderRepository;
 
-    /** @var EntityRepositoryInterface  */
-    private $esdDownloadHistoryRepository;
+    private EntityRepositoryInterface $esdDownloadHistoryRepository;
 
-    /** @var EntityRepositoryInterface  */
-    private $esdMediaDownloadHistoryRepository;
+    private EntityRepositoryInterface $esdMediaDownloadHistoryRepository;
 
     /** @var MockObject|SystemConfigService */
     private $systemConfigService;
@@ -42,17 +40,14 @@ class EsdDownloadServiceTest extends TestCase
     public function setUp(): void
     {
         $this->context = $this->createMock(Context::class);
+
         $this->systemConfigService = $this->createMock(SystemConfigService::class);
-        $event = $this->createMock(EntityWrittenContainerEvent::class);
 
-        $this->esdOrderRepository = new FakeEntityRepository(new EsdOrderDefinition());
-        $this->esdOrderRepository->entityWrittenContainerEvents[] = $event;
+        $this->esdOrderRepository = $this->createMock(EntityRepository::class);
 
-        $this->esdDownloadHistoryRepository = new FakeEntityRepository(new EsdDownloadHistoryDefinition());
-        $this->esdDownloadHistoryRepository->entityWrittenContainerEvents[] = $event;
+        $this->esdDownloadHistoryRepository = $this->createMock(EntityRepository::class);
 
-        $this->esdMediaDownloadHistoryRepository = new FakeEntityRepository(new EsdMediaDownloadHistoryDefinition());
-        $this->esdMediaDownloadHistoryRepository->entityWrittenContainerEvents[] = $event;
+        $this->esdMediaDownloadHistoryRepository = $this->createMock(EntityRepository::class);
 
         $this->esdDownloadService = new EsdDownloadService(
             $this->esdOrderRepository,
@@ -124,13 +119,18 @@ class EsdDownloadServiceTest extends TestCase
 
         $actualValue = $this->esdDownloadService->getLimitDownloadNumberList($esdOrderCollection);
 
-        $this->assertIsArray($actualValue);
+        $this->assertArrayHasKey($esdOrderEntity->getId(), $actualValue);
+        $this->assertSame($actualValue[$esdOrderEntity->getId()], 1);
     }
 
     public function testAddDownloadHistory(): void
     {
+        $this->esdDownloadHistoryRepository->expects(static::once())->method('create');
+        $this->esdOrderRepository->expects(static::once())->method('update');
+
         $esdOrder = new EsdOrderEntity();
         $esdOrder->setId(Uuid::randomHex());
+        $esdOrder->setCountDownload(1);
 
         $this->esdDownloadService->addDownloadHistory($esdOrder, $this->context);
     }
@@ -158,38 +158,51 @@ class EsdDownloadServiceTest extends TestCase
         $this->esdMediaDownloadHistoryRepository->entitySearchResults[] = $search;
 
         $this->esdDownloadService->checkMediaDownloadHistory($esdOrderId, $esdMedia, $esdOrder, $this->context);
+
+        if($search->getTotal() >= $esdMedia->getDownloadLimitNumber()) {
+            $this->expectException(NotFoundHttpException::class);
+        }
     }
 
     /**
      * @return void
-     * @dataProvider mediaDownloadHistoryProvider
      */
-    public function testGetDownloadRemainingItems(string $id, string $esdOrderId, string $esdMediaId): void
+    public function testGetDownloadRemainingItems(): void
     {
-        $esdMediaMock = $this->createConfiguredMock(EsdMediaDownloadHistoryEntity::class, [
-            'getEsdOrderId' => $esdOrderId,
-            'getEsdMediaId' => $esdMediaId
-        ]);
+        $esdOrderId = 'foo';
+        $esdMediaId = 'bar';
 
-        $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'first' => reset($esdMediaMock),
-            'last' => end($esdMediaMock),
-        ]);
+        $esdMediaDownloadHistoryCollection = new EsdMediaDownloadHistoryCollection();
 
-        $this->esdMediaDownloadHistoryRepository->entitySearchResults[] = $search;
+        $esdMediaDownloadHistoryEntity1 = new EsdMediaDownloadHistoryEntity();
+        $esdMediaDownloadHistoryEntity1->setId(Uuid::randomHex());
+        $esdMediaDownloadHistoryEntity1->setEsdOrderId($esdOrderId);
+        $esdMediaDownloadHistoryEntity1->setEsdMediaId($esdMediaId);
+        $esdMediaDownloadHistoryCollection->add($esdMediaDownloadHistoryEntity1);
+
+        $esdMediaDownloadHistoryEntity2 = new EsdMediaDownloadHistoryEntity();
+        $esdMediaDownloadHistoryEntity2->setId(Uuid::randomHex());
+        $esdMediaDownloadHistoryEntity2->setEsdOrderId($esdOrderId);
+        $esdMediaDownloadHistoryEntity2->setEsdMediaId($esdMediaId);
+        $esdMediaDownloadHistoryCollection->add($esdMediaDownloadHistoryEntity2);
+
+        $searchResult = new EntitySearchResult('esd_media_download_history', 1, $esdMediaDownloadHistoryCollection, null, new Criteria(), $this->context);
+        $this->esdMediaDownloadHistoryRepository->expects(static::any())->method('search')->willReturn($searchResult);
 
         $actualValue = $this->esdDownloadService->getDownloadRemainingItems([$esdOrderId], $this->context);
 
-        $this->assertIsArray($actualValue);
+        $this->assertArrayHasKey($esdOrderId, $actualValue);
+        $this->assertSame($actualValue[$esdOrderId][$esdMediaId], 2);
     }
 
     /**
      * @return void
-     * @dataProvider addMediaDownloadHistoryProvider
      */
-    public function testAddMediaDownloadHistory(string $orderLineItemId, string $esdMediaId): void
+    public function testAddMediaDownloadHistory(): void
     {
-        $this->esdDownloadService->addMediaDownloadHistory($orderLineItemId, $esdMediaId, $this->context);
+        $this->esdMediaDownloadHistoryRepository->expects(static::once())->method('create');
+
+        $this->esdDownloadService->addMediaDownloadHistory('test','test', $this->context);
     }
 
     public function getLimitDownloadNumberProvider(): array
@@ -203,30 +216,6 @@ class EsdDownloadServiceTest extends TestCase
             ],
             'Test limitDownloadNumber can be null' => [
                 null, false, false, true
-            ]
-        ];
-    }
-
-    public function mediaDownloadHistoryProvider(): array
-    {
-        return [
-            'Test item full fields' => [
-                'foo', 'esdOrderId', 'esdMediaId'
-            ],
-            'Test item full fields 2' => [
-                'bar', 'esdOrderId2', 'esdMediaId2'
-            ]
-        ];
-    }
-
-    public function addMediaDownloadHistoryProvider(): array
-    {
-        return [
-            'Test data can be empty' => [
-                '',''
-            ],
-            'Test data can be special characters' => [
-                '1 s o8soadioj*&G@*@ *@ß∆ß ',' 12(*NSd (*(Shdn soihsd $# Ω≈ßß¬˚˜˜'
             ]
         ];
     }

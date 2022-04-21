@@ -41,8 +41,6 @@ class EsdDownloadService
     {
         $limitNumber = $this->getLimitDownloadNumber($esdOrder);
         if ($limitNumber !== null) {
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('esdOrderId', $esdOrder->getId()));
             if ($esdOrder->getCountDownload() >= $limitNumber) {
                 throw new NotFoundHttpException('You have limited downloads');
             }
