@@ -4,7 +4,6 @@ namespace Sas\Esd\Tests\Service;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory\EsdDownloadHistoryEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryEntity;
@@ -15,7 +14,6 @@ use Sas\Esd\Service\EsdDownloadService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -59,6 +57,8 @@ class EsdDownloadServiceTest extends TestCase
 
     public function testCheckLimitDownload(): void
     {
+        $this->expectException(NotFoundHttpException::class);
+
         $esdEntity = new EsdEntity();
         $esdEntity->setId(Uuid::randomHex());
         $esdEntity->setHasCustomDownloadLimit(true);
@@ -68,6 +68,7 @@ class EsdDownloadServiceTest extends TestCase
         $esdOrder = new EsdOrderEntity();
         $esdOrder->setId(Uuid::randomHex());
         $esdOrder->setEsd($esdEntity);
+        $esdOrder->setCountDownload(5);
 
         $this->esdDownloadService->checkLimitDownload($esdOrder);
     }
@@ -137,31 +138,25 @@ class EsdDownloadServiceTest extends TestCase
 
     public function testCheckMediaDownloadHistory(): void
     {
+        $this->expectException(NotFoundHttpException::class);
+
         $esdOrderId = 'foo';
 
         $esdMedia = new EsdMediaEntity();
         $esdMedia->setId(Uuid::randomHex());
-        $esdMedia->setDownloadLimitNumber(2);
-
-        $esdEntity = new EsdEntity();
-        $esdEntity->setId(Uuid::randomHex());
-        $esdEntity->setHasUnlimitedDownload(true);
+        $esdMedia->setDownloadLimitNumber(1);
 
         $esdOrder = new EsdOrderEntity();
         $esdOrder->setId(Uuid::randomHex());
         $esdOrder->setEsd(new EsdEntity());
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'getTotal' => 1
+            'getTotal' => 2
         ]);
 
-        $this->esdMediaDownloadHistoryRepository->entitySearchResults[] = $search;
+        $this->esdMediaDownloadHistoryRepository->expects(self::once())->method('search')->willReturn($search);
 
         $this->esdDownloadService->checkMediaDownloadHistory($esdOrderId, $esdMedia, $esdOrder, $this->context);
-
-        if($search->getTotal() >= $esdMedia->getDownloadLimitNumber()) {
-            $this->expectException(NotFoundHttpException::class);
-        }
     }
 
     /**
