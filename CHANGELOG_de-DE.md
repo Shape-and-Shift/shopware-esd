@@ -1,6 +1,7 @@
 # 1.5.3
 * Behoben, um die Seriennummern nach zugewiesenem Client sortieren zu können.
-* 
+* Aktualisiert, um zu zeigen, dass die Standardansicht normal ist, auch wenn die Videofunktion aktiviert ist.
+
 # 1.5.2
 * Events wurden aktualisiert, damit sie mit dem Flow Builder der Shopware-Plattformversion >= 6.4.6 kompatibel sind.
 * Import der Core libs behoben
