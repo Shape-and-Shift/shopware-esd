@@ -55,7 +55,7 @@ class EsdDownloadServiceTest extends TestCase
         );
     }
 
-    public function testCheckLimitDownload(): void
+    public function testThrowCheckLimitDownload(): void
     {
         $this->expectException(NotFoundHttpException::class);
 
@@ -136,7 +136,7 @@ class EsdDownloadServiceTest extends TestCase
         $this->esdDownloadService->addDownloadHistory($esdOrder, $this->context);
     }
 
-    public function testCheckMediaDownloadHistory(): void
+    public function testThrowCheckMediaDownloadHistory(): void
     {
         $this->expectException(NotFoundHttpException::class);
 
