@@ -15,7 +15,8 @@
     "require":{
         "shopware/core": "~6.4.6",
         "shopware/storefront":"*",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "dompdf/dompdf": "^1.2.1"
     },
     "autoload":{
         "psr-4":{
