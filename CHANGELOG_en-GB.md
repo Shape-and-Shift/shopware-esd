@@ -3,6 +3,7 @@
 * Fixed issue of show withdrawal
 * Updated to show the default view is normal even if the video feature is enabled.
 * Updated to can not be bought the product which has all serial keys was assigned.
+* Added enable increase stock button when importing the serial keys.
 
 # 1.5.2
 * Updated events file to compatible with the flow builder of shopware platform version >= 6.4.6.

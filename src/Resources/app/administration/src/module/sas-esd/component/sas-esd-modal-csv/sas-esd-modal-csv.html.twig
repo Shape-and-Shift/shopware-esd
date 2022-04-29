@@ -22,6 +22,12 @@
                         </sw-alert>
                     </slot>
                 </div>
+                <div class="is-increase-stock">
+                    <sw-switch-field
+                        :label="$tc('sas-esd.serialModal.increaseStockLabel')"
+                        v-model="isIncreaseStock"
+                    ></sw-switch-field>
+                </div>
                 <div class="form-group">
                     <slot name="next" :load="load">
                         <sw-button @click.prevent="load" :disabled="disabledNextButton" variant="ghost" size="small" :square="false" :block="false" :isLoading="false">
