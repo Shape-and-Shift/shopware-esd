@@ -149,5 +149,9 @@ Component.register('sas-esd-serial-overview', {
         openModal(value) {
             this.activeModal = value;
         },
+
+        loadProduct() {
+            this.$emit('load-product');
+        },
     }
 });

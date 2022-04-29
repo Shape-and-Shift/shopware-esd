@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 import mimeTypes from "mime-types";
 
 const { Component, Mixin } = Shopware;
+const { mapState } = Shopware.Component.getComponentHelper();
 
 Component.register('sas-esd-modal-csv', {
     template,
@@ -111,7 +112,8 @@ Component.register('sas-esd-modal-csv', {
         isValidFileMimeType: false,
         fileSelected: false,
         isLoading: false,
-        isDisabled: true
+        isDisabled: true,
+        isIncreaseStock: false,
     }),
     created() {
         this.hasHeaders = this.headers;
@@ -141,6 +143,7 @@ Component.register('sas-esd-modal-csv', {
 
             const lines = this.form.csv;
 
+            let stockAdditional = 0;
             let promises = [];
             for (let line of lines) {
                 console.log(line.esdId);
@@ -148,10 +151,15 @@ Component.register('sas-esd-modal-csv', {
                 let serial = this.serialRepository.create(Shopware.Context.api);
                 serial.esdId = this.esdId;
                 serial.serial = line.serial;
-                promises.push(this.serialRepository.save(serial, Shopware.Context.api));
+                promises.push(this.serialRepository.save(serial, Shopware.Context.api).then(() => {
+                    stockAdditional++;
+                }));
             }
 
             Promise.all(promises)
+                .then(() => {
+                    return this.updateProductStock(stockAdditional);
+                })
                 .then(() => {
                     this.$emit('serial-updated');
                     this.isLoading = false;
@@ -221,6 +229,16 @@ Component.register('sas-esd-modal-csv', {
         },
         makeId(id) {
             return `${id}${this._uid}`;
+        },
+        updateProductStock(stockAdditional) {
+            if (!this.isIncreaseStock || stockAdditional <= 0) {
+                return Promise.resolve();
+            }
+
+            this.product.stock += stockAdditional;
+            return this.productRepository.save(this.product, Shopware.Context.api).then(() => {
+                this.$emit('load-product');
+            });
         }
     },
     watch: {
@@ -266,6 +284,9 @@ Component.register('sas-esd-modal-csv', {
         }
     },
     computed: {
+        ...mapState('swProductDetail', [
+            'product'
+        ]),
         serialRepository() {
             return this.repositoryFactory.create('sas_product_esd_serial');
         },
@@ -277,6 +298,9 @@ Component.register('sas-esd-modal-csv', {
         },
         disabledNextButton() {
             return !this.isValidFileMimeType;
-        }
+        },
+        productRepository() {
+            return this.repositoryFactory.create('product');
+        },
     },
 });

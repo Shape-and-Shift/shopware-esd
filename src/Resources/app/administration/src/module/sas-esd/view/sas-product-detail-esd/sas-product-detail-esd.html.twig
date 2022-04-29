@@ -86,6 +86,7 @@
             <div v-if="product.extensions.esd.hasSerial"
                  class="sas-esd-serial-overview">
                 <sas-esd-serial-overview
+                    @load-product="loadProduct"
                     @serial-open="openModal('serialModal')"
                 />
             </div>

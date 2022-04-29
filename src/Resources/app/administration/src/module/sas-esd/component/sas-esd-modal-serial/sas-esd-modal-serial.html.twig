@@ -12,6 +12,11 @@
                 :label="$tc('sas-esd.serialModal.textAreaSerialNumber.label')"
                 :placeholder="$tc('sas-esd.serialModal.textAreaSerialNumber.placeholder')">
             </sw-textarea-field>
+
+            <sw-switch-field
+                :label="$tc('sas-esd.serialModal.increaseStockLabel')"
+                v-model="isIncreaseStock"
+            ></sw-switch-field>
         </div>
     {% endblock %}
 

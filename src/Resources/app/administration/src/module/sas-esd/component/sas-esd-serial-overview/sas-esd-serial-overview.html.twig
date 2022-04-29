@@ -162,6 +162,7 @@
     {% block sas_product_detail_esd_modal_serial %}
         <sas-esd-modal-serial
             v-if="activeModal === 'serialModal'"
+            @load-product="loadProduct"
             @modal-close="updateSerials"
             @serial-updated="updateSerials">
         </sas-esd-modal-serial>
@@ -170,6 +171,7 @@
     {% block sas_product_detail_esd_modal_csv %}
         <sas-esd-modal-csv
             v-if="activeModal === 'csvModal'"
+            @load-product="loadProduct"
             @serial-updated="updateSerials"
             @modal-close="updateSerials"
             v-model="csv"

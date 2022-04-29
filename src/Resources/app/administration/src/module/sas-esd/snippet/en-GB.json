@@ -64,7 +64,8 @@
             "textAreaSerialNumber": {
                 "label": "Serial numbers",
                 "placeholder": "New line for each serial number"
-            }
+            },
+            "increaseStockLabel": "Increase Stock"
         },
         "serial": {
             "messageDeleteSuccess": "The Selection series has been deleted.",

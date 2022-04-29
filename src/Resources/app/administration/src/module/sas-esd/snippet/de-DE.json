@@ -63,7 +63,8 @@
             "textAreaSerialNumber": {
                 "label": "Seriennummern",
                 "placeholder": "Neue Zeile für jede Seriennummer"
-            }
+            },
+            "increaseStockLabel": "Bestand erhöhen"
         },
         "serial": {
             "messageDeleteSuccess": "Die Auswahlserie wurde gelöscht.",
