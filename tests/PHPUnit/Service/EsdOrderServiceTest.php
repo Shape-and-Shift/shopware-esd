@@ -2,14 +2,12 @@
 
 namespace Sas\Esd\Tests\Service;
 
-use phpDocumentor\Reflection\Types\Self_;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
-use Sas\Esd\Content\Product\Extension\Esd\EsdCollection;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Service\EsdOrderService;
 use Sas\Esd\Service\EsdService;
@@ -30,8 +28,6 @@ class EsdOrderServiceTest extends TestCase
 
     private EntityRepositoryInterface $esdSerialRepository;
 
-    private EntityRepositoryInterface $esdProductRepository;
-
     private EsdService $esdService;
 
     private EsdOrderService $esdOrderService;
@@ -43,8 +39,6 @@ class EsdOrderServiceTest extends TestCase
         $this->esdOrderRepository = $this->createMock(EntityRepository::class);
 
         $this->esdSerialRepository = $this->createMock(EntityRepository::class);
-
-        $this->esdProductRepository = $this->createMock(EntityRepository::class);
 
         $this->esdService = $this->createMock(EsdService::class);
 
