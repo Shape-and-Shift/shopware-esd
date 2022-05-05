@@ -80,7 +80,6 @@ class EsdMailService
 
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
-        /* @var OrderLineItemEntity $lineItem */
         if (!$order) {
             return $buttons;
         }
