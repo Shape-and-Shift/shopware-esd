@@ -65,8 +65,7 @@ class EsdOrderServiceTest extends TestCase
 
     public function testFetchSerials(): void
     {
-        $esd = new EsdEntity();
-        $esd->setId(Uuid::randomHex());
+        $esd = $this->getEsd();
         $esd->setHasSerial(true);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
@@ -80,10 +79,9 @@ class EsdOrderServiceTest extends TestCase
         $this->assertInstanceOf(EntitySearchResult::class, $value);
     }
 
-    public function testNullFetchSerialsHasSerial(): void
+    public function testFetchSerialsNullWhenHasSerialIsFalse(): void
     {
-        $esd = new EsdEntity();
-        $esd->setId(Uuid::randomHex());
+        $esd = $this->getEsd();
         $esd->setHasSerial(false);
 
         $value = $this->esdOrderService->fetchSerials($esd, $this->context);
@@ -91,10 +89,9 @@ class EsdOrderServiceTest extends TestCase
         $this->assertSame($value, null);
     }
 
-    public function testNullFetchSerialsGetTotal(): void
+    public function testFetchSerialsNullWhenTotalEqualZero(): void
     {
-        $esd = new EsdEntity();
-        $esd->setId(Uuid::randomHex());
+        $esd = $this->getEsd();
         $esd->setHasSerial(true);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
@@ -108,7 +105,7 @@ class EsdOrderServiceTest extends TestCase
         $this->assertSame($value, null);
     }
 
-    public function testmailTemplateData(): void
+    public function testMailTemplateData(): void
     {
         $order = $this->getOrder();
 
@@ -125,8 +122,7 @@ class EsdOrderServiceTest extends TestCase
         $esdOrder->setOrderLineItem($orderLineItem);
         $esdOrder->setOrderLineItemId($orderLineItem->getId());
 
-        $esd = new EsdEntity();
-        $esd->setId('bar');
+        $esd = $this->getEsd();
         $esd->setUniqueIdentifier('esdUniqueIdentifier');
 
         $esdMediaCollection = new EsdMediaCollection();
@@ -139,7 +135,7 @@ class EsdOrderServiceTest extends TestCase
 
         $esd->setEsdMedia($esdMediaCollection);
 
-        $esdOrder->setEsdId('bar');
+        $esdOrder->setEsdId('esdId');
         $esdOrder->setEsd($esd);
 
         $esdSerial = new EsdSerialEntity();
@@ -172,7 +168,7 @@ class EsdOrderServiceTest extends TestCase
         $this->assertArrayHasKey('esdSerials', $templateData);
     }
 
-    public function testTrueIsEsdOrder(): void
+    public function testIsEsdOrder(): void
     {
         $order = $this->getOrder();
 
@@ -181,7 +177,7 @@ class EsdOrderServiceTest extends TestCase
         $this->assertTrue($isEsdOrder);
     }
 
-    public function testFalseIsEsdOrder(): void
+    public function testIsNotEsdOrder(): void
     {
         $orderLineItemCollection = new OrderLineItemCollection();
 
@@ -198,8 +194,7 @@ class EsdOrderServiceTest extends TestCase
         $product = new ProductEntity();
         $product->setId('productId');
 
-        $esd = new EsdEntity();
-        $esd->setId('esdId');
+        $esd = $this->getEsd();
         $esd->setHasSerial(true);
 
         $extensions['esd'] = $esd;
@@ -236,8 +231,7 @@ class EsdOrderServiceTest extends TestCase
         $product = new ProductEntity();
         $product->setId('productId');
 
-        $esd = new EsdEntity();
-        $esd->setId('esdId');
+        $esd = $this->getEsd();
         $esd->setHasSerial(true);
 
         $extensions['esd'] = $esd;
@@ -257,5 +251,13 @@ class EsdOrderServiceTest extends TestCase
                 null
             ]
         ];
+    }
+
+    public function getEsd(): EsdEntity
+    {
+        $esd = new EsdEntity();
+        $esd->setId('esdId');
+
+        return $esd;
     }
 }
