@@ -6,15 +6,20 @@ use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoCollection;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoEntity;
+use Sas\Esd\Content\Product\Extension\Esd\EsdCollection;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Service\EsdService;
+use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use function PHPUnit\Framework\returnValueMap;
 
 class EsdServiceTest extends TestCase
 {
@@ -77,13 +82,11 @@ class EsdServiceTest extends TestCase
         $this->assertSame($value, $actual);
     }
 
-    public function testGetEsdMediaByProductId(): void
+    /**
+     * @dataProvider getEsdMediaByProductIdProvider
+     */
+    public function testGetEsdMediaByProductId(?EsdEntity $esd): void
     {
-        $esd = $this->getEsd();
-        $esdMedia = $this->getEsdMedia();
-
-        $esd->setEsdMedia($esdMedia);
-
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
             'first' => $esd
         ]);
@@ -92,34 +95,248 @@ class EsdServiceTest extends TestCase
 
         $esdMediaCollection = $this->esdService->getEsdMediaByProductId('test', $this->context);
 
-        $this->assertInstanceOf(EsdMediaCollection::class, $esdMediaCollection);
+        if($esd !== null && $esdMediaCollection !== null) {
+            $this->assertInstanceOf(EsdMediaCollection::class, $esdMediaCollection);
+        } else {
+            $this->assertSame(null, $esdMediaCollection);
+        }
     }
 
-//    /**
-//     * @dataProvider getEsdMediaByProductIdProvider
-//     */
-//    public function testNullGetEsdMediaByProductId() {
-//        // continue
-//    }
+    public function testCompressFiles(): void
+    {
+        $product = $this->getProduct();
+
+        $esd = $this->getEsd();
+
+        $media = $this->getMedia();
+
+        $esdMedia = $this->getEsdMedia($media);
+
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+
+        $esd->setEsdMedia($esdMediaCollection);
+
+        $searchEsdProduct = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esd
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($searchEsdProduct);
+
+        $searchProdcut = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $product
+        ]);
+
+        $this->productRepository->expects(self::once())->method('search')->willReturn($searchProdcut);
+
+        $this->urlGenerator->expects(self::any())->method('getRelativeMediaUrl')->willReturn(__DIR__ . '/Image/logo.svg');
+
+        $this->esdService->compressFiles('productId');
+    }
+
+    public function testGetEsdMediaByEsdIds(): void
+    {
+        $esd = $this->getEsd();
+
+        $media = $this->getMedia();
+
+        $esdMedia = $this->getEsdMedia($media);
+
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+
+        $esd->setEsdMedia($esdMediaCollection);
+
+        $esdCollection = $this->getEsdCollection($esd);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'getEntities' => $esdCollection
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdMediaByEsdIds = $this->esdService->getEsdMediaByEsdIds(['esdIds'], $this->context);
+
+        $this->assertArrayHasKey('esdId', $esdMediaByEsdIds);
+        $this->assertArrayHasKey('esdMediaId', $esdMediaByEsdIds['esdId']);
+        $this->assertInstanceOf(EsdMediaEntity::class, $esdMediaByEsdIds['esdId']['esdMediaId']);
+    }
+
+    public function testGetEsdMediaByEsdIdsEmptyWhenEsdCollectionIsEmpty(): void
+    {
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'getEntities' => new EsdCollection()
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdMediaByEsdIds = $this->esdService->getEsdMediaByEsdIds(['esdIds'], $this->context);
+
+        $this->assertSame([], $esdMediaByEsdIds);
+    }
+
+    public function testGetEsdMediaByEsdIdsEmptyWhenEsdMediaIsEmpty(): void
+    {
+        $esd = $this->getEsd();
+
+        $esdMedia = $this->getEsdMedia();
+
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+
+        $esd->setEsdMedia($esdMediaCollection);
+
+        $esdCollection = $this->getEsdCollection($esd);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'getEntities' => $esdCollection
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdMediaByEsdIds = $this->esdService->getEsdMediaByEsdIds(['esdIds'], $this->context);
+
+        $this->assertSame([], $esdMediaByEsdIds);
+    }
+
+    public function testGetEsdVideo(): void
+    {
+        $esdVideo = new EsdVideoEntity();
+        $esdVideo->setId('esdVideoId');
+        $esdVideo->setEsdMediaId('esdMediaId');
+
+        $esdVideoCollection = new EsdVideoCollection();
+        $esdVideoCollection->add($esdVideo);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'getEntities' => $esdVideoCollection
+        ]);
+
+        $this->esdVideoRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdVideoByEsdIds = $this->esdService->getEsdVideo(['esdMediaId'], $this->context);
+
+        $this->assertArrayHasKey('esdMediaId', $esdVideoByEsdIds);
+        $this->assertInstanceOf(EsdVideoEntity::class, $esdVideoByEsdIds['esdMediaId']);
+    }
+
+    public function testGetEsdVideoEmptyWhenEsdVideoCollectionIsEmpty(): void
+    {
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'getEntities' => new EsdVideoCollection()
+        ]);
+
+        $this->esdVideoRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdVideoByEsdIds = $this->esdService->getEsdVideo(['esdMediaId'], $this->context);
+
+        $this->assertSame([], $esdVideoByEsdIds);
+    }
+
+    public function testGetVideoMedia(): void
+    {
+        $esd = $this->getEsd();
+        $media = $this->getMedia();
+        $esdMedia = $this->getEsdMedia($media);
+        $esdMedia->setMediaId($media->getId());
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+        $esd->setEsdMedia($esdMediaCollection);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esd
+        ]);
+
+        $this->esdProductRepository->expects(self::any())->method('search')->willReturn($search);
+
+        $media = $this->esdService->getVideoMedia('esdId', 'mediaId', $this->context);
+
+        $this->assertInstanceOf(MediaEntity::class, $media);
+    }
+
+    public function testGetVideoMediaNull(): void
+    {
+        $media = $this->esdService->getVideoMedia('esdId', 'mediaId', $this->context);
+
+        $this->assertSame(null, $media);
+    }
+
+    public function testGetMediaByLineItemId(): void
+    {
+        $esdOrder = new EsdOrderEntity();
+        $esdOrder->setId('esdOrderId');
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esdOrder
+        ]);
+
+        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdOrder = $this->esdService->getMediaByLineItemId('esdOrderId', $this->context);
+
+        $this->assertInstanceOf(EsdOrderEntity::class, $esdOrder);
+    }
+
+    public function testGetMediaByLineItemIdNull(): void
+    {
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => null
+        ]);
+
+        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdOrder = $this->esdService->getMediaByLineItemId('esdOrderId', $this->context);
+
+        $this->assertSame(null, $esdOrder);
+    }
+
+    public function getProduct(): ProductEntity
+    {
+        $product = new ProductEntity();
+        $product->setId('productId');
+        $product->setName('productName');
+
+        return $product;
+    }
 
     public function getEsd(): EsdEntity
     {
         $esd = new EsdEntity();
         $esd->setId('esdId');
+        $esd->setUniqueIdentifier('esdIdUniqueIdentifier');
 
         return $esd;
     }
 
-    public function getEsdMedia(): EsdMediaCollection
+    public function getEsdCollection($esd): EsdCollection
     {
-        $esdMedia = new EsdMediaEntity();
-        $esdMedia->setId('esdMediaId');
-        $esdMedia->setUniqueIdentifier('esdMediaUniqueIdentifier');
+        $esdCollection = new EsdCollection();
+        $esdCollection->add($esd);
 
+        return $esdCollection;
+    }
+
+    public function getEsdMediaCollection($esdMedia): EsdMediaCollection
+    {
         $esdMediaCollection = new EsdMediaCollection();
         $esdMediaCollection->add($esdMedia);
 
         return $esdMediaCollection;
+    }
+
+    public function getMedia(): MediaEntity
+    {
+        $media = new MediaEntity();
+        $media->setId('mediaId');
+        $media->setFileName('logo');
+        $media->setFileExtension('svg');
+
+        return $media;
+    }
+
+    public function getEsdMedia($media = null): EsdMediaEntity
+    {
+        $esdMedia = new EsdMediaEntity();
+        $esdMedia->setId('esdMediaId');
+        $esdMedia->setUniqueIdentifier('esdMediaUniqueIdentifier');
+        $esdMedia->setMedia($media);
+
+        return $esdMedia;
     }
 
     public function getSystemConfigProvider(): array
@@ -138,15 +355,18 @@ class EsdServiceTest extends TestCase
     {
         $esd = $this->getEsd();
         $esdMedia = $this->getEsdMedia();
-
-        $esd->setEsdMedia($esdMedia);
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+        $esd->setEsdMedia($esdMediaCollection);
 
         return [
-            'Test can be return EsdMediaCollection' => [
-                $esd, EsdMediaCollection::class
+            'GetEsdMediaByProductId can be return EsdMediaCollection' => [
+                $esd
             ],
-            'Test can be return null' => [
-                null, null
+            'GetEsdMediaByProductId can be return null When Esd Empty' => [
+                null
+            ],
+            'GetEsdMediaByProductId can be return null When EsdMedia Empty' => [
+                $this->getEsd()
             ]
         ];
     }
