@@ -65,8 +65,7 @@ class EsdOrderServiceTest extends TestCase
 
     public function testFetchSerials(): void
     {
-        $esd = $this->getEsd();
-        $esd->setHasSerial(true);
+        $esd = $this->getEsd(true);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
             'getTotal' => 1
@@ -82,7 +81,6 @@ class EsdOrderServiceTest extends TestCase
     public function testFetchSerialsNullWhenHasSerialIsFalse(): void
     {
         $esd = $this->getEsd();
-        $esd->setHasSerial(false);
 
         $value = $this->esdOrderService->fetchSerials($esd, $this->context);
 
@@ -91,8 +89,7 @@ class EsdOrderServiceTest extends TestCase
 
     public function testFetchSerialsNullWhenTotalEqualZero(): void
     {
-        $esd = $this->getEsd();
-        $esd->setHasSerial(true);
+        $esd = $this->getEsd(true);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
             'getTotal' => 0
@@ -194,8 +191,7 @@ class EsdOrderServiceTest extends TestCase
         $product = new ProductEntity();
         $product->setId('productId');
 
-        $esd = $this->getEsd();
-        $esd->setHasSerial(true);
+        $esd = $this->getEsd(true);
 
         $extensions['esd'] = $esd;
         $product->setExtensions($extensions);
@@ -231,8 +227,7 @@ class EsdOrderServiceTest extends TestCase
         $product = new ProductEntity();
         $product->setId('productId');
 
-        $esd = $this->getEsd();
-        $esd->setHasSerial(true);
+        $esd = $this->getEsd(true);
 
         $extensions['esd'] = $esd;
         $product->setExtensions($extensions);
@@ -253,10 +248,11 @@ class EsdOrderServiceTest extends TestCase
         ];
     }
 
-    public function getEsd(): EsdEntity
+    public function getEsd($hasSerial = false): EsdEntity
     {
         $esd = new EsdEntity();
         $esd->setId('esdId');
+        $esd->setHasSerial($hasSerial);
 
         return $esd;
     }
