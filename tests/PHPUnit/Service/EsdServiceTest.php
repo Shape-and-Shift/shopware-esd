@@ -6,12 +6,14 @@ use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdCollection;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Service\EsdService;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -19,6 +21,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class EsdServiceTest extends TestCase
@@ -41,6 +44,8 @@ class EsdServiceTest extends TestCase
 
     private Context $context;
 
+    private SalesChannelContext $salesChannelContext;
+
     public function setUp(): void
     {
         $this->esdProductRepository = $this->createMock(EntityRepository::class);
@@ -59,6 +64,8 @@ class EsdServiceTest extends TestCase
 
         $this->context = $this->createMock(Context::class);
 
+        $this->salesChannelContext = $this->createMock(SalesChannelContext::class);
+
         $this->esdService = new EsdService(
             $this->esdProductRepository,
             $this->esdOrderRepository,
@@ -68,38 +75,6 @@ class EsdServiceTest extends TestCase
             $this->esdVideoRepository,
             $this->systemConfigService
         );
-    }
-
-    /**
-     * @dataProvider getSystemConfigProvider
-     */
-    public function testGetSystemConfig(string $name, $actual): void
-    {
-        $this->systemConfigService->expects(self::once())->method('get')->willReturn($name);
-
-        $value = $this->esdService->getSystemConfig($name);
-
-        $this->assertSame($value, $actual);
-    }
-
-    /**
-     * @dataProvider getEsdMediaByProductIdProvider
-     */
-    public function testGetEsdMediaByProductId(?EsdEntity $esd): void
-    {
-        $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'first' => $esd
-        ]);
-
-        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
-
-        $esdMediaCollection = $this->esdService->getEsdMediaByProductId('test', $this->context);
-
-        if($esd !== null && $esdMediaCollection !== null) {
-            $this->assertInstanceOf(EsdMediaCollection::class, $esdMediaCollection);
-        } else {
-            $this->assertSame(null, $esdMediaCollection);
-        }
     }
 
     public function testCompressFiles(): void
@@ -122,15 +97,35 @@ class EsdServiceTest extends TestCase
 
         $this->esdProductRepository->expects(self::once())->method('search')->willReturn($searchEsdProduct);
 
-        $searchProdcut = $this->createConfiguredMock(EntitySearchResult::class, [
+        $searchProduct = $this->createConfiguredMock(EntitySearchResult::class, [
             'first' => $product
         ]);
 
-        $this->productRepository->expects(self::once())->method('search')->willReturn($searchProdcut);
+        $this->productRepository->expects(self::once())->method('search')->willReturn($searchProduct);
 
         $this->urlGenerator->expects(self::any())->method('getRelativeMediaUrl')->willReturn(__DIR__ . '/Image/logo.svg');
 
         $this->esdService->compressFiles('productId');
+    }
+
+    /**
+     * @dataProvider getEsdMediaByProductIdProvider
+     */
+    public function testGetEsdMediaByProductId(?EsdEntity $esd): void
+    {
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esd
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdMediaCollection = $this->esdService->getEsdMediaByProductId('test', $this->context);
+
+        if($esd !== null && $esdMediaCollection !== null) {
+            $this->assertInstanceOf(EsdMediaCollection::class, $esdMediaCollection);
+        } else {
+            $this->assertSame(null, $esdMediaCollection);
+        }
     }
 
     public function testGetEsdMediaByEsdIds(): void
@@ -233,10 +228,14 @@ class EsdServiceTest extends TestCase
     public function testGetVideoMedia(): void
     {
         $esd = $this->getEsd();
+
         $media = $this->getMedia();
+
         $esdMedia = $this->getEsdMedia($media);
         $esdMedia->setMediaId($media->getId());
+
         $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+
         $esd->setEsdMedia($esdMediaCollection);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
@@ -245,9 +244,9 @@ class EsdServiceTest extends TestCase
 
         $this->esdProductRepository->expects(self::any())->method('search')->willReturn($search);
 
-        $media = $this->esdService->getVideoMedia('esdId', 'mediaId', $this->context);
+        $actualMedia = $this->esdService->getVideoMedia('esdId', 'mediaId', $this->context);
 
-        $this->assertInstanceOf(MediaEntity::class, $media);
+        $this->assertInstanceOf(MediaEntity::class, $actualMedia);
     }
 
     public function testGetVideoMediaNull(): void
@@ -261,6 +260,7 @@ class EsdServiceTest extends TestCase
     {
         $esdOrder = new EsdOrderEntity();
         $esdOrder->setId('esdOrderId');
+
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
             'first' => $esdOrder
         ]);
@@ -283,6 +283,214 @@ class EsdServiceTest extends TestCase
         $esdOrder = $this->esdService->getMediaByLineItemId('esdOrderId', $this->context);
 
         $this->assertSame(null, $esdOrder);
+    }
+
+    public function testGetMedia(): void
+    {
+        $esd = $this->getEsd();
+
+        $esdMedia = $this->getEsdMedia();
+        $esdMedia->setMediaId('mediaId');
+
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+
+        $esd->setEsdMedia($esdMediaCollection);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esd
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $actualEsdMedia = $this->esdService->getMedia('esdId', 'mediaId', $this->context);
+
+        $this->assertInstanceOf(EsdMediaEntity::class, $actualEsdMedia);
+    }
+
+    public function testGetMediaNullWhenEsdIsNull(): void
+    {
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => null
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $actualEsdMedia = $this->esdService->getMedia('esdId', 'mediaId', $this->context);
+
+        $this->assertSame(null, $actualEsdMedia);
+    }
+
+    public function testGetMediaNullWhenEsdMediaIsNull(): void
+    {
+        $esd = $this->getEsd();
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esd
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $actualEsdMedia = $this->esdService->getMedia('esdId', 'mediaId', $this->context);
+
+        $this->assertSame(null, $actualEsdMedia);
+    }
+
+    public function testGetMediaNullWhenEsdMediaGetFirstIsNull(): void
+    {
+        $esd = $this->getEsd();
+
+        $esdMedia = $this->getEsdMedia();
+
+        $esdMediaCollection = $this->getEsdMediaCollection($esdMedia);
+
+        $esd->setEsdMedia($esdMediaCollection);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esd
+        ]);
+
+        $this->esdProductRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $actualEsdMedia = $this->esdService->getMedia('esdId', 'mediaId', $this->context);
+
+        $this->assertSame(null, $actualEsdMedia);
+    }
+
+    public function testGetPathVideoMedia(): void
+    {
+        $this->urlGenerator->expects(self::once())->method('getRelativeMediaUrl')->willReturn('/test/image.png');
+
+        $media = $this->getMedia();
+
+        $pathVideoMedia = $this->esdService->getPathVideoMedia($media);
+
+        $this->assertIsString($pathVideoMedia);
+        $this->assertSame('/test/image.png', $pathVideoMedia);
+    }
+
+    public function testGetEsdOrderByCustomer(): void
+    {
+        $customer = new CustomerEntity();
+        $customer->setId('customerId');
+
+        $this->salesChannelContext->expects(self::once())->method('getCustomer')->willReturn($customer);
+
+        $esdOrder = $this->getEsdOrder();
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esdOrder
+        ]);
+
+        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdOrder = $this->esdService->getEsdOrderByCustomer('orderId', $this->salesChannelContext);
+
+        $this->assertInstanceOf(EsdOrderEntity::class, $esdOrder);
+    }
+
+    public function testGetEsdOrderByGuest(): void
+    {
+        $esdOrderEntity = $this->getEsdOrder();
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esdOrderEntity
+        ]);
+
+        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdOrder = $this->esdService->getEsdOrderByGuest('esdOrderId', $this->salesChannelContext);
+
+        $this->assertInstanceOf(EsdOrderEntity::class, $esdOrder);
+    }
+
+    public function testGetEsdOrderListByCustomer(): void
+    {
+        $customer = new CustomerEntity();
+        $customer->setId('customerId');
+
+        $this->salesChannelContext->expects(self::once())->method('getCustomer')->willReturn($customer);
+
+        $esdorder = $this->getEsdOrder();
+
+        $esdorders = new EsdOrderCollection();
+        $esdorders->add($esdorder);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $esdorders
+        ]);
+
+        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esdOrders = $this->esdService->getEsdOrderListByCustomer($this->salesChannelContext);
+
+        $this->assertInstanceOf(EntitySearchResult::class, $esdOrders);
+    }
+
+    public function testGetEsdOrderByOrderLineItemIds(): void
+    {
+        $esdOrder = $this->getEsdOrder();
+        $esOrders = $this->getEsdOrderCollection($esdOrder);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'getEntities' => $esOrders
+        ]);
+
+        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
+
+        $esOrders = $this->esdService->getEsdOrderByOrderLineItemIds(['testId'], $this->context);
+
+        $this->assertInstanceOf(EsdOrderCollection::class, $esOrders);
+    }
+
+    public function testGetCompressFile(): void
+    {
+        $stringFile = $this->esdService->getCompressFile('productId');
+
+        $this->assertIsString($stringFile);
+        $this->assertStringContainsString('productId.zip', $stringFile);
+    }
+
+    public function testGetPathCompressFile(): void
+    {
+        $stringFile = $this->esdService->getPathCompressFile('productId');
+
+        $this->assertIsString($stringFile);
+        $this->assertStringContainsString('productId.zip', $stringFile);
+    }
+
+    public function testDownloadFileName(): void
+    {
+        $stringFile = $this->esdService->downloadFileName('test');
+
+        $this->assertIsString($stringFile);
+        $this->assertStringContainsString('test.zip', $stringFile);
+    }
+
+    public function testGetPrivateFolder(): void
+    {
+        $path = $this->esdService->getPrivateFolder();
+
+        $this->assertIsString($path);
+        $this->assertStringContainsString('/files/', $path);
+    }
+
+    public function testGetFileSize(): void
+    {
+        $fileSize = $this->esdService->getFileSize('productId');
+
+        $this->assertIsString($fileSize);
+    }
+
+    /**
+     * @dataProvider getSystemConfigProvider
+     */
+    public function testGetSystemConfig(string $name, $actual): void
+    {
+        $this->systemConfigService->expects(self::once())->method('get')->willReturn($name);
+
+        $value = $this->esdService->getSystemConfig($name);
+
+        $this->assertSame($value, $actual);
     }
 
     public function getProduct(): ProductEntity
@@ -337,6 +545,22 @@ class EsdServiceTest extends TestCase
         $esdMedia->setMedia($media);
 
         return $esdMedia;
+    }
+
+    public function getEsdOrder(): EsdOrderEntity
+    {
+        $esdOrder = new EsdOrderEntity();
+        $esdOrder->setId('esdOrderId');
+
+        return $esdOrder;
+    }
+
+    public function getEsdOrderCollection($esdOrder): EsdOrderCollection
+    {
+        $esdOrderCollection = new EsdOrderCollection();
+        $esdOrderCollection->add($esdOrder);
+
+        return $esdOrderCollection;
     }
 
     public function getSystemConfigProvider(): array
