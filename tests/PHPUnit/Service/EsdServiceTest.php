@@ -121,7 +121,7 @@ class EsdServiceTest extends TestCase
 
         $esdMediaCollection = $this->esdService->getEsdMediaByProductId('test', $this->context);
 
-        if($esd !== null && $esdMediaCollection !== null) {
+        if ($esd instanceof EsdEntity && $esdMediaCollection instanceof EsdMediaCollection) {
             $this->assertInstanceOf(EsdMediaCollection::class, $esdMediaCollection);
         } else {
             $this->assertSame(null, $esdMediaCollection);
@@ -258,11 +258,8 @@ class EsdServiceTest extends TestCase
 
     public function testGetMediaByLineItemId(): void
     {
-        $esdOrder = new EsdOrderEntity();
-        $esdOrder->setId('esdOrderId');
-
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'first' => $esdOrder
+            'first' => $this->getEsdOrder()
         ]);
 
         $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($search);
@@ -511,7 +508,7 @@ class EsdServiceTest extends TestCase
         return $esd;
     }
 
-    public function getEsdCollection($esd): EsdCollection
+    public function getEsdCollection(EsdEntity $esd): EsdCollection
     {
         $esdCollection = new EsdCollection();
         $esdCollection->add($esd);
@@ -519,7 +516,7 @@ class EsdServiceTest extends TestCase
         return $esdCollection;
     }
 
-    public function getEsdMediaCollection($esdMedia): EsdMediaCollection
+    public function getEsdMediaCollection(EsdMediaEntity $esdMedia): EsdMediaCollection
     {
         $esdMediaCollection = new EsdMediaCollection();
         $esdMediaCollection->add($esdMedia);
@@ -555,7 +552,7 @@ class EsdServiceTest extends TestCase
         return $esdOrder;
     }
 
-    public function getEsdOrderCollection($esdOrder): EsdOrderCollection
+    public function getEsdOrderCollection(EsdOrderEntity $esdOrder): EsdOrderCollection
     {
         $esdOrderCollection = new EsdOrderCollection();
         $esdOrderCollection->add($esdOrder);
