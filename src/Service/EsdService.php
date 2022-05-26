@@ -35,30 +35,33 @@ class EsdService
 
     private UrlGeneratorInterface $urlGenerator;
 
-    private FilesystemInterface $filesystemPrivate;
-
     private EntityRepositoryInterface $esdVideoRepository;
 
     private SystemConfigService $systemConfigService;
+
+    private FilesystemInterface $filesystemPublic;
 
     public function __construct(
         EntityRepositoryInterface $esdProductRepository,
         EntityRepositoryInterface $esdOrderRepository,
         EntityRepositoryInterface $productRepository,
         UrlGeneratorInterface $urlGenerator,
-        FilesystemInterface $filesystemPrivate,
         EntityRepositoryInterface $esdVideoRepository,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        FilesystemInterface $filesystemPublic
     ) {
         $this->esdProductRepository = $esdProductRepository;
         $this->esdOrderRepository = $esdOrderRepository;
         $this->productRepository = $productRepository;
         $this->urlGenerator = $urlGenerator;
-        $this->filesystemPrivate = $filesystemPrivate;
         $this->esdVideoRepository = $esdVideoRepository;
         $this->systemConfigService = $systemConfigService;
+        $this->filesystemPublic = $filesystemPublic;
     }
 
+    /**
+     * @throws \League\Flysystem\FileNotFoundException
+     */
     public function compressFiles($productId): void
     {
         if ($this->getSystemConfig('isDisableZipFile')) {
@@ -70,10 +73,6 @@ class EsdService
             return;
         }
 
-        if (!$this->checkExistAllFiles($esdMedia)) {
-            return;
-        }
-
         $criteria = new Criteria([$productId]);
         /** @var ProductEntity $product */
         $product = $this->productRepository->search($criteria, Context::createDefaultContext())->first();
@@ -81,33 +80,35 @@ class EsdService
             return;
         }
 
-        $outZipPath = $this->getPrivateFolder() . self::FOLDER_COMPRESS_NAME;
-        if (!is_dir($outZipPath)) {
-            mkdir($outZipPath, 0777);
+        $this->checkPathFolders();
+
+        $medias = $esdMedia->filter(function (EsdMediaEntity $media) {
+            return $media->getMedia() instanceof MediaEntity;
+        });
+
+        if (\count($medias) === 0) {
+            return;
         }
 
-        $zipFiles = [];
+        $zip = new \ZipArchive();
+        $zip->open($this->getCompressFile($productId), \ZipArchive::OVERWRITE | \ZipArchive::CREATE);
 
-        foreach ($esdMedia as $media) {
-            if (empty($media->getMedia())) {
-                continue;
-            }
+        $tempFiles = [];
+        /** @var EsdMediaEntity $media */
+        foreach ($medias as $media) {
+            $newfile = $this->getTempFolder() . $media->getMedia()->getFileName() . '.' . $media->getMedia()->getFileExtension();
 
-            $filePath = $this->urlGenerator->getRelativeMediaUrl($media->getMedia());
-            $folderName = $this->convertFileName($product->getName());
-            $localName = $folderName . '/' . $media->getMedia()->getFileName() . '.' . $media->getMedia()->getFileExtension();
-            $zipFiles[$filePath] = $localName;
+            $mediaBlob = $this->loadMediaFile($media->getMedia());
+            file_put_contents($newfile, $mediaBlob);
+
+            $tempFiles[] = $newfile;
+            $zip->addFile($newfile);
         }
 
-        if (count($zipFiles) > 0) {
-            $zip = new \ZipArchive();
-            $zip->open($this->getCompressFile($productId), \ZipArchive::OVERWRITE | \ZipArchive::CREATE);
+        $zip->close();
 
-            foreach ($zipFiles as $filePath => $localName) {
-                $zip->addFile($filePath, $localName);
-            }
-
-            $zip->close();
+        foreach ($tempFiles as $tempFile) {
+            unlink($tempFile);
         }
     }
 
@@ -128,11 +129,6 @@ class EsdService
         }
 
         return $esd->getEsdMedia();
-    }
-
-    public function getEsdVideoMediaByEsdIds(array $esdIds, Context $context): array
-    {
-        return $this->getEsdMediaByEsdIds($esdIds, $context);
     }
 
     public function getEsdMediaByEsdIds(array $esdIds, Context $context): array
@@ -315,11 +311,11 @@ class EsdService
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
 
         return number_format(
-                $size / pow(1024, $power),
-                2,
-                '.',
-                ','
-            ) . ' ' . $units[$power];
+            $size / pow(1024, $power),
+            2,
+            '.',
+            ','
+        ) . ' ' . $units[$power];
     }
 
     public function getSystemConfig(string $name): bool
@@ -330,6 +326,24 @@ class EsdService
         }
 
         return true;
+    }
+
+    private function checkPathFolders(): void
+    {
+        $outZipPath = $this->getPrivateFolder() . self::FOLDER_COMPRESS_NAME;
+        if (!is_dir($outZipPath)) {
+            mkdir($outZipPath);
+        }
+
+        $tmpPath = $this->getTempFolder();
+        if (!is_dir($tmpPath)) {
+            mkdir($tmpPath);
+        }
+    }
+
+    private function getTempFolder(): string
+    {
+        return $this->getPrivateFolder() . self::FOLDER_COMPRESS_NAME . '-tmp';
     }
 
     private function createCriteriaEsdOrder(string $customerId, ?string $productId = null): Criteria
@@ -377,22 +391,13 @@ class EsdService
         return preg_replace('/-+/', '-', $string);
     }
 
-    private function checkExistAllFiles(EsdMediaCollection $esdMedia): bool
+    /**
+     * @throws \League\Flysystem\FileNotFoundException
+     */
+    private function loadMediaFile(MediaEntity $media): string
     {
-        if (empty($esdMedia)) {
-            return false;
-        }
+        $path = $this->urlGenerator->getRelativeMediaUrl($media);
 
-        foreach ($esdMedia as $media) {
-            if (empty($media->getMedia())) {
-                continue;
-            }
-
-            if (!is_file($this->urlGenerator->getRelativeMediaUrl($media->getMedia()))) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->filesystemPublic->read($path);
     }
 }

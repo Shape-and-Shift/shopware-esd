@@ -4,6 +4,7 @@
 * Aktualisiert, um zu zeigen, dass die Standardansicht normal ist, auch wenn die Videofunktion aktiviert ist.
 * Aktualisiert auf kann das Produkt nicht gekauft werden, da alle Serienschlüssel vergeben wurden.
 * Schaltfläche zum Erhöhen des Bestands beim Importieren von Serienschlüsseln hinzugefügt.
+* CDN Kompatibilität hinzugefügt
 
 # 1.5.2
 * Events wurden aktualisiert, damit sie mit dem Flow Builder der Shopware-Plattformversion >= 6.4.6 kompatibel sind.

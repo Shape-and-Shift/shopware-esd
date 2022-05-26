@@ -4,6 +4,7 @@ namespace Sas\Esd\Storefront\Controller;
 
 use League\Flysystem\FilesystemInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
+use Sas\Esd\Message\CompressMediaMessage;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -30,8 +32,6 @@ class StreamDownloadController extends StorefrontController
 {
     private EntityRepositoryInterface $esdOrderRepository;
 
-    private FilesystemInterface $filesystemPrivate;
-
     private FilesystemInterface $filesystemPublic;
 
     private EsdService $esdService;
@@ -40,20 +40,22 @@ class StreamDownloadController extends StorefrontController
 
     private SystemConfigService $systemConfigService;
 
+    private MessageBusInterface $messageBus;
+
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
-        FilesystemInterface $filesystemPrivate,
         FilesystemInterface $filesystemPublic,
         EsdService $esdService,
         EsdDownloadService $esdDownloadService,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        MessageBusInterface $messageBus
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
-        $this->filesystemPrivate = $filesystemPrivate;
         $this->filesystemPublic = $filesystemPublic;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
         $this->systemConfigService = $systemConfigService;
+        $this->messageBus = $messageBus;
     }
 
     /**
@@ -222,6 +224,10 @@ class StreamDownloadController extends StorefrontController
         if (!is_file($this->esdService->getCompressFile($productId))) {
             // Create a zip file for old version
             $this->esdService->compressFiles($productId);
+            $message = new CompressMediaMessage();
+            $message->setProductId($productId);
+
+            $this->messageBus->dispatch($message);
         }
 
         if (!$this->systemConfigService->get('SasEsd.config.isEsdVideo')) {

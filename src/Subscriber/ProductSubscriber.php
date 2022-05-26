@@ -2,19 +2,20 @@
 
 namespace Sas\Esd\Subscriber;
 
-use Sas\Esd\Service\EsdService;
+use Sas\Esd\Message\CompressMediaMessage;
 use Shopware\Core\Content\Product\ProductEvents;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Storefront\Page\Product\ProductPageCriteriaEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProductSubscriber implements EventSubscriberInterface
 {
-    private EsdService $esdService;
+    private MessageBusInterface $messageBus;
 
-    public function __construct(EsdService $esdService)
+    public function __construct(MessageBusInterface $messageBus)
     {
-        $this->esdService = $esdService;
+        $this->messageBus = $messageBus;
     }
 
     public static function getSubscribedEvents(): array
@@ -27,9 +28,14 @@ class ProductSubscriber implements EventSubscriberInterface
 
     public function onProductsWritten(EntityWrittenEvent $event): void
     {
-        if (!empty($event->getIds()[0])) {
-            $this->esdService->compressFiles($event->getIds()[0]);
+        if (empty($event->getIds()[0])) {
+            return;
         }
+
+        $message = new CompressMediaMessage();
+        $message->setProductId($event->getIds()[0]);
+
+        $this->messageBus->dispatch($message);
     }
 
     public function onProductPageCriteria(ProductPageCriteriaEvent $event): void
