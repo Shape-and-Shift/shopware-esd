@@ -57,7 +57,8 @@
         </service>
 
         <service id="Sas\Esd\Subscriber\ProductSubscriber">
-            <argument type="service" id="Sas\Esd\Service\EsdService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -93,11 +94,12 @@
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
-            <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -138,9 +140,9 @@
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
-            <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="sas_product_esd_video.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="shopware.filesystem.public"/>
         </service>
 
         <service id="Sas\Esd\Service\EsdOrderService">
@@ -168,8 +170,9 @@
         </service>
 
         <!-- Message -->
-        <service id="Sas\Esd\Message\SendMailHandler">
-            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+        <service id="Sas\Esd\Message\CompressMediaHandler">
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
+
             <tag name="messenger.message_handler"/>
         </service>
 
