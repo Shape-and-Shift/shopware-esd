@@ -96,13 +96,15 @@ class EsdService
         $tempFiles = [];
         /** @var EsdMediaEntity $media */
         foreach ($medias as $media) {
-            $newfile = $this->getTempFolder() . $media->getMedia()->getFileName() . '.' . $media->getMedia()->getFileExtension();
+            $filename = $media->getMedia()->getFileName() . '.' . $media->getMedia()->getFileExtension();
+            $newfile = $this->getTempFolder() . '/' . $filename;
 
             $mediaBlob = $this->loadMediaFile($media->getMedia());
             file_put_contents($newfile, $mediaBlob);
 
             $tempFiles[] = $newfile;
-            $zip->addFile($newfile);
+
+            $zip->addFile($newfile, $filename);
         }
 
         $zip->close();
@@ -311,11 +313,11 @@ class EsdService
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
 
         return number_format(
-            $size / pow(1024, $power),
-            2,
-            '.',
-            ','
-        ) . ' ' . $units[$power];
+                $size / pow(1024, $power),
+                2,
+                '.',
+                ','
+            ) . ' ' . $units[$power];
     }
 
     public function getSystemConfig(string $name): bool
