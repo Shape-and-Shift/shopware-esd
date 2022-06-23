@@ -13,9 +13,7 @@
         }
     ],
     "require":{
-        "shopware/core": "~6.4.6",
-        "shopware/storefront":"*",
-        "dompdf/dompdf": "^1.2.1"
+        "shopware/core": "^6.4.6"
     },
     "require-dev":{
         "phpunit/phpunit": "^9.5"
