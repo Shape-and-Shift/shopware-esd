@@ -16,12 +16,11 @@ Component.override('sw-order-state-history-card', {
                     return;
                 }
 
-                if (item.product.extensions.esd?.serial?.length <= 0)
-                {
+                if (item.product.extensions.esd?.serial?.length <= 0) {
                     return;
                 }
 
-                const availableSerials = item.product.extensions.esd.serial.filter(item => item === null);
+                const availableSerials = item.product.extensions.esd.serial.filter(item => !item.esdOrder);
 
                 if (availableSerials.length <= 0) {
                     isSelected = false;
