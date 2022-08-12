@@ -1,3 +1,6 @@
+# 1.5.4
+* Fixed error when applying promitional code
+
 # 1.5.3
 * Fixed to be able to sort the serials by Assigned client
 * Fixed issue of show withdrawal
