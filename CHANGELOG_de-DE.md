@@ -1,3 +1,6 @@
+# 1.5.4
+* Fehler bei der Anwendung von Promitional Code behoben
+
 # 1.5.3
 * Behoben, um die Seriennummern nach zugewiesenem Client sortieren zu können.
 * Problem mit der Rücknahme von Anzeigen behoben.

@@ -8,7 +8,7 @@ jobs:
     build:
         uses: FriendsOfShopware/actions/.github/workflows/store.yml@main
         with:
-            extensionName: ${{ github.event.repository.name }}
+            extensionName: SasEsd
             shopwareVersion: '6.4.10'
         secrets:
             accountUser: ${{ secrets.ACCOUNT_USER }}
