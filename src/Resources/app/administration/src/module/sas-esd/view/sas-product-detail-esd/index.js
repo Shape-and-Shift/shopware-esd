@@ -17,7 +17,7 @@ Component.register('sas-product-detail-esd', {
     data() {
         return {
             activeModal: '',
-            fileAccept: '*',
+            fileAccept: '*/*',
             selectedItems: null,
             isLoading: true,
             isLoadedEsd: false,
