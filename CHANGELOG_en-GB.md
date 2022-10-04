@@ -1,3 +1,7 @@
+# 1.5.5
+* Fixed upload duplicate media file
+* Fixed fileAccept to accept all filetypes
+
 # 1.5.4
 * Fixed error when applying promitional code
 
