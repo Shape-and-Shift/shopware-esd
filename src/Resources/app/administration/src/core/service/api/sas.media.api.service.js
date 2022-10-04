@@ -61,6 +61,7 @@ class SasMediaApiService extends ApiService {
                     ));
                 });
             }).catch((cause) => {
+                task.plugin = 'ESD';
                 task.error = cause;
                 task.running = false;
                 failureUploads += 1;
@@ -161,6 +162,44 @@ class SasMediaApiService extends ApiService {
             listener(this.mediaService._createUploadEvent(
                 UploadEventProcess, this.tag, { fileName: this.fileNameUploading, process })
             );
+        });
+    }
+
+    getAdminSystemMedia(fileName, extension) {
+        const apiRoute = `/_action/${this.getApiBasePath()}/esd`;
+        return this.httpClient.get(
+            apiRoute,
+            {
+                params: { fileName, extension },
+                headers: this.getBasicHeaders(),
+            },
+        ).then((response) => {
+            return ApiService.handleResponse(response);
+        });
+    }
+
+    getAdminSystemMediaById(mediaId) {
+        const apiRoute = `/_action/${this.getApiBasePath()}/esd/${mediaId}`;
+        return this.httpClient.get(
+            apiRoute,
+            {
+                headers: this.getBasicHeaders(),
+            },
+        ).then((response) => {
+            return ApiService.handleResponse(response);
+        });
+    }
+
+    provideName(fileName, extension, mediaId = null) {
+        const apiRoute = `/_action/${this.getApiBasePath()}/esd/provide-name`;
+        return this.httpClient.get(
+            apiRoute,
+            {
+                params: { fileName, extension, mediaId },
+                headers: this.getBasicHeaders(),
+            },
+        ).then((response) => {
+            return ApiService.handleResponse(response);
         });
     }
 }

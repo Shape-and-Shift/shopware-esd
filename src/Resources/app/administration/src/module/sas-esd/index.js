@@ -5,6 +5,7 @@ import './component/sas-esd-serial-overview';
 import './component/sas-esd-modal-csv';
 import './component/sas-process-bar';
 import './component/sas-switch-esd-button';
+import './component/sas-duplicated-media';
 
 import './view/sas-product-detail-esd';
 import './view/sas-product-detail-esd-video';

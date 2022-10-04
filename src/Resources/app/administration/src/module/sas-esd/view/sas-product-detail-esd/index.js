@@ -8,7 +8,7 @@ const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 Component.register('sas-product-detail-esd', {
     template,
 
-    inject: ['repositoryFactory', 'systemConfigApiService'],
+    inject: ['repositoryFactory', 'systemConfigApiService', 'sasMediaService'],
 
     mixins: [
         Mixin.getByName('notification')
@@ -17,7 +17,7 @@ Component.register('sas-product-detail-esd', {
     data() {
         return {
             activeModal: '',
-            fileAccept: '*',
+            fileAccept: '*/*',
             selectedItems: null,
             isLoading: true,
             isLoadedEsd: false,
@@ -280,9 +280,25 @@ Component.register('sas-product-detail-esd', {
                 await this.productRepository.save(this.product, Shopware.Context.api);
             }
 
-            this.mediaRepository.get(targetId, Shopware.Context.api).then((updatedMedia) => {
-                this.createEsdMediaAssoc(updatedMedia);
+            this.sasMediaService.getAdminSystemMediaById(targetId).then((updatedMedia) => {
+                const media = this.createNewMedia(updatedMedia);
+                this.createEsdMediaAssoc(media);
             });
+        },
+
+        createNewMedia(updatedMedia) {
+            const media = this.mediaRepository.create();
+            media.id = updatedMedia.id;
+            media.fileExtension = updatedMedia.fileExtension;
+            media.fileName = updatedMedia.fileName;
+            media.fileSize = updatedMedia.fileSize;
+            media.hasFile = updatedMedia.hasFile;
+            media.mediaFolderId = updatedMedia.mediaFolderId;
+            media.mimeType = updatedMedia.mimeType;
+            media.private = updatedMedia.private;
+            media.userId = updatedMedia.userId;
+
+            return media
         },
 
         onDeleteMediaItem(mediaId) {

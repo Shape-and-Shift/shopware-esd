@@ -112,6 +112,14 @@
             </call>
         </service>
 
+        <service id="Sas\Esd\Api\Controller\MediaController" public="true">
+            <argument type="service" id="Sas\Esd\Service\EsdMediaService"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileNameProvider"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="Sas\Esd\Storefront\Controller\CheckoutControllerDecorator" decorates="Shopware\Storefront\Controller\CheckoutController">
             <argument type="service" id="Sas\Esd\Storefront\Controller\CheckoutControllerDecorator.inner"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
@@ -167,6 +175,11 @@
 
         <service id="Sas\Esd\Service\EsdCartService">
             <argument type="service" id="product.repository"/>
+        </service>
+
+        <service id="Sas\Esd\Service\EsdMediaService">
+            <argument type="service" id="logger"/>
+            <argument type="service" id="media.repository"/>
         </service>
 
         <!-- Message -->

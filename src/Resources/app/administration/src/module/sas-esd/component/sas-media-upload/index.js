@@ -7,7 +7,7 @@ Shopware.Component.extend('sas-media-upload', 'sw-media-upload-v2', {
         fileAccept: {
             type: String,
             required: false,
-            default: 'image/*'
+            default: '*/*'
         }
 
     },
