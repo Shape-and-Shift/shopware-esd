@@ -1,3 +1,7 @@
+# 1.5.5
+* Duplizierte Mediendatei hochladen behoben
+* Behoben fileAccept akzeptiert nun alle Dateitypen
+
 # 1.5.4
 * Fehler bei der Anwendung von Promitional Code behoben
 
