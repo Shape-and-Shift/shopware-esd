@@ -41,6 +41,8 @@ class EsdService
 
     private FilesystemInterface $filesystemPublic;
 
+    private FilesystemInterface $filesystemPrivate;
+
     public function __construct(
         EntityRepositoryInterface $esdProductRepository,
         EntityRepositoryInterface $esdOrderRepository,
@@ -48,7 +50,8 @@ class EsdService
         UrlGeneratorInterface $urlGenerator,
         EntityRepositoryInterface $esdVideoRepository,
         SystemConfigService $systemConfigService,
-        FilesystemInterface $filesystemPublic
+        FilesystemInterface $filesystemPublic,
+        FilesystemInterface $filesystemPrivate
     ) {
         $this->esdProductRepository = $esdProductRepository;
         $this->esdOrderRepository = $esdOrderRepository;
@@ -57,6 +60,7 @@ class EsdService
         $this->esdVideoRepository = $esdVideoRepository;
         $this->systemConfigService = $systemConfigService;
         $this->filesystemPublic = $filesystemPublic;
+        $this->filesystemPrivate = $filesystemPrivate;
     }
 
     /**
@@ -400,6 +404,7 @@ class EsdService
     {
         $path = $this->urlGenerator->getRelativeMediaUrl($media);
 
+        if ( $media->isPrivate() )  return $this->filesystemPrivate->read($path);
         return $this->filesystemPublic->read($path);
     }
 }

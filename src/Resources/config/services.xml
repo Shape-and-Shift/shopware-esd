@@ -151,6 +151,7 @@
             <argument type="service" id="sas_product_esd_video.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="shopware.filesystem.private"/>
         </service>
 
         <service id="Sas\Esd\Service\EsdOrderService">
