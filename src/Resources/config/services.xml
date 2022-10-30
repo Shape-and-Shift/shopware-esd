@@ -95,6 +95,7 @@
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

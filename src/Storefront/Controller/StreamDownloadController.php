@@ -34,6 +34,8 @@ class StreamDownloadController extends StorefrontController
 
     private FilesystemInterface $filesystemPublic;
 
+    private FilesystemInterface $filesystemPrivate;
+
     private EsdService $esdService;
 
     private EsdDownloadService $esdDownloadService;
@@ -45,6 +47,7 @@ class StreamDownloadController extends StorefrontController
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         FilesystemInterface $filesystemPublic,
+        FilesystemInterface $filesystemPrivate,
         EsdService $esdService,
         EsdDownloadService $esdDownloadService,
         SystemConfigService $systemConfigService,
@@ -52,6 +55,7 @@ class StreamDownloadController extends StorefrontController
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->filesystemPublic = $filesystemPublic;
+        $this->filesystemPrivate = $filesystemPrivate;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
         $this->systemConfigService = $systemConfigService;
@@ -206,7 +210,7 @@ class StreamDownloadController extends StorefrontController
 
     private function mediaProcess(MediaEntity $media): ?StreamedResponse
     {
-        $fileSystem = $this->filesystemPublic;
+        $fileSystem = ($media->isPrivate())?$this->filesystemPrivate:$this->filesystemPublic;
         $path = $this->esdService->getPathVideoMedia($media);
 
         return new StreamedResponse(function () use ($fileSystem, $path): void {
