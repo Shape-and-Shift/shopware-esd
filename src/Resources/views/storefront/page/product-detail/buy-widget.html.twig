@@ -2,6 +2,7 @@
 
 {% block page_product_detail_delivery_informations %}
     {% set esd = searchEsdByProductIds([page.product.id], context.context) %}
+
     {% if shopware.config.SasEsd.config.isShowInstantESDDownload == true %}
         {% if esd.count > 0 %}
             <div class="product-detail-delivery-information">
