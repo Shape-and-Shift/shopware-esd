@@ -22,7 +22,7 @@ class ProductSubscriber implements EventSubscriberInterface
     {
         return [
             ProductEvents::PRODUCT_WRITTEN_EVENT => 'onProductsWritten',
-            ProductPageCriteriaEvent::class => 'onProductPageCriteria'
+            ProductPageCriteriaEvent::class => 'onProductPageCriteria',
         ];
     }
 

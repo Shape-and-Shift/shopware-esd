@@ -11,6 +11,7 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -72,7 +73,7 @@ class EsdService
     /**
      * @throws \League\Flysystem\FileNotFoundException
      */
-    public function compressFiles($productId): void
+    public function compressFiles(string $productId): void
     {
         if ($this->getSystemConfig('isDisableZipFile')) {
             return;
@@ -86,7 +87,7 @@ class EsdService
         $criteria = new Criteria([$productId]);
         /** @var ProductEntity $product */
         $product = $this->productRepository->search($criteria, Context::createDefaultContext())->first();
-        if (empty($product)) {
+        if (!$product instanceof ProductEntity) {
             return;
         }
 
@@ -106,10 +107,18 @@ class EsdService
         $tempFiles = [];
         /** @var EsdMediaEntity $media */
         foreach ($medias as $media) {
+            if (!$media->getMedia() instanceof MediaEntity) {
+                continue;
+            }
+
             $filename = $media->getMedia()->getFileName() . '.' . $media->getMedia()->getFileExtension();
             $newfile = $this->getTempFolder() . '/' . $filename;
 
             $mediaBlob = $this->loadMediaFile($media->getMedia());
+            if (!\is_string($mediaBlob)) {
+                continue;
+            }
+
             file_put_contents($newfile, $mediaBlob);
 
             $tempFiles[] = $newfile;
@@ -132,11 +141,11 @@ class EsdService
 
         /** @var EsdEntity $esd */
         $esd = $this->esdProductRepository->search($criteria, $context)->first();
-        if (empty($esd)) {
+        if (!$esd instanceof EsdEntity) {
             return null;
         }
 
-        if (empty($esd->getEsdMedia())) {
+        if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
             return null;
         }
 
@@ -150,13 +159,17 @@ class EsdService
         $criteria->addFilter(new EqualsAnyFilter('id', $esdIds));
 
         $esdCollection = $this->esdProductRepository->search($criteria, $context)->getEntities();
-        if (empty($esdCollection)) {
+        if ($esdCollection->count() === 0) {
             return [];
         }
 
         $esdMediaByEsdIds = [];
         /** @var EsdEntity $esd */
         foreach ($esdCollection as $esd) {
+            if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
+                continue;
+            }
+
             /** @var EsdMediaEntity $esdMedia */
             foreach ($esd->getEsdMedia() as $esdMedia) {
                 if (empty($esdMedia->getMedia())) {
@@ -177,7 +190,7 @@ class EsdService
 
         $esdVideoByEsdIds = [];
         $esdVideoCollection = $this->esdVideoRepository->search($criteria, $context)->getEntities();
-        if (empty($esdVideoCollection)) {
+        if ($esdVideoCollection->count() === 0) {
             return [];
         }
 
@@ -218,18 +231,20 @@ class EsdService
 
         /** @var EsdEntity $esd */
         $esd = $this->esdProductRepository->search($criteria, $context)->first();
-        if (empty($esd)) {
+        if (!$esd instanceof EsdEntity) {
             return null;
         }
 
-        if (empty($esd->getEsdMedia())) {
+        if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
             return null;
         }
 
         $esdMedias = $esd->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) use ($mediaId) {
             return $esdMedia->getMediaId() === $mediaId;
         });
-        if (empty($esdMedias->first())) {
+
+        $esdMedia = $esdMedias->first();
+        if (!$esdMedia instanceof EsdMediaEntity) {
             return null;
         }
 
@@ -241,13 +256,13 @@ class EsdService
         return $this->urlGenerator->getRelativeMediaUrl($media);
     }
 
-    public function getEsdOrderByCustomer(string $esdOrderId, SalesChannelContext $context): EsdOrderEntity
+    public function getEsdOrderByCustomer(CustomerEntity $customer, string $esdOrderId, SalesChannelContext $context): ?EsdOrderEntity
     {
         $criteria = new Criteria([$esdOrderId]);
         $criteria->addAssociation('orderLineItem.order');
         $criteria->addAssociation('esd');
         $criteria->addFilter(
-            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId())
+            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $customer->getId())
         );
 
         /** @var EsdOrderEntity $esdOrder */
@@ -256,7 +271,7 @@ class EsdService
         return $esdOrder;
     }
 
-    public function getEsdOrderByGuest(string $esdOrderId, SalesChannelContext $context): EsdOrderEntity
+    public function getEsdOrderByGuest(string $esdOrderId, SalesChannelContext $context): ?EsdOrderEntity
     {
         $criteria = new Criteria([$esdOrderId]);
         $criteria->addAssociation('orderLineItem');
@@ -268,13 +283,17 @@ class EsdService
         return $esdOrder;
     }
 
-    public function getEsdOrderListByCustomer(SalesChannelContext $context): EntitySearchResult
+    public function getEsdOrderListByCustomer(CustomerEntity $customer, SalesChannelContext $context): EntitySearchResult
     {
-        $criteria = $this->createCriteriaEsdOrder($context->getCustomer()->getId());
+        $criteria = $this->createCriteriaEsdOrder($customer->getId());
 
         $esdOrders = $this->esdOrderRepository->search($criteria, $context->getContext());
         /** @var EsdOrderEntity $esdOrder */
         foreach ($esdOrders as $esdOrder) {
+            if (!$esdOrder->getEsd()->getEsdMedia() instanceof EsdMediaCollection) {
+                continue;
+            }
+
             $esdMedias = $esdOrder->getEsd()->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) {
                 return $esdMedia->getMediaId() !== null;
             });
@@ -296,17 +315,17 @@ class EsdService
         return $esOrders;
     }
 
-    public function getCompressFile($productId): string
+    public function getCompressFile(string $productId): string
     {
         return $this->getPrivateFolder() . $this->getPathCompressFile($productId);
     }
 
-    public function getPathCompressFile($productId): string
+    public function getPathCompressFile(string $productId): string
     {
         return self::FOLDER_COMPRESS_NAME . "/$productId.zip";
     }
 
-    public function downloadFileName($string): string
+    public function downloadFileName(string $string): string
     {
         return $this->convertFileName($string) . '.zip';
     }
@@ -323,11 +342,11 @@ class EsdService
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
 
         return number_format(
-                $size / pow(1024, $power),
-                2,
-                '.',
-                ','
-            ) . ' ' . $units[$power];
+            $size / pow(1024, $power),
+            2,
+            '.',
+            ','
+        ) . ' ' . $units[$power];
     }
 
     public function getSystemConfig(string $name): bool
@@ -388,8 +407,9 @@ class EsdService
         return $criteria;
     }
 
-    private function convertFileName($string): string
+    private function convertFileName(string $fileName): string
     {
+        $string = $fileName;
         $string = str_replace(' ', '-', $string);
         $string = str_replace('ä', 'ae', $string);
         $string = str_replace('ü', 'ue', $string);
@@ -398,9 +418,9 @@ class EsdService
         $string = str_replace('Ö', 'Oe', $string);
         $string = str_replace('Ü', 'Ue', $string);
         $string = str_replace('ß', 'ss', $string);
-        $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string);
+        $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // @phpstan-ignore-line
 
-        return preg_replace('/-+/', '-', $string);
+        return preg_replace('/-+/', '-', $string); // @phpstan-ignore-line
     }
 
     /**

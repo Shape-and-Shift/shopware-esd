@@ -7,6 +7,19 @@
         {% endif %}
     {% endif %}
 
+    {% set isDisabledDownload = false %}
+    {% if esdMedia.downloadLimitNumber > 0 %}
+        {% if downloadLimitItems[esdOrder.id][esdMedia.id] %}
+            {% set downloaded = downloadLimitItems[esdOrder.id][esdMedia.id] %}
+        {% else %}
+            {% set downloaded = 0 %}
+        {% endif %}
+
+        {% if downloaded >= esdMedia.downloadLimitNumber %}
+            {% set isDisabledDownload = true %}
+        {% endif %}
+    {% endif %}
+
     {% block page_account_sas_esd_download_table_action_buttons %}
         {% if actionOption == 0 %}
             {% block page_account_sas_esd_download_table_action_buttons_play_and_download %}

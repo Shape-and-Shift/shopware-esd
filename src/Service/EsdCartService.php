@@ -8,8 +8,8 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Exception\ProductNotEnoughSerialException;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
@@ -45,13 +45,11 @@ class EsdCartService
         $criteria = new Criteria($productIds);
         $criteria->addAssociation('esd.serial.esdOrder');
 
-        /** @var $products EntityCollection */
         $products = $this->productRepository->search($criteria, $context)->getEntities();
 
+        /** @var ProductEntity $product */
         foreach ($products as $product) {
-            /** @var $productEsd EsdEntity|null */
             $productEsd = $product->getExtension('esd');
-
             if (!$productEsd instanceof EsdEntity) {
                 continue;
             }
@@ -64,7 +62,7 @@ class EsdCartService
                 continue;
             }
 
-            $availableSerials = $productEsd->getSerial()->filter(function(EsdSerialEntity $serial) {
+            $availableSerials = $productEsd->getSerial()->filter(function (EsdSerialEntity $serial) {
                 return !$serial->getEsdOrder() instanceof EsdOrderEntity;
             });
 

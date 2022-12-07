@@ -193,7 +193,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                     'technical_name' => $technicalName,
                 ]
             );
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

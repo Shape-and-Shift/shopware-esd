@@ -143,7 +143,7 @@ class EsdEntity extends Entity
         return $this->hasCustomDownloadLimit;
     }
 
-    public function setHasCustomDownloadLimit($hasCustomDownloadLimit): void
+    public function setHasCustomDownloadLimit(bool $hasCustomDownloadLimit): void
     {
         $this->hasCustomDownloadLimit = $hasCustomDownloadLimit;
     }
@@ -153,7 +153,7 @@ class EsdEntity extends Entity
         return $this->downloadLimitNumber;
     }
 
-    public function setDownloadLimitNumber($downloadLimitNumber): void
+    public function setDownloadLimitNumber(int $downloadLimitNumber): void
     {
         $this->downloadLimitNumber = $downloadLimitNumber;
     }
@@ -163,7 +163,7 @@ class EsdEntity extends Entity
         return $this->hasUnlimitedDownload;
     }
 
-    public function setHasUnlimitedDownload($hasUnlimitedDownload): void
+    public function setHasUnlimitedDownload(bool $hasUnlimitedDownload): void
     {
         $this->hasUnlimitedDownload = $hasUnlimitedDownload;
     }

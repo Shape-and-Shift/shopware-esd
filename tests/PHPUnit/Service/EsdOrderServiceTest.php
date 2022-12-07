@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class EsdOrderServiceTest extends TestCase
 {
@@ -56,7 +55,7 @@ class EsdOrderServiceTest extends TestCase
      */
     public function testAddNewEsdOrders(?ProductCollection $products): void
     {
-        $this->esdOrderRepository->expects(self::once())->method('create');
+        $this->esdOrderRepository->expects(static::once())->method('create');
 
         $order = $this->getOrder();
 
@@ -68,14 +67,14 @@ class EsdOrderServiceTest extends TestCase
         $esd = $this->getEsd(true);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'getTotal' => 1
+            'getTotal' => 1,
         ]);
 
-        $this->esdSerialRepository->expects(self::once())->method('search')->willReturn($search);
+        $this->esdSerialRepository->expects(static::once())->method('search')->willReturn($search);
 
         $value = $this->esdOrderService->fetchSerials($esd, $this->context);
 
-        $this->assertInstanceOf(EntitySearchResult::class, $value);
+        static::assertInstanceOf(EntitySearchResult::class, $value);
     }
 
     public function testFetchSerialsNullWhenHasSerialIsFalse(): void
@@ -84,7 +83,7 @@ class EsdOrderServiceTest extends TestCase
 
         $value = $this->esdOrderService->fetchSerials($esd, $this->context);
 
-        $this->assertSame($value, null);
+        static::assertSame($value, null);
     }
 
     public function testFetchSerialsNullWhenTotalEqualZero(): void
@@ -92,14 +91,14 @@ class EsdOrderServiceTest extends TestCase
         $esd = $this->getEsd(true);
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'getTotal' => 0
+            'getTotal' => 0,
         ]);
 
-        $this->esdSerialRepository->expects(self::once())->method('search')->willReturn($search);
+        $this->esdSerialRepository->expects(static::once())->method('search')->willReturn($search);
 
         $value = $this->esdOrderService->fetchSerials($esd, $this->context);
 
-        $this->assertSame($value, null);
+        static::assertSame($value, null);
     }
 
     public function testMailTemplateData(): void
@@ -144,25 +143,25 @@ class EsdOrderServiceTest extends TestCase
 
         $esdOrderCollection->add($esdOrder);
 
-        $orderSearch = $this->createConfiguredMock(EntitySearchResult::class,[
+        $orderSearch = $this->createConfiguredMock(EntitySearchResult::class, [
             'getEntities' => $esdOrderCollection,
-            'filter' => $esdOrderCollection
+            'filter' => $esdOrderCollection,
         ]);
 
-        $this->esdOrderRepository->expects(self::once())->method('search')->willReturn($orderSearch);
+        $this->esdOrderRepository->expects(static::once())->method('search')->willReturn($orderSearch);
 
         $esdMediaByEsdIds[$esd->getId()][$esdMedia->getId()] = $esdMedia;
-        $this->esdService->expects(self::once())->method('getEsdMediaByEsdIds')->willReturn($esdMediaByEsdIds);
-        $this->esdService->expects(self::once())->method('getFileSize')->willReturn('testFileSize');
+        $this->esdService->expects(static::once())->method('getEsdMediaByEsdIds')->willReturn($esdMediaByEsdIds);
+        $this->esdService->expects(static::once())->method('getFileSize')->willReturn('testFileSize');
 
         $templateData = $this->esdOrderService->mailTemplateData($order, $this->context);
 
-        $this->assertNotEmpty($templateData);
-        $this->assertArrayHasKey('esdMediaFiles', $templateData);
-        $this->assertArrayHasKey('esdOrderLineItems', $templateData);
-        $this->assertArrayHasKey('esdOrderListIds', $templateData);
-        $this->assertArrayHasKey('esdFiles', $templateData);
-        $this->assertArrayHasKey('esdSerials', $templateData);
+        static::assertNotEmpty($templateData);
+        static::assertArrayHasKey('esdMediaFiles', $templateData);
+        static::assertArrayHasKey('esdOrderLineItems', $templateData);
+        static::assertArrayHasKey('esdOrderListIds', $templateData);
+        static::assertArrayHasKey('esdFiles', $templateData);
+        static::assertArrayHasKey('esdSerials', $templateData);
     }
 
     public function testIsEsdOrder(): void
@@ -171,7 +170,7 @@ class EsdOrderServiceTest extends TestCase
 
         $isEsdOrder = $this->esdOrderService->isEsdOrder($order);
 
-        $this->assertTrue($isEsdOrder);
+        static::assertTrue($isEsdOrder);
     }
 
     public function testIsNotEsdOrder(): void
@@ -183,7 +182,7 @@ class EsdOrderServiceTest extends TestCase
 
         $isEsdOrder = $this->esdOrderService->isEsdOrder($order);
 
-        $this->assertFalse($isEsdOrder);
+        static::assertFalse($isEsdOrder);
     }
 
     public function getOrder(): OrderEntity
@@ -240,11 +239,11 @@ class EsdOrderServiceTest extends TestCase
 
         return [
             'ProductCollection can be set' => [
-                $productCollection
+                $productCollection,
             ],
             'ProductCollection can be null' => [
-                null
-            ]
+                null,
+            ],
         ];
     }
 

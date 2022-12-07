@@ -77,6 +77,36 @@ class EsdCartServiceTest extends TestCase
         $this->esdCartService->checkProductsWithSerialKey($productIds, $this->context);
     }
 
+    public function dataCheckProductsProvider(): array
+    {
+        return [
+            'Test product does not have Esd' => [
+                ['id1'], false, false, false,
+            ],
+            'Test product has Esd but not has serial' => [
+                ['id1'], true, false, false,
+            ],
+            'Test product has Esd and all of serial not assigned' => [
+                ['id1'], true, true, false,
+            ],
+            'Test product has Esd and all of serial assigned so throw exception' => [
+                ['id1'], true, true, true,
+            ],
+        ];
+    }
+
+    public function dataIsCanCheckoutOrderProvider(): array
+    {
+        return [
+            'Can checkout order' => [
+                ['id1'], true, true, false,
+            ],
+            'Can not checkout order' => [
+                ['id1'], true, true, true,
+            ],
+        ];
+    }
+
     private function mockProducts(array $entities): void
     {
         $collection = $this->createMock(EntityCollection::class);
@@ -118,43 +148,13 @@ class EsdCartServiceTest extends TestCase
             }
 
             $product->setExtensions([
-                'esd' => $productEsd
+                'esd' => $productEsd,
             ]);
 
             $products[] = $product;
         }
 
         return $products;
-    }
-
-    public function dataCheckProductsProvider(): array
-    {
-        return [
-            "Test product does not have Esd" => [
-                ['id1'], false, false, false
-            ],
-            "Test product has Esd but not has serial" => [
-                ['id1'], true, false, false
-            ],
-            "Test product has Esd and all of serial not assigned" => [
-                ['id1'], true, true, false
-            ],
-            "Test product has Esd and all of serial assigned so throw exception" => [
-                ['id1'], true, true, true
-            ],
-        ];
-    }
-
-    public function dataIsCanCheckoutOrderProvider(): array
-    {
-        return [
-            "Can checkout order" => [
-                ['id1'], true, true, false
-            ],
-            "Can not checkout order" => [
-                ['id1'], true, true, true
-            ],
-        ];
     }
 
     private function arrayAsGenerator(array $array): \Generator

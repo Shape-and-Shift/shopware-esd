@@ -20,7 +20,7 @@ class Migration1617469293CreateMediaDownload extends MigrationStep
                 ALTER TABLE `sas_product_esd_media`
                 ADD COLUMN `download_limit_number` INT(11) DEFAULT NULL AFTER `media_id`
             ');
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
         }
 
         try {

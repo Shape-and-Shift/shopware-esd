@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Checkout\Cart\Subscriber;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
@@ -65,12 +66,15 @@ class OrderPlacedSubscriber
         $esdProducts = new ProductCollection();
         /** @var ProductEntity $product */
         foreach ($products as $product) {
-            if (!$product->getExtension('esd')) {
+            $esd = $product->getExtension('esd');
+            if (!$esd instanceof EsdEntity) {
                 continue;
             }
 
-            /** @var EsdEntity $esd */
-            $esd = $product->getExtension('esd');
+            if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
+                continue;
+            }
+
             $esdMedias = $esd->getEsdMedia()->filter(function (EsdMediaEntity $esdMedia) {
                 return $esdMedia->getMediaId() !== null;
             });

@@ -10,12 +10,12 @@ class EsdMediaDownloadHistoryEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $esdOrderId;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $esdMediaId;
 

@@ -4,7 +4,7 @@ namespace Sas\Esd\Message;
 
 class CompressMediaMessage
 {
-    private ?string $productId;
+    private string $productId;
 
     public function setProductId(string $productId): void
     {

@@ -35,6 +35,10 @@
                     <sw-media-preview-v2 :source="item.media.id" :mediaIsPrivate="item.media.private"></sw-media-preview-v2>
                 </template>
 
+                <template #column-fileType="{ item }">
+                    {{ item.media.fileExtension }}
+                </template>
+
                 <template v-if="isDisableZipFile" #column-downloadLimit="{ item, isInlineEdit }">
                     <template v-if="isInlineEdit">
                         <sw-field v-model="item.downloadLimitNumber"

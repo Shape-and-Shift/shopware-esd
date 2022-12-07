@@ -136,9 +136,9 @@ Component.register('sas-product-detail-esd', {
     },
 
     methods: {
-        createdComponent() {
-            this.fetchMediaConfig();
-            this.fetchEsdConfig();
+        async createdComponent() {
+            await this.fetchMediaConfig();
+            await this.fetchEsdConfig();
 
             if (this.product.id !== this.parentProduct.id) {
                 Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', false);
@@ -196,7 +196,9 @@ Component.register('sas-product-detail-esd', {
                 const esdMediaList = this.createMediaCollection();
                 Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
                 esdMedia.forEach((esdMedia) => {
-                    if (esdMedia.media.mediaType.name !== 'VIDEO') {
+                    if (this.isEsdVideo && esdMedia.media.mediaType.name === 'VIDEO') {
+                        // We don't show video in this list if the user enable esd video mode
+                    } else {
                         Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
                     }
                 })
@@ -211,7 +213,11 @@ Component.register('sas-product-detail-esd', {
                 {
                     property: 'media.fileName',
                     label: 'sas-esd.media.fileName'
-                }
+                },
+                {
+                    property: 'fileType',
+                    label: 'sas-esd.media.fileType'
+                },
             ];
 
             if (this.isDisableZipFile) {
@@ -251,8 +257,8 @@ Component.register('sas-product-detail-esd', {
             });
         },
 
-        fetchMediaConfig() {
-            this.systemConfigApiService.getValues('SasEsd.config')
+        async fetchMediaConfig() {
+            await this.systemConfigApiService.getValues('SasEsd.config')
                 .then(response => {
                     this.isPublicMedia = response['SasEsd.config.isPublicMedia'];
                 });
@@ -263,7 +269,9 @@ Component.register('sas-product-detail-esd', {
             Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMedia);
             this.product.extensions.esd.esdMedia.forEach((esdMedia) => {
                 if (esdMedia.media && esdMedia.mediaId) {
-                    if (esdMedia.media.mediaType.name !== 'VIDEO') {
+                    if (this.isEsdVideo && esdMedia.media.mediaType.name === 'VIDEO') {
+                        // We don't show video in this list if the user enable esd video mode
+                    } else {
                         Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
                     }
                 }
@@ -340,8 +348,8 @@ Component.register('sas-product-detail-esd', {
             }
         },
 
-        fetchEsdConfig() {
-            this.systemConfigApiService.getValues('SasEsd.config')
+        async fetchEsdConfig() {
+            await this.systemConfigApiService.getValues('SasEsd.config')
                 .then(response => {
                     this.isEsdVideo = response['SasEsd.config.isEsdVideo'];
                     this.isDisableZipFile = response['SasEsd.config.isDisableZipFile'];

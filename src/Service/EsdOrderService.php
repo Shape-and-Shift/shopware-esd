@@ -2,10 +2,14 @@
 
 namespace Sas\Esd\Service;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Utils\EsdMailTemplate;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -40,6 +44,10 @@ class EsdOrderService
         Context $context,
         ?ProductCollection $products = null
     ): void {
+        if (!$order->getLineItems() instanceof OrderLineItemCollection) {
+            return;
+        }
+
         $newEsdOrders = [];
         foreach ($order->getLineItems() as $orderLineItem) {
             if ($products instanceof ProductCollection) {
@@ -48,20 +56,19 @@ class EsdOrderService
                     continue;
                 }
 
-                /** @var EsdEntity $esd */
                 $esd = $product->getExtension('esd');
             } else {
                 if (!$orderLineItem->getProduct()) {
                     continue;
                 }
-                /** @var EsdEntity $esd */
                 $esd = $orderLineItem->getProduct()->getExtension('esd');
             }
 
-            if ($esd === null
-                || $esd->hasSerial() === false
-                && $esd->getEsdMedia() === null
-            ) {
+            if (!$esd instanceof EsdEntity) {
+                continue;
+            }
+
+            if ($esd->hasSerial() === false && $esd->getEsdMedia() === null) {
                 continue;
             }
 
@@ -73,9 +80,9 @@ class EsdOrderService
 
             for ($q = 0; $q < $orderLineItem->getQuantity(); ++$q) {
                 $serialId = null;
-                if (!empty($fetchSerialIds)) {
+                if (\count($fetchSerialIds) > 0) {
                     $serialId = current($fetchSerialIds);
-                    unset($fetchSerialIds[$serialId]);
+                    unset($fetchSerialIds[$serialId]); // @phpstan-ignore-line
                 }
 
                 $newEsdOrders[] = [
@@ -94,6 +101,10 @@ class EsdOrderService
 
     public function mailTemplateData(OrderEntity $order, Context $context): array
     {
+        if (!$order->getLineItems() instanceof OrderLineItemCollection) {
+            return [];
+        }
+
         $esdOrderListIds = [];
         $esdOrderLineItems = [];
 
@@ -105,14 +116,16 @@ class EsdOrderService
             new EqualsAnyFilter('orderLineItemId', array_values($order->getLineItems()->getIds()))
         );
 
-        $esdOrders = $this->esdOrderRepository->search($criteria, $context);
+        /** @var EsdOrderCollection $esdOrders */
+        $esdOrders = $this->esdOrderRepository->search($criteria, $context)->getEntities();
 
         $esdByLineItemIds = [];
         $esdIds = [];
+
         /** @var EsdOrderEntity $esdOrder */
-        foreach ($esdOrders->getEntities() as $esdOrder) {
+        foreach ($esdOrders as $esdOrder) {
             $esd = $esdOrder->getEsd();
-            if ($esd === null || $esd->getEsdMedia() === null) {
+            if ($esd->getEsdMedia() === null) {
                 continue;
             }
 
@@ -123,7 +136,8 @@ class EsdOrderService
 
         $templateData['esdMediaFiles'] = [];
         $esdMedias = $this->esdService->getEsdMediaByEsdIds($esdIds, $context);
-        foreach ($esdOrders->getEntities() as $esdOrder) {
+
+        foreach ($esdOrders as $esdOrder) {
             if (empty($esdMedias[$esdOrder->getEsdId()])) {
                 continue;
             }
@@ -136,18 +150,22 @@ class EsdOrderService
 
         /** @var OrderLineItemEntity $orderLineItem */
         foreach ($order->getLineItems() as $orderLineItem) {
-            if (empty($esdByLineItemIds[$orderLineItem->getId()])) {
+            if (\array_key_exists($orderLineItem->getId(), $esdByLineItemIds)) {
                 continue;
             }
 
             $esd = $esdByLineItemIds[$orderLineItem->getId()];
-            if ($esd === null || $esd->getEsdMedia() === null) {
+            if ($esd->getEsdMedia() === null) {
                 continue;
             }
 
             $esdOrder = $esdOrders->filter(function (EsdOrderEntity $esdOrderEntity) use ($orderLineItem) {
                 return $esdOrderEntity->getOrderLineItemId() === $orderLineItem->getId();
             })->first();
+
+            if (!$esdOrder instanceof EsdOrderEntity) {
+                continue;
+            }
 
             for ($q = 0; $q < $orderLineItem->getQuantity(); ++$q) {
                 $esdOrderListIds[$orderLineItem->getId()][] = $esdOrder->getId();
@@ -160,6 +178,9 @@ class EsdOrderService
         if (!$this->esdService->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)) {
             /** @var OrderLineItemEntity $lineItem */
             foreach ($esdOrderLineItems as $lineItem) {
+                if (!\is_string($lineItem->getProductId())) {
+                    continue;
+                }
                 $templateData['esdFiles'][$lineItem->getProductId()] = $this->esdService->getFileSize($lineItem->getProductId());
             }
         }
@@ -171,6 +192,10 @@ class EsdOrderService
         $templateData['esdSerials'] = [];
         /** @var EsdOrderEntity $serialOfEsdOrder */
         foreach ($serialOfEsdOrders as $serialOfEsdOrder) {
+            if (!$serialOfEsdOrder->getSerial() instanceof EsdSerialEntity) {
+                continue;
+            }
+
             $templateData['esdSerials'][] = [
                 'serial' => $serialOfEsdOrder->getSerial()->getSerial(),
                 'productName' => $serialOfEsdOrder->getOrderLineItem()->getLabel(),
@@ -200,6 +225,10 @@ class EsdOrderService
 
     public function isEsdOrder(OrderEntity $order): bool
     {
+        if (!$order->getLineItems() instanceof OrderLineItemCollection) {
+            return false;
+        }
+
         foreach ($order->getLineItems() as $lineItem) {
             if (!$lineItem->getProduct()) {
                 continue;
@@ -207,7 +236,11 @@ class EsdOrderService
 
             /** @var EsdEntity $esd */
             $esd = $lineItem->getProduct()->getExtension('esd');
-            if (empty($esd)) {
+            if (!$esd instanceof EsdEntity) {
+                continue;
+            }
+
+            if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
                 continue;
             }
 

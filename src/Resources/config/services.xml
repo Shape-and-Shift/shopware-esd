@@ -81,12 +81,12 @@
 
         <service id="Sas\Esd\Subscriber\BusinessEventSubscriber">
             <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventCollector"/>
+
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Storefront -->
         <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
-            <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
@@ -97,7 +97,6 @@
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
-            <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>

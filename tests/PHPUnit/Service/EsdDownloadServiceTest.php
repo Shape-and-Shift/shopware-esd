@@ -28,7 +28,9 @@ class EsdDownloadServiceTest extends TestCase
 
     private EntityRepositoryInterface $esdMediaDownloadHistoryRepository;
 
-    /** @var MockObject|SystemConfigService */
+    /**
+     * @var MockObject|SystemConfigService
+     */
     private $systemConfigService;
 
     private EsdDownloadService $esdDownloadService;
@@ -74,7 +76,6 @@ class EsdDownloadServiceTest extends TestCase
     }
 
     /**
-     * @return void
      * @dataProvider getLimitDownloadNumberProvider
      */
     public function testGetLimitDownloadNumber(?int $systemConfigData, bool $isHasCustomDownloadLimit, bool $isHasUnlimitedDownload, bool $isNotDownloadLimitation): void
@@ -87,7 +88,7 @@ class EsdDownloadServiceTest extends TestCase
         $esdOrder = $this->createMock(EsdOrderEntity::class);
         $esdOrder->method('getEsd')->willReturn($esdEntity);
 
-        if(!$isHasCustomDownloadLimit && !$isHasUnlimitedDownload && !$isNotDownloadLimitation) {
+        if (!$isHasCustomDownloadLimit && !$isHasUnlimitedDownload && !$isNotDownloadLimitation) {
             $this->systemConfigService
                 ->expects(static::exactly(2))
                 ->method('get')
@@ -96,12 +97,12 @@ class EsdDownloadServiceTest extends TestCase
 
         $limitDownloadNumber = $this->esdDownloadService->getLimitDownloadNumber($esdOrder);
 
-        $this->assertSame($systemConfigData, $limitDownloadNumber);
+        static::assertSame($systemConfigData, $limitDownloadNumber);
     }
 
     /**
      * @return void
-     * Test getLimitDownloadNumberList return array
+     *              Test getLimitDownloadNumberList return array
      */
     public function testGetLimitDownloadNumberList(): void
     {
@@ -120,8 +121,8 @@ class EsdDownloadServiceTest extends TestCase
 
         $actualValue = $this->esdDownloadService->getLimitDownloadNumberList($esdOrderCollection);
 
-        $this->assertArrayHasKey($esdOrderEntity->getId(), $actualValue);
-        $this->assertSame($actualValue[$esdOrderEntity->getId()], 1);
+        static::assertArrayHasKey($esdOrderEntity->getId(), $actualValue);
+        static::assertSame($actualValue[$esdOrderEntity->getId()], 1);
     }
 
     public function testAddDownloadHistory(): void
@@ -151,17 +152,14 @@ class EsdDownloadServiceTest extends TestCase
         $esdOrder->setEsd(new EsdEntity());
 
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'getTotal' => 2
+            'getTotal' => 2,
         ]);
 
-        $this->esdMediaDownloadHistoryRepository->expects(self::once())->method('search')->willReturn($search);
+        $this->esdMediaDownloadHistoryRepository->expects(static::once())->method('search')->willReturn($search);
 
         $this->esdDownloadService->checkMediaDownloadHistory($esdOrderId, $esdMedia, $esdOrder, $this->context);
     }
 
-    /**
-     * @return void
-     */
     public function testGetDownloadRemainingItems(): void
     {
         $esdOrderId = 'foo';
@@ -186,32 +184,29 @@ class EsdDownloadServiceTest extends TestCase
 
         $actualValue = $this->esdDownloadService->getDownloadRemainingItems([$esdOrderId], $this->context);
 
-        $this->assertArrayHasKey($esdOrderId, $actualValue);
-        $this->assertSame($actualValue[$esdOrderId][$esdMediaId], 2);
+        static::assertArrayHasKey($esdOrderId, $actualValue);
+        static::assertSame($actualValue[$esdOrderId][$esdMediaId], 2);
     }
 
-    /**
-     * @return void
-     */
     public function testAddMediaDownloadHistory(): void
     {
         $this->esdMediaDownloadHistoryRepository->expects(static::once())->method('create');
 
-        $this->esdDownloadService->addMediaDownloadHistory('test','test', $this->context);
+        $this->esdDownloadService->addMediaDownloadHistory('test', 'test', $this->context);
     }
 
     public function getLimitDownloadNumberProvider(): array
     {
         return [
             'Test limitDownloadNumber can be set' => [
-                1, true, false, false
+                1, true, false, false,
             ],
             'Test limitDownloadNumber can be set 2' => [
-                1, false, false, false
+                1, false, false, false,
             ],
             'Test limitDownloadNumber can be null' => [
-                null, false, false, true
-            ]
+                null, false, false, true,
+            ],
         ];
     }
 }

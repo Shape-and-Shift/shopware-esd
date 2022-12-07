@@ -7,7 +7,7 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -24,8 +24,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DownloadsController extends StorefrontController
 {
-    private EntityRepositoryInterface $esdOrderRepository;
-
     private EsdService $esdService;
 
     private EsdDownloadService $esdDownloadService;
@@ -35,13 +33,11 @@ class DownloadsController extends StorefrontController
     private SystemConfigService $systemConfigService;
 
     public function __construct(
-        EntityRepositoryInterface $esdOrderRepository,
         EsdService $esdService,
         EsdDownloadService $esdDownloadService,
         GenericPageLoaderInterface $genericLoader,
         SystemConfigService $systemConfigService
     ) {
-        $this->esdOrderRepository = $esdOrderRepository;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
         $this->genericLoader = $genericLoader;
@@ -56,7 +52,12 @@ class DownloadsController extends StorefrontController
         $this->denyAccessUnlessLoggedIn();
         $page = $this->genericLoader->load($request, $context);
 
-        $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
+            throw new CustomerNotLoggedInException();
+        }
+
+        $esdOrders = $this->esdService->getEsdOrderListByCustomer($customer, $context);
 
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
@@ -111,7 +112,12 @@ class DownloadsController extends StorefrontController
         $this->denyAccessUnlessLoggedIn();
         $page = $this->genericLoader->load($request, $context);
 
-        $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
+            throw new CustomerNotLoggedInException();
+        }
+
+        $esdOrders = $this->esdService->getEsdOrderListByCustomer($customer, $context);
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
 
@@ -130,7 +136,12 @@ class DownloadsController extends StorefrontController
         $this->denyAccessUnlessLoggedIn();
         $page = $this->genericLoader->load($request, $context);
 
-        $esdOrders = $this->esdService->getEsdOrderListByCustomer($context);
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
+            throw new CustomerNotLoggedInException();
+        }
+
+        $esdOrders = $this->esdService->getEsdOrderListByCustomer($customer, $context);
         /** @var EsdOrderCollection $esdOrdersCollection */
         $esdOrdersCollection = $esdOrders->getEntities();
 
@@ -158,14 +169,15 @@ class DownloadsController extends StorefrontController
         /** @var SalesChannelContext|null $context */
         $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
 
-        if (
-            $context
-            && $context->getCustomer()
-            && (
-                $allowGuest === true
-                || $context->getCustomer()->getGuest() === false
-            )
-        ) {
+        if (!$context instanceof SalesChannelContext) {
+            return;
+        }
+
+        if (!$context->getCustomer() instanceof CustomerEntity) {
+            return;
+        }
+
+        if ($allowGuest || $context->getCustomer()->getGuest() === false) {
             return;
         }
 
