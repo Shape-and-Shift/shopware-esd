@@ -7,10 +7,16 @@ use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Shopware\Core\Framework\Event\BusinessEventCollector;
 use Shopware\Core\Framework\Event\BusinessEventCollectorEvent;
+use Shopware\Core\Framework\Event\BusinessEventCollectorResponse;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BusinessEventSubscriber implements EventSubscriberInterface
 {
+    private array $awares = [
+        EsdDownloadPaymentStatusPaidEvent::class,
+        EsdDownloadPaymentStatusPaidDisabledZipEvent::class,
+        EsdSerialPaymentStatusPaidEvent::class,
+    ];
     private BusinessEventCollector $businessEventCollector;
 
     public function __construct(BusinessEventCollector $businessEventCollector)
@@ -27,24 +33,18 @@ class BusinessEventSubscriber implements EventSubscriberInterface
 
     public function onRegisterEvent(BusinessEventCollectorEvent $event): void
     {
-        $downloadDefinition = $this->businessEventCollector->define(EsdDownloadPaymentStatusPaidEvent::class);
-        if ($downloadDefinition) {
-            $event->getCollection()->set(EsdDownloadPaymentStatusPaidEvent::EVENT_NAME, $downloadDefinition);
+        foreach ($this->awares as $aware) {
+            $this->defineBusinessEvents($event->getCollection(), $aware);
+        }
+    }
+
+    private function defineBusinessEvents(BusinessEventCollectorResponse $collection, string $eventName): void
+    {
+        $definition = $this->businessEventCollector->define($eventName);
+        if (!$definition) {
+            return;
         }
 
-        $downloadDisabledZipDefinition = $this->businessEventCollector->define(
-            EsdDownloadPaymentStatusPaidDisabledZipEvent::class
-        );
-        if ($downloadDisabledZipDefinition) {
-            $event->getCollection()->set(
-                EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME,
-                $downloadDisabledZipDefinition
-            );
-        }
-
-        $serialDefinition = $this->businessEventCollector->define(EsdSerialPaymentStatusPaidEvent::class);
-        if ($serialDefinition) {
-            $event->getCollection()->set(EsdSerialPaymentStatusPaidEvent::EVENT_NAME, $serialDefinition);
-        }
+        $collection->set($definition->getName(), $definition);
     }
 }

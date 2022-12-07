@@ -20,8 +20,7 @@ class EsdMediaService
     public function __construct(
         LoggerInterface $logger,
         EntityRepositoryInterface $mediaRepository
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->mediaRepository = $mediaRepository;
     }

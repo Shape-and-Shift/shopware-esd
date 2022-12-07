@@ -40,7 +40,7 @@ class EsdMediaEntity extends Entity
         $this->id = $id;
     }
 
-    public function getEsdId(): string
+    public function getEsdId(): ?string
     {
         return $this->esdId;
     }
@@ -75,7 +75,7 @@ class EsdMediaEntity extends Entity
         return $this->downloadLimitNumber;
     }
 
-    public function setDownloadLimitNumber($downloadLimitNumber): void
+    public function setDownloadLimitNumber(int $downloadLimitNumber): void
     {
         $this->downloadLimitNumber = $downloadLimitNumber;
     }

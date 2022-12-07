@@ -5,39 +5,29 @@ namespace Sas\Esd\Event;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\AssociationNotFoundException;
 use Shopware\Core\Framework\Event\EventData\ArrayType;
 use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\MailRecipientStruct;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
+use Shopware\Core\Framework\Event\FlowEventAware;
 use Shopware\Core\Framework\Event\MailActionInterface;
 use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements MailActionInterface, SalesChannelAware, MailAware
+class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements FlowEventAware, SalesChannelAware, MailAware
 {
     public const EVENT_NAME = 'esd.download.disabled.zip.payment.status.paid';
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
-    /**
-     * @var OrderEntity
-     */
-    private $order;
+    private OrderEntity $order;
 
-    /**
-     * @var array
-     */
-    private $templateData;
+    private array $templateData;
 
-    /**
-     * @var MailRecipientStruct|null
-     */
-    private $mailRecipientStruct;
+    private MailRecipientStruct $mailRecipientStruct;
 
     public function __construct(
         Context $context,
@@ -87,11 +77,14 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Mail
 
     public function getMailStruct(): MailRecipientStruct
     {
-        if (!$this->mailRecipientStruct instanceof MailRecipientStruct) {
-            $this->mailRecipientStruct = new MailRecipientStruct([
-                $this->order->getOrderCustomer()->getEmail() => $this->order->getOrderCustomer()->getFirstName() . ' ' . $this->order->getOrderCustomer()->getLastName(),
-            ]);
+        $orderCustomer = $this->order->getOrderCustomer();
+        if ($orderCustomer === null) {
+            throw new AssociationNotFoundException('orderCustomer');
         }
+
+        $this->mailRecipientStruct = new MailRecipientStruct([
+            $orderCustomer->getEmail() => $orderCustomer->getFirstName() . ' ' . $orderCustomer->getLastName(),
+        ]);
 
         return $this->mailRecipientStruct;
     }

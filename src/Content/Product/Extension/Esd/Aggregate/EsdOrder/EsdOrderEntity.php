@@ -38,7 +38,7 @@ class EsdOrderEntity extends Entity
     protected $serial;
 
     /**
-     * @var string|null
+     * @var int|null
      */
     protected $countDownload;
 

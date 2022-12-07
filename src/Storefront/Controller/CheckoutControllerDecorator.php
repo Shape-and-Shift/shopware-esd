@@ -2,15 +2,15 @@
 
 namespace Sas\Esd\Storefront\Controller;
 
+use Sas\Esd\Service\EsdCartService;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Controller\CheckoutController;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Shopware\Storefront\Controller\CheckoutController;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Sas\Esd\Service\EsdCartService;
 
 /**
  * @RouteScope(scopes={"storefront"})
@@ -27,8 +27,7 @@ class CheckoutControllerDecorator extends StorefrontController
         CheckoutController $decoratedController,
         CartService $cartService,
         EsdCartService $esdCartService
-    )
-    {
+    ) {
         $this->decoratedController = $decoratedController;
         $this->cartService = $cartService;
         $this->esdCartService = $esdCartService;

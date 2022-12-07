@@ -3,7 +3,6 @@
 namespace Sas\Esd\Subscriber;
 
 use Shopware\Core\Content\Product\Events\ProductListingCriteriaEvent;
-use Shopware\Core\Content\Product\ProductEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ProductListingSubscriber implements EventSubscriberInterface
@@ -11,7 +10,7 @@ class ProductListingSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ProductListingCriteriaEvent::class => 'onProductListingCriteria'
+            ProductListingCriteriaEvent::class => 'onProductListingCriteria',
         ];
     }
 

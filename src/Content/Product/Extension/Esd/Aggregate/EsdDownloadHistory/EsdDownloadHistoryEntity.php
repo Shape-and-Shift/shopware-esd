@@ -24,7 +24,7 @@ class EsdDownloadHistoryEntity extends Entity
         $this->id = $id;
     }
 
-    public function getEsdOrderId(): string
+    public function getEsdOrderId(): ?string
     {
         return $this->esdOrderId;
     }

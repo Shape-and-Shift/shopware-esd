@@ -12,6 +12,17 @@
             {% endfor %}
         {% endif %}
 
+        {% set isDisabledDownload = false %}
+        {% if not isDisableZipFile %}
+            {% if downloadLimits[esdOrder.id] == null %}
+            {% else %}
+                {% set downloadLimit = downloadLimits[esdOrder.id] %}
+                {% if esdOrder.countDownload >= downloadLimit %}
+                    {% set isDisabledDownload = true %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
         <div class="table sas-esd-table">
             <div class="sas-esd-wrapper">
                 <div class="sas-esd-item-header">
@@ -123,14 +134,12 @@
                                             {{ "sasEsd.account.downloadTable.downloadRemaining"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
                                         </strong>
                                         <span class="sas-esd-table-body-value">
-                                            {% set isDisabledDownload = false %}
                                             {% if downloadLimits[esdOrder.id] == null %}
                                                 {{ "sasEsd.account.downloadTable.unlimitedDownload"|trans|sw_sanitize }}
                                             {% else %}
                                                 {% set downloadLimit = downloadLimits[esdOrder.id] %}
                                                 {% if esdOrder.countDownload >= downloadLimit %}
                                                     <span class="text-danger">0</span>
-                                                    {% set isDisabledDownload = true %}
                                                 {% else %}
                                                     {{ esdOrder.countDownload }} / {{ downloadLimit }}
                                                 {% endif %}

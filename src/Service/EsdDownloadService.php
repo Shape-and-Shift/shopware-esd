@@ -65,7 +65,7 @@ class EsdDownloadService
         if (!$isCheckCustom && !$isUnlimited) {
             $isNotDownloadLimitation = $this->systemConfigService->get('SasEsd.config.isNotDownloadLimitation');
             if ($isNotDownloadLimitation === false) {
-                $limitNumber = $this->systemConfigService->get('SasEsd.config.limitDownloadNumber');
+                $limitNumber = (int) $this->systemConfigService->get('SasEsd.config.limitDownloadNumber');
             }
         }
 

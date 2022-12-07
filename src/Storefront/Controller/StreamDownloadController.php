@@ -10,10 +10,8 @@ use Sas\Esd\Message\CompressMediaMessage;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -32,8 +30,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class StreamDownloadController extends StorefrontController
 {
-    private EntityRepositoryInterface $esdOrderRepository;
-
     private FilesystemInterface $filesystemPublic;
 
     private FilesystemInterface $filesystemPrivate;
@@ -49,7 +45,6 @@ class StreamDownloadController extends StorefrontController
     private LoggerInterface $logger;
 
     public function __construct(
-        EntityRepositoryInterface $esdOrderRepository,
         FilesystemInterface $filesystemPublic,
         FilesystemInterface $filesystemPrivate,
         EsdService $esdService,
@@ -58,7 +53,6 @@ class StreamDownloadController extends StorefrontController
         MessageBusInterface $messageBus,
         LoggerInterface $logger
     ) {
-        $this->esdOrderRepository = $esdOrderRepository;
         $this->filesystemPublic = $filesystemPublic;
         $this->filesystemPrivate = $filesystemPrivate;
         $this->esdService = $esdService;
@@ -75,8 +69,13 @@ class StreamDownloadController extends StorefrontController
     {
         $this->denyAccessUnlessLoggedIn();
 
-        $esdOrder = $this->esdService->getEsdOrderByCustomer($esdOrderId, $context);
-        if (empty($esdOrder)) {
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
+            throw new CustomerNotLoggedInException();
+        }
+
+        $esdOrder = $this->esdService->getEsdOrderByCustomer($customer, $esdOrderId, $context);
+        if (!$esdOrder instanceof EsdOrderEntity) {
             throw new NotFoundHttpException('Esd cannot be found');
         }
 
@@ -112,7 +111,7 @@ class StreamDownloadController extends StorefrontController
     public function streamMediaLineItemByGuest(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
         $esdOrder = $this->esdService->getEsdOrderByGuest($esdOrderId, $context);
-        if (empty($esdOrder)) {
+        if (!$esdOrder instanceof EsdOrderEntity) {
             throw new NotFoundHttpException('Esd cannot be found');
         }
 
@@ -137,22 +136,6 @@ class StreamDownloadController extends StorefrontController
         return $response;
     }
 
-    public function getEsdOrder(string $esdId, SalesChannelContext $context): EsdOrderEntity
-    {
-        $criteria = new Criteria();
-        $criteria->addAssociation('orderLineItem.order');
-        $criteria->addAssociation('esd');
-        $criteria->addFilter(new EqualsFilter('esdId', $esdId));
-        $criteria->addFilter(
-            new EqualsFilter('orderLineItem.order.orderCustomer.customerId', $context->getCustomer()->getId())
-        );
-
-        /** @var EsdOrderEntity $esdOrder */
-        $esdOrder = $this->esdOrderRepository->search($criteria, $context->getContext())->first();
-
-        return $esdOrder;
-    }
-
     /**
      * @throws CustomerNotLoggedInException
      */
@@ -168,22 +151,22 @@ class StreamDownloadController extends StorefrontController
 
         /** @var SalesChannelContext|null $context */
         $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        if (!$context instanceof SalesChannelContext) {
+            return;
+        }
 
-        if (
-            $context
-            && $context->getCustomer()
-            && (
-                $allowGuest === true
-                || $context->getCustomer()->getGuest() === false
-            )
-        ) {
+        if (!$context->getCustomer() instanceof CustomerEntity) {
+            return;
+        }
+
+        if ($allowGuest || $context->getCustomer()->getGuest() === false) {
             return;
         }
 
         throw new CustomerNotLoggedInException();
     }
 
-    private function streamMediaLineItem(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
+    private function streamMediaLineItem(SalesChannelContext $context, string $esdOrderId, string $mediaId): StreamedResponse
     {
         $esdOrder = $this->esdService->getMediaByLineItemId($esdOrderId, $context->getContext());
         if (empty($esdOrder)) {
@@ -200,6 +183,10 @@ class StreamDownloadController extends StorefrontController
         }
 
         $this->esdDownloadService->addMediaDownloadHistory($esdOrderId, $esdMedia->getId(), $context->getContext());
+
+        if (!$esdMedia->getMedia() instanceof MediaEntity) {
+            throw new NotFoundHttpException('Esd media cannot be found');
+        }
 
         $esdMediaPath = $esdMedia->getMedia();
         $response = $this->mediaProcess($esdMediaPath);
@@ -269,15 +256,24 @@ class StreamDownloadController extends StorefrontController
             $this->esdService->downloadFileName($esdOrder->getOrderLineItem()->getLabel())
         );
 
+        $filesize = filesize($path);
+        if (!\is_int($filesize)) {
+            $filesize = 0;
+        }
         $response = new Response();
         $response->headers->set('Cache-Control', 'no-cache, must-revalidate');
         $response->headers->set('Content-Type', 'zip');
         $response->headers->set('Content-Disposition', $disposition);
-        $response->headers->set('Content-Length', filesize($path));
+        $response->headers->set('Content-Length', (string) $filesize);
         $response->headers->set('Pragma', 'public');
 
+        $content = file_get_contents($path);
+        if (!\is_string($content)) {
+            return $response;
+        }
+
         $response->sendHeaders();
-        $response->setContent(file_get_contents($path));
+        $response->setContent($content);
 
         flush();
         readfile($path);

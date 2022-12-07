@@ -30,7 +30,7 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
     private $esdService;
 
     /**
-     * @var EsdService
+     * @var EsdOrderService
      */
     private $esdOrderService;
 

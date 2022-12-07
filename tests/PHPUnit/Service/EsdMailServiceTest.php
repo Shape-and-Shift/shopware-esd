@@ -183,7 +183,7 @@ class EsdMailServiceTest extends TestCase
                 [
                     'download' => false,
                     'serial' => false,
-                ]
+                ],
             ],
             'test when is not esd order' => [
                 true,
@@ -200,7 +200,7 @@ class EsdMailServiceTest extends TestCase
                 [
                     'download' => false,
                     'serial' => false,
-                ]
+                ],
             ],
             'test when serials is empty' => [
                 true,
@@ -217,7 +217,7 @@ class EsdMailServiceTest extends TestCase
                 [
                     'download' => true,
                     'serial' => false,
-                ]
+                ],
             ],
             'test when order line items is empty' => [
                 true,
@@ -234,7 +234,7 @@ class EsdMailServiceTest extends TestCase
                 [
                     'download' => false,
                     'serial' => true,
-                ]
+                ],
             ],
             'test when has both order line items and serial' => [
                 true,
@@ -251,7 +251,7 @@ class EsdMailServiceTest extends TestCase
                 [
                     'download' => true,
                     'serial' => true,
-                ]
+                ],
             ],
         ];
     }
@@ -259,7 +259,7 @@ class EsdMailServiceTest extends TestCase
     private function mockData(?OrderEntity $order, InvokedCountMatcher $esdOrderServiceExpect, bool $hasEsdSerials = false, bool $hasEsdOrderLineItems = false): void
     {
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
-            'get' => $order
+            'get' => $order,
         ]);
 
         $this->esdOrderRepository->expects(static::once())->method('search')->willReturn($search);
@@ -269,7 +269,7 @@ class EsdMailServiceTest extends TestCase
 
         $mailTemplateData = [
             'esdSerials' => $esdSerials,
-            'esdOrderLineItems' => $esdOrderLineItems
+            'esdOrderLineItems' => $esdOrderLineItems,
         ];
 
         $this->esdOrderService->expects($esdOrderServiceExpect)->method('mailTemplateData')->willReturn($mailTemplateData);

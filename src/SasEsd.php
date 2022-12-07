@@ -96,9 +96,14 @@ class SasEsd extends Plugin
         }
     }
 
-    private function rmdirRecursive($dir): void
+    private function rmdirRecursive(string $dir): void
     {
-        foreach (scandir($dir) as $file) {
+        $scandir = scandir($dir);
+        if (!$scandir) {
+            return;
+        }
+
+        foreach ($scandir as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }

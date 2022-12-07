@@ -40,7 +40,7 @@ class EsdMailTemplate
 
         /** @var MailTemplateTypeCollection $myCustomMailTemplateTypes */
         $myCustomMailTemplateTypes = $mailTemplateTypeRepository->search($criteria, $context)->getEntities();
-        if (empty($myCustomMailTemplateTypes)) {
+        if ($myCustomMailTemplateTypes->count() === 0) {
             return;
         }
 
@@ -71,69 +71,71 @@ class EsdMailTemplate
 
     public static function getDownloadHtmlMailTemplate(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/download-html-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/download-html-mail-template.html.twig');
     }
 
     public static function getDownloadPlainMailTemplate(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/download-plain-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/download-plain-mail-template.html.twig');
     }
 
     public static function getDownloadHtmlMailTemplateInGerman(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/de/download-html-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/de/download-html-mail-template.html.twig');
     }
 
     public static function getDownloadPlainMailTemplateGerman(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/de/download-plain-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/de/download-plain-mail-template.html.twig');
     }
 
     public static function getDownloadHtmlMailTemplateForDisabledZip(): string
     {
-        return file_get_contents(
-            __DIR__ . '/../Resources/views/mail-template/download-disabled-zip-html-mail-template.html.twig'
-        );
+        return self::getFileContents('Resources/views/mail-template/download-disabled-zip-html-mail-template.html.twig');
     }
 
     public static function getDownloadPlainMailTemplateForDisabledZip(): string
     {
-        return file_get_contents(
-            __DIR__ . '/../Resources/views/mail-template/download-disabled-zip-plain-mail-template.html.twig'
-        );
+        return self::getFileContents('Resources/views/mail-template/download-disabled-zip-plain-mail-template.html.twig');
     }
 
     public static function getDownloadHtmlMailTemplateForDisabledZipInGerman(): string
     {
-        return file_get_contents(
-            __DIR__ . '/../Resources/views/mail-template/de/download-disabled-zip-html-mail-template.html.twig'
-        );
+        return self::getFileContents('Resources/views/mail-template/de/download-disabled-zip-html-mail-template.html.twig');
     }
 
     public static function getDownloadPlainMailTemplateForDisabledZipInGerman(): string
     {
-        return file_get_contents(
-            __DIR__ . '/../Resources/views/mail-template/de/download-disabled-zip-plain-mail-template.html.twig'
-        );
+        return self::getFileContents('Resources/views/mail-template/de/download-disabled-zip-plain-mail-template.html.twig');
     }
 
     public static function getSerialHtmlMailTemplate(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/serial-html-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/serial-html-mail-template.html.twig');
     }
 
     public static function getSerialPlainMailTemplate(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/serial-plain-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/serial-plain-mail-template.html.twig');
     }
 
     public static function getSerialHtmlMailTemplateInGerman(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/de/serial-html-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/de/serial-html-mail-template.html.twig');
     }
 
     public static function getSerialPlainMailTemplateGerman(): string
     {
-        return file_get_contents(__DIR__ . '/../Resources/views/mail-template/de/serial-plain-mail-template.html.twig');
+        return self::getFileContents('Resources/views/mail-template/de/serial-plain-mail-template.html.twig');
+    }
+
+    public static function getFileContents(string $path): string
+    {
+        $content = file_get_contents(__DIR__ . '/../' . $path);
+        if (\is_string($content)) {
+            return $content;
+        }
+
+        return '';
     }
 }

@@ -43,6 +43,7 @@
         "media": {
             "label": "Lade deine Datei hoch",
             "fileName": "Dateiname",
+            "fileType": "Dateityp",
             "downloadLimit": "Download limit",
             "labelContextMenuAddToEsd": "Add to ESD"
         },

@@ -4,18 +4,17 @@
          bootstrap="phpunit.autoload.php"
          cacheResult="false"
          colors="true"
-         executionOrder="random"
          resolveDependencies="true"
 >
     <testsuites>
         <testsuite name="SasEsd Tests">
-            <directory>./tests/PHPUnit</directory>
+            <directory>tests/PHPUnit/</directory>
         </testsuite>
     </testsuites>
 
-    <coverage>
-        <include>
-            <directory>./src</directory>
-        </include>
-    </coverage>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
 </phpunit>
