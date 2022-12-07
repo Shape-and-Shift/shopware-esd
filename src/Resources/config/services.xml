@@ -4,6 +4,10 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <imports>
+        <import resource="monologs.xml"/>
+    </imports>
+
     <services>
         <!-- DAL -->
         <service id="Sas\Esd\Content\Product\Extension\Esd\EsdDefinition">
@@ -95,10 +99,12 @@
         <service id="Sas\Esd\Storefront\Controller\StreamDownloadController" public="true">
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="sas_esd.shopware6.logger"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -151,6 +157,8 @@
             <argument type="service" id="sas_product_esd_video.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="shopware.filesystem.private"/>
+            <argument type="service" id="sas_esd.shopware6.logger"/>
         </service>
 
         <service id="Sas\Esd\Service\EsdOrderService">
@@ -205,6 +213,11 @@
 
         <service id="Sas\Esd\Subscriber\ProductListingSubscriber">
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- logger -->
+        <service id="sas_esd.shopware6.logger" class="Sas\Esd\Service\LoggerService">
+            <argument type="service" id="monolog.logger.sas_esd"/>
         </service>
     </services>
 </container>

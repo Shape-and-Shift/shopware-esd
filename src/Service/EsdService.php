@@ -2,7 +2,9 @@
 
 namespace Sas\Esd\Service;
 
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
@@ -41,6 +43,10 @@ class EsdService
 
     private FilesystemInterface $filesystemPublic;
 
+    private FilesystemInterface $filesystemPrivate;
+
+    private LoggerInterface $logger;
+
     public function __construct(
         EntityRepositoryInterface $esdProductRepository,
         EntityRepositoryInterface $esdOrderRepository,
@@ -48,7 +54,9 @@ class EsdService
         UrlGeneratorInterface $urlGenerator,
         EntityRepositoryInterface $esdVideoRepository,
         SystemConfigService $systemConfigService,
-        FilesystemInterface $filesystemPublic
+        FilesystemInterface $filesystemPublic,
+        FilesystemInterface $filesystemPrivate,
+        LoggerInterface $logger
     ) {
         $this->esdProductRepository = $esdProductRepository;
         $this->esdOrderRepository = $esdOrderRepository;
@@ -57,6 +65,8 @@ class EsdService
         $this->esdVideoRepository = $esdVideoRepository;
         $this->systemConfigService = $systemConfigService;
         $this->filesystemPublic = $filesystemPublic;
+        $this->filesystemPrivate = $filesystemPrivate;
+        $this->logger = $logger;
     }
 
     /**
@@ -396,10 +406,35 @@ class EsdService
     /**
      * @throws \League\Flysystem\FileNotFoundException
      */
-    private function loadMediaFile(MediaEntity $media): string
+    private function loadMediaFile(MediaEntity $media): ?string
     {
         $path = $this->urlGenerator->getRelativeMediaUrl($media);
 
-        return $this->filesystemPublic->read($path);
+        try {
+            $read = $this->filesystemPublic->read($path);
+            if (\is_string($read)) {
+                return $read;
+            }
+
+            return null;
+        } catch (FileNotFoundException $e) {
+            return $this->loadPrivateMediaFile($path);
+        }
+    }
+
+    private function loadPrivateMediaFile(string $path): ?string
+    {
+        try {
+            $read = $this->filesystemPrivate->read($path);
+            if (\is_string($read)) {
+                return $read;
+            }
+
+            return null;
+        } catch (FileNotFoundException $e) {
+            $this->logger->warning('We could not found media from ' . $path);
+
+            return null;
+        }
     }
 }
