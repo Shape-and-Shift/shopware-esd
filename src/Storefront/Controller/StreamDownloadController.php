@@ -2,7 +2,9 @@
 
 namespace Sas\Esd\Storefront\Controller;
 
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Message\CompressMediaMessage;
 use Sas\Esd\Service\EsdDownloadService;
@@ -34,6 +36,8 @@ class StreamDownloadController extends StorefrontController
 
     private FilesystemInterface $filesystemPublic;
 
+    private FilesystemInterface $filesystemPrivate;
+
     private EsdService $esdService;
 
     private EsdDownloadService $esdDownloadService;
@@ -42,20 +46,26 @@ class StreamDownloadController extends StorefrontController
 
     private MessageBusInterface $messageBus;
 
+    private LoggerInterface $logger;
+
     public function __construct(
         EntityRepositoryInterface $esdOrderRepository,
         FilesystemInterface $filesystemPublic,
+        FilesystemInterface $filesystemPrivate,
         EsdService $esdService,
         EsdDownloadService $esdDownloadService,
         SystemConfigService $systemConfigService,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        LoggerInterface $logger
     ) {
         $this->esdOrderRepository = $esdOrderRepository;
         $this->filesystemPublic = $filesystemPublic;
+        $this->filesystemPrivate = $filesystemPrivate;
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
         $this->systemConfigService = $systemConfigService;
         $this->messageBus = $messageBus;
+        $this->logger = $logger;
     }
 
     /**
@@ -204,17 +214,34 @@ class StreamDownloadController extends StorefrontController
         return $response;
     }
 
-    private function mediaProcess(MediaEntity $media): ?StreamedResponse
+    private function mediaProcess(MediaEntity $media): StreamedResponse
     {
-        $fileSystem = $this->filesystemPublic;
         $path = $this->esdService->getPathVideoMedia($media);
+        $fileSystem = $this->getFileSystem($path);
 
         return new StreamedResponse(function () use ($fileSystem, $path): void {
             $outputStream = fopen('php://output', 'rb');
             $fileStream = $fileSystem->readStream($path);
-            stream_copy_to_stream($fileStream, $outputStream);
-            fclose($outputStream);
+            if (\is_resource($outputStream) && \is_resource($fileStream)) {
+                stream_copy_to_stream($fileStream, $outputStream);
+                fclose($outputStream);
+            }
         });
+    }
+
+    private function getFileSystem(string $path): FilesystemInterface
+    {
+        $fileSystem = $this->filesystemPrivate;
+
+        try {
+            if ($this->filesystemPublic->read($path)) {
+                $fileSystem = $this->filesystemPublic;
+            }
+        } catch (FileNotFoundException $e) {
+            $this->logger->warning('We could not found media from ' . $path);
+        }
+
+        return $fileSystem;
     }
 
     private function downloadProcess(EsdOrderEntity $esdOrder, SalesChannelContext $context): Response
