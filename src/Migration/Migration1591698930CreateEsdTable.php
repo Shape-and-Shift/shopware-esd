@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Migration;
 
+use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
@@ -73,7 +74,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'id' => $defaultFolderId,
                 'association_fields' => '[]',
                 'entity' => EsdDefinition::ENTITY_NAME,
-                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+                'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (Exception $e) {
         }
@@ -86,7 +87,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'no_association' => 1,
                 'create_thumbnails' => 0,
                 'private' => 0,
-                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+                'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (Exception $e) {
         }
@@ -97,7 +98,7 @@ class Migration1591698930CreateEsdTable extends MigrationStep
                 'default_folder_id' => $defaultFolderId,
                 'media_folder_configuration_id' => $mediaFolderConfigurationId,
                 'name' => 'ESD Media',
-                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
+                'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_FORMAT),
             ]);
         } catch (Exception $e) {
         }

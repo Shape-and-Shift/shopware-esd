@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Migration;
 
+use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
@@ -10,6 +11,7 @@ use Shopware\Core\Content\MailTemplate\MailTemplateActions;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
+use function in_array;
 
 class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
 {
@@ -57,7 +59,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                         'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),
                         'mail_template_id' => Uuid::fromBytesToHex($templateId),
                     ]),
-                    'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                    'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]
             );
         }
@@ -71,7 +73,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                 'id' => $templateTypeId,
                 'technical_name' => EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_TECHNICAL_NAME,
                 'available_entities' => $this->getAvailableEntities(),
-                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]
         );
 
@@ -86,14 +88,14 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
             $connection
         );
 
-        if (!\in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
+        if (!in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
             $connection->insert(
                 'mail_template_type_translation',
                 [
                     'mail_template_type_id' => $templateTypeId,
                     'language_id' => $defaultLanguageId,
                     'name' => EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_NAME,
-                    'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                    'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]
             );
         }
@@ -105,7 +107,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                     'mail_template_type_id' => $templateTypeId,
                     'language_id' => $englishLanguageId,
                     'name' => EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_NAME,
-                    'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                    'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]
             );
         }
@@ -117,7 +119,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                     'mail_template_type_id' => $templateTypeId,
                     'language_id' => $germanLanguageId,
                     'name' => EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_NAME_DE,
-                    'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                    'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]
             );
         }
@@ -130,7 +132,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
             [
                 'id' => $templateId,
                 'mail_template_type_id' => $templateTypeId,
-                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]
         );
 
@@ -145,7 +147,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
             'sender_name' => 'No Reply',
             'content_html' => EsdMailTemplate::getDownloadHtmlMailTemplate(),
             'content_plain' => EsdMailTemplate::getDownloadPlainMailTemplate(),
-            'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             'mail_template_id' => $templateId,
         ];
 
@@ -155,12 +157,12 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
             'sender_name' => 'Keine Antwort',
             'content_html' => EsdMailTemplate::getDownloadHtmlMailTemplateInGerman(),
             'content_plain' => EsdMailTemplate::getDownloadPlainMailTemplateGerman(),
-            'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             'mail_template_id' => $templateId,
             'language_id' => $germanLanguageId,
         ];
 
-        if (!\in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
+        if (!in_array($defaultLanguageId, [$englishLanguageId, $germanLanguageId], true)) {
             $connection->insert(
                 'mail_template_translation',
                 $englishMailTemplate + ['language_id' => $defaultLanguageId]

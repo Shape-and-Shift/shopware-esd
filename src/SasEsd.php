@@ -3,6 +3,7 @@
 namespace Sas\Esd;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Sas\Esd\Service\EsdService;
 use Sas\Esd\Utils\InstallUninstall;
 use Sas\Esd\Utils\Update;
@@ -12,6 +13,7 @@ use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use function dirname;
 
 class SasEsd extends Plugin
 {
@@ -49,7 +51,7 @@ class SasEsd extends Plugin
             $eventActionRepository
         ))->uninstall($context->getContext());
 
-        $dirCompress = \dirname(__DIR__, 4) . '/files/' . EsdService::FOLDER_COMPRESS_NAME;
+        $dirCompress = dirname(__DIR__, 4) . '/files/' . EsdService::FOLDER_COMPRESS_NAME;
         if (is_dir($dirCompress)) {
             $this->rmdirRecursive($dirCompress);
         }
@@ -66,7 +68,7 @@ class SasEsd extends Plugin
      * We need to drop the database tables
      * in case if the plugin is uninstalled
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     protected function dropDatabaseTable(): void
     {

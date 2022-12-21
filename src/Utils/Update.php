@@ -9,12 +9,13 @@ use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
 use Sas\Esd\Migration\Migration1597597704CreateEsdMediaTable;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Uuid\Uuid;
+use function version_compare;
 
 class Update
 {
     public function update(ContainerInterface $container, UpdateContext $updateContext): void
     {
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
+        if (version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
             $this->updateTo110($container);
         }
     }

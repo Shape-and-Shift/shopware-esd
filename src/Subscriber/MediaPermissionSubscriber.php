@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Subscriber;
 
+use Closure;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\PlatformRequest;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -12,7 +13,7 @@ class MediaPermissionSubscriber
     {
         if ($event->getRequest()->attributes->get('_route') === 'api.action.media.upload') {
             $context = $event->getRequest()->attributes->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
-            $f = \Closure::bind(function ($class): void {
+            $f = Closure::bind(function ($class): void {
                 $class->scope = Context::SYSTEM_SCOPE;
             }, null, $context);
             $f($context);

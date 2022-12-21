@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Service;
 
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
@@ -22,6 +23,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use ZipArchive;
+use function count;
+use function dirname;
 
 class EsdService
 {
@@ -64,7 +68,7 @@ class EsdService
     }
 
     /**
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function compressFiles($productId): void
     {
@@ -90,12 +94,12 @@ class EsdService
             return $media->getMedia() instanceof MediaEntity;
         });
 
-        if (\count($medias) === 0) {
+        if (count($medias) === 0) {
             return;
         }
 
-        $zip = new \ZipArchive();
-        $zip->open($this->getCompressFile($productId), \ZipArchive::OVERWRITE | \ZipArchive::CREATE);
+        $zip = new ZipArchive();
+        $zip->open($this->getCompressFile($productId), ZipArchive::OVERWRITE | ZipArchive::CREATE);
 
         $tempFiles = [];
         /** @var EsdMediaEntity $media */
@@ -307,7 +311,7 @@ class EsdService
 
     public function getPrivateFolder(): string
     {
-        return \dirname(__DIR__, 5) . '/files/';
+        return dirname(__DIR__, 5) . '/files/';
     }
 
     public function getFileSize(string $productId): string
@@ -398,7 +402,7 @@ class EsdService
     }
 
     /**
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     private function loadMediaFile(MediaEntity $media): string
     {

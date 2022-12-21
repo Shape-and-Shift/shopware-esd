@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Message;
 
+use League\Flysystem\FileNotFoundException;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 
@@ -17,7 +18,7 @@ class CompressMediaHandler extends AbstractMessageHandler
     /**
      * @param CompressMediaMessage $message
      *
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function handle($message): void
     {
