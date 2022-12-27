@@ -1,3 +1,9 @@
+# 1.6.0
+* Kompatibilität Shopware Version 6.4.18.0
+* Aktualisiert, um E-Mails mit Flow Builder zu versenden.
+* Probleme mit den privaten und öffentlichen Dateien behoben.
+* Deaktivierte Optionen zum Versenden von E-Mails in der Plugin-Konfiguration.
+
 # 1.5.5
 * Duplizierte Mediendatei hochladen behoben
 * Behoben fileAccept akzeptiert nun alle Dateitypen

@@ -52,6 +52,7 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
                     'title' => 'ESD - Serial mail',
                     'event_name' => 'esd.serial.payment.status.paid',
                     'action_name' => MailTemplateActions::MAIL_TEMPLATE_MAIL_SEND_ACTION,
+                    'active' => 0,
                     'config' => json_encode([
                         'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),
                         'mail_template_id' => Uuid::fromBytesToHex($templateId),

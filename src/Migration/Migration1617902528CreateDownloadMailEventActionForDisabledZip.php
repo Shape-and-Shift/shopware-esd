@@ -57,6 +57,7 @@ class Migration1617902528CreateDownloadMailEventActionForDisabledZip extends Mig
                     'title' => 'ESD - Download mail with disabled zip',
                     'event_name' => EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME,
                     'action_name' => MailTemplateActions::MAIL_TEMPLATE_MAIL_SEND_ACTION,
+                    'active' => 0,
                     'config' => json_encode([
                         'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),
                         'mail_template_id' => Uuid::fromBytesToHex($templateId),

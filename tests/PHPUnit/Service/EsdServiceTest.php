@@ -24,6 +24,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class EsdServiceTest extends TestCase
 {
@@ -51,6 +52,8 @@ class EsdServiceTest extends TestCase
 
     private LoggerInterface $logger;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     public function setUp(): void
     {
         $this->esdProductRepository = $this->createMock(EntityRepository::class);
@@ -75,6 +78,8 @@ class EsdServiceTest extends TestCase
 
         $this->logger = $this->createMock(LoggerInterface::class);
 
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+
         $this->esdService = new EsdService(
             $this->esdProductRepository,
             $this->esdOrderRepository,
@@ -85,6 +90,7 @@ class EsdServiceTest extends TestCase
             $this->filesystemPublic,
             $this->filesystemPrivate,
             $this->logger,
+            $this->eventDispatcher,
         );
     }
 

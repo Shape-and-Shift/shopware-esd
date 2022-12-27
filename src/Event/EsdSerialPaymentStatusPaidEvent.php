@@ -11,34 +11,21 @@ use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\MailRecipientStruct;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
-use Shopware\Core\Framework\Event\FlowEventAware;
 use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdSerialPaymentStatusPaidEvent extends Event implements FlowEventAware, SalesChannelAware, MailAware
+class EsdSerialPaymentStatusPaidEvent extends Event implements SalesChannelAware, MailAware
 {
     public const EVENT_NAME = 'esd.serial.payment.status.paid';
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
-    /**
-     * @var OrderEntity
-     */
-    private $order;
+    private OrderEntity $order;
 
-    /**
-     * @var array
-     */
-    private $templateData;
+    private array $templateData;
 
-    /**
-     * @var MailRecipientStruct|null
-     */
-    private $mailRecipientStruct;
+    private ?MailRecipientStruct $mailRecipientStruct;
 
     public function __construct(
         Context $context,

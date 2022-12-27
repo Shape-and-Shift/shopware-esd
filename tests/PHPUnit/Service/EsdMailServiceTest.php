@@ -6,6 +6,8 @@ use PHPUnit\Framework\MockObject\Rule\InvokedCount as InvokedCountMatcher;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
+use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Service\EsdMailService;
 use Sas\Esd\Service\EsdOrderService;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -37,72 +39,55 @@ class EsdMailServiceTest extends TestCase
     /**
      * @dataProvider sendMailDownloadProvider()
      */
-    public function testSendMailDownload(bool $hasOrder, bool $hasEsdOrderLineItems, bool $isDisableZipFile, bool $isSendDownloadConfirmation): void
+    public function testSendMailDownload(bool $hasOrder, bool $hasEsdOrderLineItems, bool $isDisableZipFile): void
     {
         $order = null;
         $esdOrderServiceExpect = static::never();
 
         if ($hasOrder) {
             $order = new OrderEntity();
+            $order->setSalesChannelId('testsdsdsds');
             $esdOrderServiceExpect = static::once();
         }
 
         $this->mockData($order, $esdOrderServiceExpect, false, $hasEsdOrderLineItems);
-        $eventExpect = static::once();
-
-        if (empty($order) || !$hasEsdOrderLineItems || (!$isDisableZipFile && !$isSendDownloadConfirmation)) {
-            $eventExpect = static::never();
-        }
 
         if (!$hasOrder) {
-            $this->systemConfigService
-                ->expects(static::never())
-                ->method('get');
+            $this->eventDispatcher->expects(static::never())
+                ->method('dispatch');
         } elseif (!$hasEsdOrderLineItems) {
-            $this->systemConfigService
-                ->expects(static::exactly(2))
-                ->method('get')
-                ->willReturnOnConsecutiveCalls($isDisableZipFile, $isSendDownloadConfirmation);
+            $this->eventDispatcher->expects(static::never())
+                ->method('dispatch')
+                ->with(static::isInstanceOf(EsdDownloadPaymentStatusPaidDisabledZipEvent::class));
         } elseif ($isDisableZipFile) {
-            $this->systemConfigService
-                ->expects(static::exactly(1))
-                ->method('get')
-                ->willReturn(true);
+            $this->eventDispatcher->expects(static::once())
+                ->method('dispatch')
+                ->with(static::isInstanceOf(EsdDownloadPaymentStatusPaidEvent::class));
         } else {
-            $this->systemConfigService
-                ->expects(static::exactly(2))
-                ->method('get')
-                ->willReturnOnConsecutiveCalls(false, $isSendDownloadConfirmation);
+            $this->eventDispatcher->expects(static::never())
+                ->method('dispatch');
         }
 
-        $this->eventDispatcher->expects($eventExpect)->method('dispatch');
         $this->esdMailService->sendMailDownload('id', $this->context);
     }
 
     /**
      * @dataProvider sendMailSerialProvider()
      */
-    public function testSendMailSerial(bool $hasOrder, bool $hasEsdSerials, bool $isSendSerialConfirmation): void
+    public function testSendMailSerial(bool $hasOrder, bool $hasEsdSerials): void
     {
         if ($hasOrder) {
             $order = new OrderEntity();
             $esdOrderServiceExpect = static::once();
-            $this->systemConfigService
-                ->expects(static::once())
-                ->method('get')
-                ->willReturnOnConsecutiveCalls($isSendSerialConfirmation);
         } else {
             $order = null;
             $esdOrderServiceExpect = static::never();
-            $this->systemConfigService
-                ->expects(static::never())
-                ->method('get');
         }
 
         $this->mockData($order, $esdOrderServiceExpect, $hasEsdSerials);
 
         $eventExpect = static::once();
-        if (empty($order) || !$hasEsdSerials || (!$isSendSerialConfirmation)) {
+        if (empty($order) || !$hasEsdSerials) {
             $eventExpect = static::never();
         }
 
@@ -117,27 +102,17 @@ class EsdMailServiceTest extends TestCase
     {
         if ($hasOrder) {
             $order = new OrderEntity();
+            $order->setSalesChannelId('orderSalesChannelId23343');
             $esdOrderServiceExpect = static::once();
 
             if (!$esdOrderService['isEsdOrder']) {
                 $esdOrderServiceExpect = static::never();
-                $this->systemConfigService
-                    ->expects(static::never())
-                    ->method('get');
-            } else {
-                $this->systemConfigService
-                    ->expects(static::exactly(3))
-                    ->method('get')
-                    ->willReturnOnConsecutiveCalls($config['isSendDownloadConfirmation'], $config['isDisableZipFile'], $config['isSendSerialConfirmation']);
             }
+
             $this->esdOrderService->expects(static::once())->method('isEsdOrder')->willReturn($esdOrderService['isEsdOrder']);
         } else {
             $order = null;
             $esdOrderServiceExpect = static::never();
-            $this->systemConfigService
-                ->expects(static::never())
-                ->method('get');
-            $this->esdOrderService->expects(static::never())->method('isEsdOrder');
         }
 
         $this->mockData($order, $esdOrderServiceExpect, $esdOrderService['hasEsdSerials'], $esdOrderService['hasEsdOrderLineItems']);
@@ -148,20 +123,18 @@ class EsdMailServiceTest extends TestCase
     public function sendMailDownloadProvider(): array
     {
         return [
-            'test not send when order is null' => [false, false, false, false],
-            'test not send when order line items is empty' => [true, false, false, false],
-            'test not send when both is enable zip file and is not send confirmation' => [true, true, false, false],
-            'test send when is disable zip file' => [true, true, true, false],
-            'test send when is send download confirmation' => [true, true, false, true],
+            'test not send when order is null' => [false, false, false],
+            'test not send when order line items is empty' => [true, false, false],
+            'test send when is disable zip file' => [true, true, true],
         ];
     }
 
     public function sendMailSerialProvider(): array
     {
         return [
-            'test not send when order is null' => [false, false, false],
-            'test not send when serials is empty' => [true, false, false],
-            'test send when is send serial confirmation' => [true, true, true],
+            'test not send when order is null' => [false, false],
+            'test not send when serials is empty' => [true, false],
+            'test send when is send serial confirmation' => [true, true],
         ];
     }
 

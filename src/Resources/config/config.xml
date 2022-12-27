@@ -13,18 +13,6 @@
         </input-field>
 
         <input-field type="bool">
-            <name>isSendDownloadConfirmation</name>
-            <label>Sending download confirmation email</label>
-            <label lang="de-DE">Download Bestätigungs Email senden</label>
-        </input-field>
-
-        <input-field type="bool">
-            <name>isSendSerialConfirmation</name>
-            <label>Sending serial number confirmation email</label>
-            <label lang="de-DE">Seriennummer Bestätigungs Email senden</label>
-        </input-field>
-
-        <input-field type="bool">
             <name>isNotDownloadLimitation</name>
             <label>No download limitation</label>
             <label lang="de-DE">Kein Download Limit</label>
@@ -67,5 +55,20 @@
             <label lang="de-DE">Deaktivieren Sie die Komprimierung in eine Zip-Datei</label>
             <defaultValue>false</defaultValue>
         </input-field>
+
+        <input-field type="bool">
+            <name>isSendDownloadConfirmation</name>
+            <disabled>true</disabled>
+            <label>Sending download confirmation email (Moved to use Flow builder)</label>
+            <label lang="de-DE">Download Bestätigungs Email senden (Umstellung auf Flow Builder)</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>isSendSerialConfirmation</name>
+            <disabled>true</disabled>
+            <label>Sending serial number confirmation email (Moved to use Flow builder)</label>
+            <label lang="de-DE">Seriennummer Bestätigungs Email senden (Umstellung auf Flow Builder)</label>
+        </input-field>
+
     </card>
 </config>

@@ -42,19 +42,19 @@ class EsdMailService
         if (!empty($order)) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
 
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)
-                && !empty($templateData['esdOrderLineItems'])) {
+            if (empty($templateData['esdOrderLineItems'])) {
+                return;
+            }
+
+            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)) {
                 $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($context, $order, $templateData);
                 $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
 
                 return;
             }
 
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
-                && !empty($templateData['esdOrderLineItems'])) {
-                $event = new EsdDownloadPaymentStatusPaidEvent($context, $order, $templateData);
-                $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
-            }
+            $event = new EsdDownloadPaymentStatusPaidEvent($context, $order, $templateData);
+            $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
         }
     }
 
@@ -64,11 +64,12 @@ class EsdMailService
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
         if (!empty($order)) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
-            if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
-                && !empty($templateData['esdSerials'])) {
-                $event = new EsdSerialPaymentStatusPaidEvent($context, $order, $templateData);
-                $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
+            if (empty($templateData['esdSerials'])) {
+                return;
             }
+
+            $event = new EsdSerialPaymentStatusPaidEvent($context, $order, $templateData);
+            $this->eventDispatcher->dispatch($event, EsdSerialPaymentStatusPaidEvent::EVENT_NAME);
         }
     }
 
@@ -88,18 +89,11 @@ class EsdMailService
         }
 
         $templateData = $this->esdOrderService->mailTemplateData($order, $context);
-        if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME)
-            && !empty($templateData['esdOrderLineItems'])) {
+        if (!empty($templateData['esdOrderLineItems'])) {
             $buttons['download'] = true;
         }
 
-        if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)
-            && !empty($templateData['esdOrderLineItems'])) {
-            $buttons['download'] = true;
-        }
-
-        if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME)
-            && !empty($templateData['esdSerials'])) {
+        if (!empty($templateData['esdSerials'])) {
             $buttons['serial'] = true;
         }
 

@@ -11,35 +11,23 @@ use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\MailRecipientStruct;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
-use Shopware\Core\Framework\Event\FlowEventAware;
-use Shopware\Core\Framework\Event\MailActionInterface;
 use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidEvent extends Event implements FlowEventAware, SalesChannelAware, MailAware
+class EsdDownloadPaymentStatusPaidEvent extends Event implements SalesChannelAware, MailAware
 {
     public const EVENT_NAME = 'esd.download.payment.status.paid';
 
-    /**
-     * @var Context
-     */
     private Context $context;
 
-    /**
-     * @var OrderEntity
-     */
-    private $order;
+    private OrderEntity $order;
 
-    /**
-     * @var array
-     */
-    private $templateData;
+    private array $templateData;
 
-    /**
-     * @var MailRecipientStruct|null
-     */
-    private $mailRecipientStruct;
+    private ?MailRecipientStruct $mailRecipientStruct;
+
+    private string $salesChannelId;
 
     public function __construct(
         Context $context,
@@ -49,6 +37,8 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements FlowEventAware,
         $this->context = $context;
         $this->order = $order;
         $this->templateData = $templateData;
+
+        $this->salesChannelId = $order->getSalesChannelId();
     }
 
     public function getOrder(): OrderEntity
@@ -113,7 +103,7 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements FlowEventAware,
 
     public function getSalesChannelId(): string
     {
-        return $this->order->getSalesChannelId();
+        return $this->salesChannelId;
     }
 
     public function getContext(): Context

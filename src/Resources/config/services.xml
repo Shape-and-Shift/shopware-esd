@@ -85,6 +85,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Sas\Esd\Subscriber\ReadEsdFileSubscriber">
+            <argument type="service" id="Sas\Esd\Service\EsdService"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <!-- Storefront -->
         <service id="Sas\Esd\Storefront\Controller\DownloadsController" public="true">
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
@@ -102,7 +108,6 @@
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdDownloadService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="sas_esd.shopware6.logger"/>
 
             <call method="setContainer">
@@ -158,6 +163,7 @@
             <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="shopware.filesystem.private"/>
             <argument type="service" id="sas_esd.shopware6.logger"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <service id="Sas\Esd\Service\EsdOrderService">

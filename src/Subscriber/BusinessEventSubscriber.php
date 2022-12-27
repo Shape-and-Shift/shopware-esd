@@ -12,11 +12,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BusinessEventSubscriber implements EventSubscriberInterface
 {
-    private array $awares = [
-        EsdDownloadPaymentStatusPaidEvent::class,
-        EsdDownloadPaymentStatusPaidDisabledZipEvent::class,
-        EsdSerialPaymentStatusPaidEvent::class,
-    ];
     private BusinessEventCollector $businessEventCollector;
 
     public function __construct(BusinessEventCollector $businessEventCollector)
@@ -33,18 +28,24 @@ class BusinessEventSubscriber implements EventSubscriberInterface
 
     public function onRegisterEvent(BusinessEventCollectorEvent $event): void
     {
-        foreach ($this->awares as $aware) {
-            $this->defineBusinessEvents($event->getCollection(), $aware);
-        }
+        $this->defineBusinessEvents($event->getCollection());
     }
 
-    private function defineBusinessEvents(BusinessEventCollectorResponse $collection, string $eventName): void
+    private function defineBusinessEvents(BusinessEventCollectorResponse $collection): void
     {
-        $definition = $this->businessEventCollector->define($eventName);
-        if (!$definition) {
-            return;
-        }
+        $awares = [
+            EsdDownloadPaymentStatusPaidEvent::class,
+            EsdDownloadPaymentStatusPaidDisabledZipEvent::class,
+            EsdSerialPaymentStatusPaidEvent::class,
+        ];
 
-        $collection->set($definition->getName(), $definition);
+        foreach ($awares as $aware) {
+            $definition = $this->businessEventCollector->define($aware);
+            if (!$definition) {
+                return;
+            }
+
+            $collection->set($definition->getName(), $definition);
+        }
     }
 }

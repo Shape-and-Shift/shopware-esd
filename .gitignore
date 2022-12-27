@@ -107,5 +107,9 @@ Temporary Items
 
 # Esd
 var
-
 /vendor
+composer.lock
+src/Resources/app/administration/dist/
+src/Resources/app/storefront/dist/
+src/Resources/public/administration/css/
+src/Resources/public/administration/js/
