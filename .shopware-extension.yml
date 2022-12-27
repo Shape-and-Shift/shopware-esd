@@ -1,0 +1,12 @@
+build:
+  zip:
+    composer:
+      enabled: true
+    assets:
+      enabled: true
+    pack:
+      excludes:
+        paths:
+          - .idea
+          - .gitignore
+          - SasEsd.zip

@@ -69,11 +69,10 @@ jobs:
                   docker exec shop bash -c 'cd /var/www/html/custom/plugins/SasEsd && make build'
 
     build:
-        uses: FriendsOfShopware/actions/.github/workflows/store.yml@main
+        uses: FriendsOfShopware/actions/.github/workflows/store-shopware-cli.yml@main
         needs: integrationphp74
         with:
             extensionName: SasEsd
-            shopwareVersion: '6.4.10'
         secrets:
             accountUser: ${{ secrets.ACCOUNT_USER }}
             accountPassword: ${{ secrets.ACCOUNT_PASSWORD }}
