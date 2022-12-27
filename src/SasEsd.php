@@ -43,10 +43,14 @@ class SasEsd extends Plugin
 
         /** @var EntityRepositoryInterface $eventActionRepository */
         $eventActionRepository = $this->container->get('event_action.repository');
+
+        /** @var EntityRepositoryInterface $flowRepository */
+        $flowRepository = $this->container->get('flow.repository');
         (new InstallUninstall(
             $mailTemplateTypeRepository,
             $mailTemplateRepository,
-            $eventActionRepository
+            $eventActionRepository,
+            $flowRepository
         ))->uninstall($context->getContext());
 
         $dirCompress = \dirname(__DIR__, 4) . '/files/' . EsdService::FOLDER_COMPRESS_NAME;

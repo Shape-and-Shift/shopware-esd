@@ -13,12 +13,10 @@ class EsdMailTemplate
     public const TEMPLATE_TYPE_DOWNLOAD_NAME = 'ESD - order download link';
     public const TEMPLATE_TYPE_DOWNLOAD_NAME_DE = 'ESD - Download-Link bestellen';
     public const TEMPLATE_TYPE_DOWNLOAD_TECHNICAL_NAME = 'sas_esd.download';
-    public const TEMPLATE_DOWNLOAD_SYSTEM_CONFIG_NAME = 'isSendDownloadConfirmation';
 
     public const TEMPLATE_TYPE_SERIAL_NAME = 'ESD - serial number';
     public const TEMPLATE_TYPE_SERIAL_NAME_DE = 'ESD - Ordnungsnummer';
     public const TEMPLATE_TYPE_SERIAL_TECHNICAL_NAME = 'sas_esd.serial';
-    public const TEMPLATE_SERIAL_SYSTEM_CONFIG_NAME = 'isSendSerialConfirmation';
 
     public const TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_NAME = 'ESD - order download link with disabled zip';
     public const TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_NAME_DE = 'ESD - order download link with disabled zip';

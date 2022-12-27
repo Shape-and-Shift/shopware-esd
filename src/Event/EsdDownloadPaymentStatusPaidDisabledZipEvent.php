@@ -11,13 +11,11 @@ use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\MailRecipientStruct;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
-use Shopware\Core\Framework\Event\FlowEventAware;
-use Shopware\Core\Framework\Event\MailActionInterface;
 use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements FlowEventAware, SalesChannelAware, MailAware
+class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements SalesChannelAware, MailAware
 {
     public const EVENT_NAME = 'esd.download.disabled.zip.payment.status.paid';
 
@@ -27,7 +25,9 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Flow
 
     private array $templateData;
 
-    private MailRecipientStruct $mailRecipientStruct;
+    private ?MailRecipientStruct $mailRecipientStruct;
+
+    private string $salesChannelId;
 
     public function __construct(
         Context $context,
@@ -37,6 +37,8 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Flow
         $this->context = $context;
         $this->order = $order;
         $this->templateData = $templateData;
+
+        $this->salesChannelId = $order->getSalesChannelId();
     }
 
     public function getOrder(): OrderEntity
@@ -91,7 +93,7 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Flow
 
     public function getSalesChannelId(): string
     {
-        return $this->order->getSalesChannelId();
+        return $this->salesChannelId;
     }
 
     public function getContext(): Context

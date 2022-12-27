@@ -49,7 +49,12 @@ class EsdOrderService
         }
 
         $newEsdOrders = [];
+        /** @var OrderLineItemEntity $orderLineItem */
         foreach ($order->getLineItems() as $orderLineItem) {
+            if (!\is_string($orderLineItem->getProductId())) {
+                continue;
+            }
+
             if ($products instanceof ProductCollection) {
                 $product = $products->get($orderLineItem->getProductId());
                 if (!$product) {
@@ -125,7 +130,7 @@ class EsdOrderService
         /** @var EsdOrderEntity $esdOrder */
         foreach ($esdOrders as $esdOrder) {
             $esd = $esdOrder->getEsd();
-            if ($esd->getEsdMedia() === null) {
+            if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
                 continue;
             }
 
@@ -150,7 +155,7 @@ class EsdOrderService
 
         /** @var OrderLineItemEntity $orderLineItem */
         foreach ($order->getLineItems() as $orderLineItem) {
-            if (\array_key_exists($orderLineItem->getId(), $esdByLineItemIds)) {
+            if (!\array_key_exists($orderLineItem->getId(), $esdByLineItemIds)) {
                 continue;
             }
 

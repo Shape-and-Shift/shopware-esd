@@ -53,6 +53,7 @@ class Migration1607159480CreateDownloadMailEventAction extends MigrationStep
                     'title' => 'ESD - Download mail',
                     'event_name' => EsdDownloadPaymentStatusPaidEvent::EVENT_NAME,
                     'action_name' => MailTemplateActions::MAIL_TEMPLATE_MAIL_SEND_ACTION,
+                    'active' => 0,
                     'config' => json_encode([
                         'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),
                         'mail_template_id' => Uuid::fromBytesToHex($templateId),

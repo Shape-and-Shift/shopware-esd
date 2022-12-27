@@ -11,6 +11,7 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
+use Sas\Esd\Event\ReadEsdFileEvent;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
@@ -25,6 +26,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EsdService
 {
@@ -48,6 +50,8 @@ class EsdService
 
     private LoggerInterface $logger;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct(
         EntityRepositoryInterface $esdProductRepository,
         EntityRepositoryInterface $esdOrderRepository,
@@ -57,7 +61,8 @@ class EsdService
         SystemConfigService $systemConfigService,
         FilesystemInterface $filesystemPublic,
         FilesystemInterface $filesystemPrivate,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->esdProductRepository = $esdProductRepository;
         $this->esdOrderRepository = $esdOrderRepository;
@@ -68,6 +73,7 @@ class EsdService
         $this->filesystemPublic = $filesystemPublic;
         $this->filesystemPrivate = $filesystemPrivate;
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -337,6 +343,8 @@ class EsdService
 
     public function getFileSize(string $productId): string
     {
+        $this->eventDispatcher->dispatch(new ReadEsdFileEvent($productId));
+
         $size = filesize($this->getCompressFile($productId));
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $power = $size > 0 ? floor(log($size, 1024)) : 0;

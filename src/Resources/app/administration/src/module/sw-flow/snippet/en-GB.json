@@ -1,0 +1,13 @@
+{
+    "sw-flow": {
+        "triggers": {
+            "esd": "ESD plugin",
+            "download": "ESD Download",
+            "serial": "ESD serial",
+            "disabled": "Disabled zip",
+            "zip": "Zip",
+            "payment": "Payment",
+            "status": "Status"
+        }
+    }
+}

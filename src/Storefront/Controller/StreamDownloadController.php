@@ -6,7 +6,6 @@ use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
-use Sas\Esd\Message\CompressMediaMessage;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
@@ -22,7 +21,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -40,8 +38,6 @@ class StreamDownloadController extends StorefrontController
 
     private SystemConfigService $systemConfigService;
 
-    private MessageBusInterface $messageBus;
-
     private LoggerInterface $logger;
 
     public function __construct(
@@ -50,7 +46,6 @@ class StreamDownloadController extends StorefrontController
         EsdService $esdService,
         EsdDownloadService $esdDownloadService,
         SystemConfigService $systemConfigService,
-        MessageBusInterface $messageBus,
         LoggerInterface $logger
     ) {
         $this->filesystemPublic = $filesystemPublic;
@@ -58,7 +53,6 @@ class StreamDownloadController extends StorefrontController
         $this->esdService = $esdService;
         $this->esdDownloadService = $esdDownloadService;
         $this->systemConfigService = $systemConfigService;
-        $this->messageBus = $messageBus;
         $this->logger = $logger;
     }
 
@@ -238,10 +232,6 @@ class StreamDownloadController extends StorefrontController
         if (!is_file($this->esdService->getCompressFile($productId))) {
             // Create a zip file for old version
             $this->esdService->compressFiles($productId);
-            $message = new CompressMediaMessage();
-            $message->setProductId($productId);
-
-            $this->messageBus->dispatch($message);
         }
 
         if (!$this->systemConfigService->get('SasEsd.config.isEsdVideo')) {
