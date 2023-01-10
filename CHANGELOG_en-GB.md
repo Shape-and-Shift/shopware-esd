@@ -1,3 +1,6 @@
+# 1.6.1
+* Added CustomerAware and OrderAware to the Flow events to have a customer option.
+
 # 1.6.0
 * Compatibility Shopware version 6.4.18.0.
 * Updated to send emails with Flow Builder.
