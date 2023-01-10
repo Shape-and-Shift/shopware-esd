@@ -4,18 +4,21 @@ namespace Sas\Esd\Event;
 
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Flow\Exception\CustomerDeletedException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\AssociationNotFoundException;
+use Shopware\Core\Framework\Event\CustomerAware;
 use Shopware\Core\Framework\Event\EventData\ArrayType;
 use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\MailRecipientStruct;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
 use Shopware\Core\Framework\Event\MailAware;
+use Shopware\Core\Framework\Event\OrderAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements SalesChannelAware, MailAware
+class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements SalesChannelAware, OrderAware, MailAware, CustomerAware
 {
     public const EVENT_NAME = 'esd.download.disabled.zip.payment.status.paid';
 
@@ -99,5 +102,21 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Sale
     public function getContext(): Context
     {
         return $this->context;
+    }
+
+    public function getCustomerId(): string
+    {
+        $customer = $this->getOrder()->getOrderCustomer();
+
+        if ($customer === null || $customer->getCustomerId() === null) {
+            throw new CustomerDeletedException($this->getOrderId());
+        }
+
+        return $customer->getCustomerId();
+    }
+
+    public function getOrderId(): string
+    {
+        return $this->order->getId();
     }
 }

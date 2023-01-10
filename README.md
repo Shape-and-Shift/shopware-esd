@@ -214,16 +214,3 @@ to send the mail again to your customer
 
 ![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1607271464/ESD%20Docs/Bildschirmfoto_2020-12-06_um_18.10.22_pgl1k4.png)
 *send the ESD mail again*
-
-## Business Events
-In version `1.2.11` we added the new Shopware Business Events to the plugin.
-You will find now two new business events from the ESD plugin.
-
-![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1607271463/ESD%20Docs/Bildschirmfoto_2020-12-06_um_18.10.48_fuzsur.png)
-*new business events in 1.2.11*
-
-**Make sure your business event is attached to a SalesChannel**
-
-![](https://res.cloudinary.com/dtgdh7noz/image/upload/v1607271463/ESD%20Docs/Bildschirmfoto_2020-12-06_um_18.11.02_bkgm2p.png)
-*Business events sales channel*
-
