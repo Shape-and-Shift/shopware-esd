@@ -1,3 +1,6 @@
+# 1.6.2
+* Added .epub and .mobi to the WhiteList of the media file extension
+
 # 1.6.1
 * Added CustomerAware and OrderAware to the Flow events to have a customer option.
 

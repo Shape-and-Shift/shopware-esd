@@ -1,3 +1,6 @@
+# 1.6.2
+* .epub und.mobi zur WhiteList der Mediendateierweiterung hinzugefügt.
+
 # 1.6.1
 * CustomerAware und OrderAware zu den Flow-Ereignissen hinzugefügt, um eine Kundenoption zu haben.
 
