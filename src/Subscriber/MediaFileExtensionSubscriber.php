@@ -36,6 +36,8 @@ class MediaFileExtensionSubscriber implements EventSubscriberInterface
             'rar',
             'tar.gz',
             'tar.gz2',
+            'epub',
+            'mobi',
         ], $event->getWhitelist());
 
         $event->setWhitelist($newWhiteList);
