@@ -1,3 +1,6 @@
+# unreleased
+* Fixed issue user can download the file without login.
+
 # 1.6.2
 * Added .epub and .mobi to the WhiteList of the media file extension
 

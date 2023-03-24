@@ -9,13 +9,11 @@ use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Page\GenericPageLoaderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -49,7 +47,7 @@ class DownloadsController extends StorefrontController
      */
     public function getAccountDownloads(Request $request, SalesChannelContext $context): Response
     {
-        $this->denyAccessUnlessLoggedIn();
+        $this->denyAccessUnlessLoggedIn($context);
         $page = $this->genericLoader->load($request, $context);
 
         $customer = $context->getCustomer();
@@ -109,7 +107,7 @@ class DownloadsController extends StorefrontController
      */
     public function getDownloadRemaining(Request $request, SalesChannelContext $context): Response
     {
-        $this->denyAccessUnlessLoggedIn();
+        $this->denyAccessUnlessLoggedIn($context);
         $page = $this->genericLoader->load($request, $context);
 
         $customer = $context->getCustomer();
@@ -133,7 +131,7 @@ class DownloadsController extends StorefrontController
      */
     public function getItemDownloadRemaining(Request $request, SalesChannelContext $context): Response
     {
-        $this->denyAccessUnlessLoggedIn();
+        $this->denyAccessUnlessLoggedIn($context);
         $page = $this->genericLoader->load($request, $context);
 
         $customer = $context->getCustomer();
@@ -156,28 +154,14 @@ class DownloadsController extends StorefrontController
         ]);
     }
 
-    protected function denyAccessUnlessLoggedIn(bool $allowGuest = false): void
+    protected function denyAccessUnlessLoggedIn(SalesChannelContext $context, bool $allowGuest = false): void
     {
-        /** @var RequestStack $requestStack */
-        $requestStack = $this->get('request_stack');
-        $request = $requestStack->getCurrentRequest();
-
-        if (!$request) {
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
             throw new CustomerNotLoggedInException();
         }
 
-        /** @var SalesChannelContext|null $context */
-        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-
-        if (!$context instanceof SalesChannelContext) {
-            return;
-        }
-
-        if (!$context->getCustomer() instanceof CustomerEntity) {
-            return;
-        }
-
-        if ($allowGuest || $context->getCustomer()->getGuest() === false) {
+        if ($allowGuest || $customer->getGuest() === false) {
             return;
         }
 
