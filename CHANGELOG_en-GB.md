@@ -1,4 +1,4 @@
-# unreleased
+# 1.6.3
 * Fixed issue user can download the file without login.
 
 # 1.6.2
