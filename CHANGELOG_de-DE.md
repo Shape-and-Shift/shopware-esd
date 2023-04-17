@@ -1,3 +1,6 @@
+# unreleased
+* Problem behoben, dass Benutzer die Datei ohne Anmeldung herunterladen können.
+
 # 1.6.2
 * .epub und.mobi zur WhiteList der Mediendateierweiterung hinzugefügt.
 

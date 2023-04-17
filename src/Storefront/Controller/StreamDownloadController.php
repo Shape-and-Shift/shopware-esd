@@ -12,12 +12,10 @@ use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -61,7 +59,7 @@ class StreamDownloadController extends StorefrontController
      */
     public function downloadByUserLoggedIn(SalesChannelContext $context, string $esdOrderId): Response
     {
-        $this->denyAccessUnlessLoggedIn();
+        $this->denyAccessUnlessLoggedIn($context);
 
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
@@ -94,7 +92,7 @@ class StreamDownloadController extends StorefrontController
      */
     public function streamMediaLineItemByUser(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
-        $this->denyAccessUnlessLoggedIn();
+        $this->denyAccessUnlessLoggedIn($context);
 
         return $this->streamMediaLineItem($context, $esdOrderId, $mediaId);
     }
@@ -117,7 +115,7 @@ class StreamDownloadController extends StorefrontController
      */
     public function streamVideo(SalesChannelContext $context, string $esdId, string $mediaId): ?StreamedResponse
     {
-        $this->denyAccessUnlessLoggedIn();
+        $this->denyAccessUnlessLoggedIn($context);
 
         $esdVideoPath = $this->esdService->getVideoMedia($esdId, $mediaId, $context->getContext());
         if (empty($esdVideoPath)) {
@@ -133,27 +131,14 @@ class StreamDownloadController extends StorefrontController
     /**
      * @throws CustomerNotLoggedInException
      */
-    protected function denyAccessUnlessLoggedIn(bool $allowGuest = false): void
+    protected function denyAccessUnlessLoggedIn(SalesChannelContext $context, bool $allowGuest = false): void
     {
-        /** @var RequestStack $requestStack */
-        $requestStack = $this->get('request_stack');
-        $request = $requestStack->getCurrentRequest();
-
-        if (!$request) {
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
             throw new CustomerNotLoggedInException();
         }
 
-        /** @var SalesChannelContext|null $context */
-        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-        if (!$context instanceof SalesChannelContext) {
-            return;
-        }
-
-        if (!$context->getCustomer() instanceof CustomerEntity) {
-            return;
-        }
-
-        if ($allowGuest || $context->getCustomer()->getGuest() === false) {
+        if ($allowGuest || $customer->getGuest() === false) {
             return;
         }
 
