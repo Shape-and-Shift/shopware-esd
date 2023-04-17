@@ -1,4 +1,4 @@
-# unreleased
+# 1.6.3
 * Problem behoben, dass Benutzer die Datei ohne Anmeldung herunterladen können.
 
 # 1.6.2
