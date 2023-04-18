@@ -13,9 +13,9 @@
         }
     ],
     "require":{
-        "shopware/core": "^6.4.6",
-        "shopware/administration": "^6.4.6",
-        "shopware/storefront": "^6.4.6"
+        "shopware/core": "~6.4.6",
+        "shopware/administration": "~6.4.6",
+        "shopware/storefront": "~6.4.6"
     },
     "require-dev":{
         "phpunit/phpunit": "^9.5",
