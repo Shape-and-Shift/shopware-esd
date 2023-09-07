@@ -18,14 +18,13 @@ use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 
 class EsdOrderServiceTest extends TestCase
 {
-    private EntityRepositoryInterface $esdOrderRepository;
+    private EntityRepository $esdOrderRepository;
 
-    private EntityRepositoryInterface $esdSerialRepository;
+    private EntityRepository $esdSerialRepository;
 
     private EsdService $esdService;
 

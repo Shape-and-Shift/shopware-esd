@@ -7,11 +7,8 @@ use Psr\Log\AbstractLogger;
 
 class LoggerService extends AbstractLogger
 {
-    private Logger $logger;
-
-    public function __construct(Logger $logger)
+    public function __construct(private readonly Logger $logger)
     {
-        $this->logger = $logger;
     }
 
     public function log($level, $message, array $context = []): void

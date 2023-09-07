@@ -9,10 +9,7 @@ class EsdDownloadHistoryEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string|null
-     */
-    protected $esdOrderId;
+    protected ?string $esdOrderId = null;
 
     public function getId(): string
     {

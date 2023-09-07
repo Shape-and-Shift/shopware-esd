@@ -1,9 +1,9 @@
 import template from './sas-esd-modal-csv.html.twig';
 import './sas-esd-modal-csv.scss';
 
-import { drop, every, forEach, get, isArray, map, set } from 'lodash';
-import Papa from 'papaparse';
-import mimeTypes from "mime-types";
+import { drop, every, forEach, get, isArray, map, set } from '@lodash';
+import Papa from '@papaparse';
+import mimeTypes from "@mime-types";
 
 const { Component, Mixin } = Shopware;
 const { mapState } = Shopware.Component.getComponentHelper();

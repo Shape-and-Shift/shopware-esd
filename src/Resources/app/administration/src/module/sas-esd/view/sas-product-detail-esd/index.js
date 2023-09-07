@@ -357,7 +357,7 @@ Component.register('sas-product-detail-esd', {
         },
 
         onMediaUploadButtonOpenSidebar() {
-            this.$root.$emit('sidebar-toggle-open');
+            this.$root.$emit('esd-sidebar-toggle-open');
         },
 
         async onInlineEditSave(esdMedia) {

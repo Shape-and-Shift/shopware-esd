@@ -2,16 +2,16 @@
 
 namespace Sas\Esd\Storefront\Controller;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -22,36 +22,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
 class StreamDownloadController extends StorefrontController
 {
-    private FilesystemInterface $filesystemPublic;
-
-    private FilesystemInterface $filesystemPrivate;
-
-    private EsdService $esdService;
-
-    private EsdDownloadService $esdDownloadService;
-
-    private SystemConfigService $systemConfigService;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        FilesystemInterface $filesystemPublic,
-        FilesystemInterface $filesystemPrivate,
-        EsdService $esdService,
-        EsdDownloadService $esdDownloadService,
-        SystemConfigService $systemConfigService,
-        LoggerInterface $logger
+        private readonly FilesystemOperator $filesystemPublic,
+        private readonly FilesystemOperator $filesystemPrivate,
+        private readonly EsdService $esdService,
+        private readonly EsdDownloadService $esdDownloadService,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly LoggerInterface $logger
     ) {
-        $this->filesystemPublic = $filesystemPublic;
-        $this->filesystemPrivate = $filesystemPrivate;
-        $this->esdService = $esdService;
-        $this->esdDownloadService = $esdDownloadService;
-        $this->systemConfigService = $systemConfigService;
-        $this->logger = $logger;
     }
 
     /**
@@ -63,7 +45,7 @@ class StreamDownloadController extends StorefrontController
 
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
-            throw new CustomerNotLoggedInException();
+            throw CartException::customerNotLoggedIn();
         }
 
         $esdOrder = $this->esdService->getEsdOrderByCustomer($customer, $esdOrderId, $context);
@@ -135,14 +117,14 @@ class StreamDownloadController extends StorefrontController
     {
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
-            throw new CustomerNotLoggedInException();
+            throw CartException::customerNotLoggedIn();
         }
 
         if ($allowGuest || $customer->getGuest() === false) {
             return;
         }
 
-        throw new CustomerNotLoggedInException();
+        throw CartException::customerNotLoggedIn();
     }
 
     private function streamMediaLineItem(SalesChannelContext $context, string $esdOrderId, string $mediaId): StreamedResponse
@@ -195,7 +177,7 @@ class StreamDownloadController extends StorefrontController
         });
     }
 
-    private function getFileSystem(string $path): FilesystemInterface
+    private function getFileSystem(string $path): FilesystemOperator
     {
         $fileSystem = $this->filesystemPrivate;
 
@@ -203,7 +185,7 @@ class StreamDownloadController extends StorefrontController
             if ($this->filesystemPublic->read($path)) {
                 $fileSystem = $this->filesystemPublic;
             }
-        } catch (FileNotFoundException $e) {
+        } catch (FilesystemException $e) {
             $this->logger->warning('We could not found media from ' . $path);
         }
 
@@ -212,6 +194,10 @@ class StreamDownloadController extends StorefrontController
 
     private function downloadProcess(EsdOrderEntity $esdOrder, SalesChannelContext $context): Response
     {
+        if (!$esdOrder->getEsd()) {
+            return new Response();
+        }
+
         $productId = $esdOrder->getEsd()->getProductId();
 
         if (!is_file($this->esdService->getCompressFile($productId))) {
@@ -225,6 +211,10 @@ class StreamDownloadController extends StorefrontController
         }
 
         $path = $this->esdService->getCompressFile($productId);
+
+        if (!$esdOrder->getOrderLineItem()) {
+            return new Response();
+        }
 
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,

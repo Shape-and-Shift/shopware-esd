@@ -5,13 +5,7 @@ namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistor
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * @method void                               add(EsdMediaDownloadHistoryEntity $entity)
- * @method void                               set(string $key, EsdMediaDownloadHistoryEntity $entity)
- * @method EsdMediaDownloadHistoryEntity[]    getIterator()
- * @method EsdMediaDownloadHistoryEntity[]    getElements()
- * @method EsdMediaDownloadHistoryEntity|null get(string $key)
- * @method EsdMediaDownloadHistoryEntity|null first()
- * @method EsdMediaDownloadHistoryEntity|null last()
+ * @extends EntityCollection<EsdMediaDownloadHistoryEntity>
  */
 class EsdMediaDownloadHistoryCollection extends EntityCollection
 {

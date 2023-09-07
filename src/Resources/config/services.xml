@@ -52,7 +52,7 @@
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="kernel.event_listener"/>
         </service>
 
@@ -71,7 +71,7 @@
             <argument type="service" id="Sas\Esd\Service\EsdService"/>
             <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -99,6 +99,9 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
             </call>
         </service>
 
@@ -131,7 +134,7 @@
         </service>
 
         <service id="Sas\Esd\Storefront\Controller\CheckoutControllerDecorator" decorates="Shopware\Storefront\Controller\CheckoutController">
-            <argument type="service" id="Sas\Esd\Storefront\Controller\CheckoutControllerDecorator.inner"/>
+            <argument type="service" id=".inner"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Sas\Esd\Service\EsdCartService"/>
             <tag name="controller.service_arguments" />
@@ -141,15 +144,6 @@
             <call method="setTwig">
                 <argument type="service" id="twig"/>
             </call>
-        </service>
-
-        <!-- Language Snippets -->
-        <service id="Sas\Esd\Resources\snippet\en_GB\SnippetFile_en_GB">
-            <tag name="shopware.snippet.file"/>
-        </service>
-
-        <service id="Sas\Esd\Resources\snippet\de_DE\SnippetFile_de_DE">
-            <tag name="shopware.snippet.file"/>
         </service>
 
         <!-- Service -->
@@ -183,7 +177,7 @@
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventDispatcher"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <service id="Sas\Esd\Service\EsdCartService">
@@ -220,9 +214,13 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Sas\Esd\Subscriber\OrderStorerSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <!-- logger -->
         <service id="sas_esd.shopware6.logger" class="Sas\Esd\Service\LoggerService">
-            <argument type="service" id="monolog.logger.sas_esd"/>
+            <argument type="service" id="monolog.logger.business_events"/>
         </service>
     </services>
 </container>

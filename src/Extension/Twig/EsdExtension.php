@@ -4,7 +4,7 @@ namespace Sas\Esd\Extension\Twig;
 
 use Sas\Esd\Content\Product\Extension\Esd\EsdCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Twig\Extension\AbstractExtension;
@@ -12,11 +12,8 @@ use Twig\TwigFunction;
 
 class EsdExtension extends AbstractExtension
 {
-    private EntityRepositoryInterface $esdRepository;
-
-    public function __construct(EntityRepositoryInterface $esdRepository)
+    public function __construct(private readonly EntityRepository $esdRepository)
     {
-        $this->esdRepository = $esdRepository;
     }
 
     public function getFunctions(): array

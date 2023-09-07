@@ -2,7 +2,6 @@
 
 namespace Sas\Esd\Tests\Service;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryCollection;
@@ -11,27 +10,19 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Service\EsdDownloadService;
+use Sas\Esd\Tests\Stubs\StaticEntityRepository;
+use Sas\Esd\Tests\Stubs\StaticSystemConfigService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EsdDownloadServiceTest extends TestCase
 {
-    private EntityRepositoryInterface $esdOrderRepository;
+    private StaticEntityRepository $esdMediaDownloadHistoryRepository;
 
-    private EntityRepositoryInterface $esdDownloadHistoryRepository;
-
-    private EntityRepositoryInterface $esdMediaDownloadHistoryRepository;
-
-    /**
-     * @var MockObject|SystemConfigService
-     */
-    private $systemConfigService;
+    private StaticSystemConfigService $systemConfigService;
 
     private EsdDownloadService $esdDownloadService;
 
@@ -39,22 +30,8 @@ class EsdDownloadServiceTest extends TestCase
 
     public function setUp(): void
     {
-        $this->context = $this->createMock(Context::class);
-
-        $this->systemConfigService = $this->createMock(SystemConfigService::class);
-
-        $this->esdOrderRepository = $this->createMock(EntityRepository::class);
-
-        $this->esdDownloadHistoryRepository = $this->createMock(EntityRepository::class);
-
-        $this->esdMediaDownloadHistoryRepository = $this->createMock(EntityRepository::class);
-
-        $this->esdDownloadService = new EsdDownloadService(
-            $this->esdOrderRepository,
-            $this->esdDownloadHistoryRepository,
-            $this->esdMediaDownloadHistoryRepository,
-            $this->systemConfigService
-        );
+        $this->context = Context::createDefaultContext();
+        $this->systemConfigService = new StaticSystemConfigService();
     }
 
     public function testThrowCheckLimitDownload(): void
@@ -72,6 +49,13 @@ class EsdDownloadServiceTest extends TestCase
         $esdOrder->setEsd($esdEntity);
         $esdOrder->setCountDownload(5);
 
+        $this->esdDownloadService = new EsdDownloadService(
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            new StaticSystemConfigService(),
+        );
+
         $this->esdDownloadService->checkLimitDownload($esdOrder);
     }
 
@@ -80,20 +64,30 @@ class EsdDownloadServiceTest extends TestCase
      */
     public function testGetLimitDownloadNumber(?int $systemConfigData, bool $isHasCustomDownloadLimit, bool $isHasUnlimitedDownload, bool $isNotDownloadLimitation): void
     {
-        $esdEntity = $this->createMock(EsdEntity::class);
-        $esdEntity->method('getHasCustomDownloadLimit')->willReturn($isHasCustomDownloadLimit);
-        $esdEntity->method('getHasUnlimitedDownload')->willReturn($isHasUnlimitedDownload);
-        $esdEntity->method('getDownloadLimitNumber')->willReturn($systemConfigData);
+        $esdEntity = new EsdEntity();
+        $esdEntity->setId(Uuid::randomHex());
+        $esdEntity->setHasUnlimitedDownload($isHasUnlimitedDownload);
+        $esdEntity->setHasCustomDownloadLimit($isHasCustomDownloadLimit);
+        if (\is_int($systemConfigData)) {
+            $esdEntity->setDownloadLimitNumber($systemConfigData);
+        }
 
         $esdOrder = $this->createMock(EsdOrderEntity::class);
         $esdOrder->method('getEsd')->willReturn($esdEntity);
 
         if (!$isHasCustomDownloadLimit && !$isHasUnlimitedDownload && !$isNotDownloadLimitation) {
-            $this->systemConfigService
-                ->expects(static::exactly(2))
-                ->method('get')
-                ->willReturnOnConsecutiveCalls($isNotDownloadLimitation, $systemConfigData);
+            $this->systemConfigService = new StaticSystemConfigService([
+                'SasEsd.config.isNotDownloadLimitation' => $isNotDownloadLimitation,
+                'SasEsd.config.limitDownloadNumber' => $systemConfigData,
+            ]);
         }
+
+        $this->esdDownloadService = new EsdDownloadService(
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            $this->systemConfigService
+        );
 
         $limitDownloadNumber = $this->esdDownloadService->getLimitDownloadNumber($esdOrder);
 
@@ -119,6 +113,13 @@ class EsdDownloadServiceTest extends TestCase
         $esdOrderCollection = new EsdOrderCollection();
         $esdOrderCollection->add($esdOrderEntity);
 
+        $this->esdDownloadService = new EsdDownloadService(
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            new StaticSystemConfigService([]),
+        );
+
         $actualValue = $this->esdDownloadService->getLimitDownloadNumberList($esdOrderCollection);
 
         static::assertArrayHasKey($esdOrderEntity->getId(), $actualValue);
@@ -127,12 +128,21 @@ class EsdDownloadServiceTest extends TestCase
 
     public function testAddDownloadHistory(): void
     {
-        $this->esdDownloadHistoryRepository->expects(static::once())->method('create');
-        $this->esdOrderRepository->expects(static::once())->method('update');
+        $esdDownloadHistoryRepository = $this->createMock(EntityRepository::class);
+        $esdOrderRepository = $this->createMock(EntityRepository::class);
+        $esdDownloadHistoryRepository->expects(static::once())->method('create');
+        $esdOrderRepository->expects(static::once())->method('update');
 
         $esdOrder = new EsdOrderEntity();
         $esdOrder->setId(Uuid::randomHex());
         $esdOrder->setCountDownload(1);
+
+        $this->esdDownloadService = new EsdDownloadService(
+            $esdOrderRepository,
+            $esdDownloadHistoryRepository,
+            new StaticEntityRepository([]),
+            new StaticSystemConfigService()
+        );
 
         $this->esdDownloadService->addDownloadHistory($esdOrder, $this->context);
     }
@@ -155,7 +165,15 @@ class EsdDownloadServiceTest extends TestCase
             'getTotal' => 2,
         ]);
 
-        $this->esdMediaDownloadHistoryRepository->expects(static::once())->method('search')->willReturn($search);
+        $esdMediaDownloadHistoryRepository = $this->createMock(EntityRepository::class);
+        $esdMediaDownloadHistoryRepository->expects(static::once())->method('search')->willReturn($search);
+
+        $this->esdDownloadService = new EsdDownloadService(
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            $esdMediaDownloadHistoryRepository,
+            new StaticSystemConfigService()
+        );
 
         $this->esdDownloadService->checkMediaDownloadHistory($esdOrderId, $esdMedia, $esdOrder, $this->context);
     }
@@ -179,8 +197,16 @@ class EsdDownloadServiceTest extends TestCase
         $esdMediaDownloadHistoryEntity2->setEsdMediaId($esdMediaId);
         $esdMediaDownloadHistoryCollection->add($esdMediaDownloadHistoryEntity2);
 
-        $searchResult = new EntitySearchResult('esd_media_download_history', 1, $esdMediaDownloadHistoryCollection, null, new Criteria(), $this->context);
-        $this->esdMediaDownloadHistoryRepository->expects(static::any())->method('search')->willReturn($searchResult);
+        $this->esdMediaDownloadHistoryRepository = new StaticEntityRepository([
+            new EsdMediaDownloadHistoryCollection([$esdMediaDownloadHistoryEntity1, $esdMediaDownloadHistoryEntity2]),
+        ]);
+
+        $this->esdDownloadService = new EsdDownloadService(
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            $this->esdMediaDownloadHistoryRepository,
+            new StaticSystemConfigService()
+        );
 
         $actualValue = $this->esdDownloadService->getDownloadRemainingItems([$esdOrderId], $this->context);
 
@@ -190,8 +216,14 @@ class EsdDownloadServiceTest extends TestCase
 
     public function testAddMediaDownloadHistory(): void
     {
-        $this->esdMediaDownloadHistoryRepository->expects(static::once())->method('create');
-
+        $esdMediaDownloadHistoryRepository = $this->createMock(EntityRepository::class);
+        $esdMediaDownloadHistoryRepository->expects(static::once())->method('create');
+        $this->esdDownloadService = new EsdDownloadService(
+            new StaticEntityRepository([]),
+            new StaticEntityRepository([]),
+            $esdMediaDownloadHistoryRepository,
+            new StaticSystemConfigService()
+        );
         $this->esdDownloadService->addMediaDownloadHistory('test', 'test', $this->context);
     }
 

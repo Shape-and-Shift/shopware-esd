@@ -7,7 +7,7 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdM
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -17,24 +17,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EsdDownloadService
 {
-    private EntityRepositoryInterface $esdOrderRepository;
-
-    private EntityRepositoryInterface $esdDownloadHistoryRepository;
-
-    private EntityRepositoryInterface $esdMediaDownloadHistoryRepository;
-
-    private SystemConfigService $systemConfigService;
-
     public function __construct(
-        EntityRepositoryInterface $esdOrderRepository,
-        EntityRepositoryInterface $esdDownloadHistoryRepository,
-        EntityRepositoryInterface $esdMediaDownloadHistoryRepository,
-        SystemConfigService $systemConfigService
+        private readonly EntityRepository $esdOrderRepository,
+        private readonly EntityRepository $esdDownloadHistoryRepository,
+        private readonly EntityRepository $esdMediaDownloadHistoryRepository,
+        private readonly SystemConfigService $systemConfigService
     ) {
-        $this->esdOrderRepository = $esdOrderRepository;
-        $this->esdDownloadHistoryRepository = $esdDownloadHistoryRepository;
-        $this->esdMediaDownloadHistoryRepository = $esdMediaDownloadHistoryRepository;
-        $this->systemConfigService = $systemConfigService;
     }
 
     public function checkLimitDownload(EsdOrderEntity $esdOrder): void
@@ -52,11 +40,16 @@ class EsdDownloadService
         $limitNumber = null;
         $isCheckCustom = false;
         $isUnlimited = false;
-        if ($esdOrder->getEsd()->getHasCustomDownloadLimit()) {
-            if ($esdOrder->getEsd()->getHasUnlimitedDownload()) {
+        $esd = $esdOrder->getEsd();
+        if (!$esd) {
+            return $limitNumber;
+        }
+
+        if ($esd->getHasCustomDownloadLimit()) {
+            if ($esd->getHasUnlimitedDownload()) {
                 $isUnlimited = true;
             } else {
-                $limitNumber = $esdOrder->getEsd()->getDownloadLimitNumber();
+                $limitNumber = $esd->getDownloadLimitNumber();
             }
 
             $isCheckCustom = true;
@@ -107,7 +100,12 @@ class EsdDownloadService
         EsdOrderEntity $esdOrder,
         Context $context
     ): void {
-        if ($esdOrder->getEsd()->getHasUnlimitedDownload()) {
+        $esd = $esdOrder->getEsd();
+        if (!$esd) {
+            return;
+        }
+
+        if ($esd->getHasUnlimitedDownload()) {
             return;
         }
 

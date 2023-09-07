@@ -10,25 +10,13 @@ class EsdMediaEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string|null
-     */
-    protected $esdId;
+    protected ?string $esdId = null;
 
-    /**
-     * @var string|null
-     */
-    protected $mediaId;
+    protected ?string $mediaId = null;
 
-    /**
-     * @var MediaEntity|null
-     */
-    protected $media;
+    protected ?MediaEntity $media = null;
 
-    /**
-     * @var int|null
-     */
-    protected $downloadLimitNumber;
+    protected ?int $downloadLimitNumber = null;
 
     public function getId(): string
     {

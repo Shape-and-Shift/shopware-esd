@@ -11,25 +11,13 @@ class EsdSerialEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string
-     */
-    protected $esdId;
+    protected string $esdId;
 
-    /**
-     * @var EsdEntity
-     */
-    protected $esd;
+    protected ?EsdEntity $esd = null;
 
-    /**
-     * @var string
-     */
-    protected $serial;
+    protected string $serial;
 
-    /**
-     * @var EsdOrderEntity|null
-     */
-    protected $esdOrder;
+    protected ?EsdOrderEntity $esdOrder = null;
 
     public function getEsdId(): string
     {
@@ -41,12 +29,12 @@ class EsdSerialEntity extends Entity
         $this->esdId = $esdId;
     }
 
-    public function getEsd(): EsdEntity
+    public function getEsd(): ?EsdEntity
     {
         return $this->esd;
     }
 
-    public function setEsd(EsdEntity $esd): void
+    public function setEsd(?EsdEntity $esd): void
     {
         $this->esd = $esd;
     }

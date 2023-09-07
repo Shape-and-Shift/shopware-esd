@@ -26,9 +26,9 @@
         <div class="table sas-esd-table">
             <div class="sas-esd-wrapper">
                 <div class="sas-esd-item-header">
-                    <div class="row flex-wrap">
+                    <div class="row flex-wrap p-0">
                         {% block page_account_sas_esd_download_table_product_name %}
-                            <div class="col-12 pl-0 pr-0 pb-2">
+                            <div class="col-12 ps-0 pe-0 pb-2">
                                 <h5>
                                     {{ "sasEsd.account.downloadTable.product"|trans|sw_sanitize }}:
                                     <span>{{ esdOrder.orderLineItem.label }}</span>
@@ -38,7 +38,7 @@
                     </div>
 
                     {% block page_account_sas_esd_download_table_header %}
-                        <div class="col-12 row sas-esd-table-header-order-table-header">
+                        <div class="col-12 row sas-esd-table-header-order-table-header p-0">
                             {% block page_account_sas_esd_download_table_header_cell_order_number %}
                                 <div class="col-12 col-sm sas-esd-table-header-order-table-header-cell">
                                     {{ "sasEsd.account.downloadTable.orderNumber"|trans|sw_sanitize }}
@@ -81,7 +81,7 @@
                     {% endblock %}
 
                     {% block page_account_sas_esd_download_table_body %}
-                        <div class="col-12 row sas-esd-table-header-order-table-body">
+                        <div class="col-12 row sas-esd-table-header-order-table-body p-0">
                             {% block page_account_sas_esd_download_table_body_cell_order_number %}
                                 <div class="col-12 col-sm sas-esd-table-header-order-table-body-cell">
                                     <strong class="sas-esd-table-header-label">
@@ -155,9 +155,11 @@
                                         {% block page_account_sas_esd_download_table_body_cell_toggle_button %}
                                             <button class="btn btn-light btn-sm sas-esd-hide-btn collapsed"
                                                     type="submit"
-                                                    data-toggle="collapse"
-                                                    data-target="#esdOrder{{ esdOrder.id }}"
-                                                    aria-expanded="false">
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#esdOrder{{ esdOrder.id }}"
+                                                    aria-expanded="false"
+                                                    aria-controls="collapseExample"
+                                            >
 
                                                 {% block page_account_sas_esd_download_table_body_cell_toggle_button_text %}
                                                     <span class="sas-esd-hide-btn-text">{{ "sasEsd.account.downloadTable.hideFilesButton"|trans|sw_sanitize }}</span>

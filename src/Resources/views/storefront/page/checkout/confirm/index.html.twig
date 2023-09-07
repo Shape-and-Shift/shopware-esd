@@ -9,9 +9,9 @@
 
         {% set esd = searchEsdByProductIds(productIds, context.context) %}
         {% if esd.count %}
-            <div class="custom-control custom-checkbox">
+            <div class="form-check">
                 <input type="checkbox"
-                       class="checkout-confirm-tos-checkbox custom-control-input{% if formViolations.getViolations('/waiveRightOfRescission') is not empty %} is-invalid{% endif %}"
+                       class="checkout-confirm-tos-checkbox form-check-input{% if formViolations.getViolations('/waiveRightOfRescission') is not empty %} is-invalid{% endif %}"
                        required="required"
                        id="waiveRightOfRescission"
                        form="confirmOrderForm"

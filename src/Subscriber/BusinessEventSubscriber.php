@@ -12,11 +12,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BusinessEventSubscriber implements EventSubscriberInterface
 {
-    private BusinessEventCollector $businessEventCollector;
-
-    public function __construct(BusinessEventCollector $businessEventCollector)
+    public function __construct(private readonly BusinessEventCollector $businessEventCollector)
     {
-        $this->businessEventCollector = $businessEventCollector;
     }
 
     public static function getSubscribedEvents(): array

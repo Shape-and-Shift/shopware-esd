@@ -11,12 +11,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CartSubscriber implements EventSubscriberInterface
 {
-    private EsdCartService $esdCartService;
-
     public function __construct(
-        EsdCartService $esdCartService
+        private readonly EsdCartService $esdCartService
     ) {
-        $this->esdCartService = $esdCartService;
     }
 
     public static function getSubscribedEvents(): array

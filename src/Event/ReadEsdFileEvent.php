@@ -9,12 +9,9 @@ class ReadEsdFileEvent extends NestedEvent
 {
     protected Context $context;
 
-    protected string $productId;
-
-    public function __construct(string $productId)
+    public function __construct(protected readonly string $productId)
     {
         $this->context = Context::createDefaultContext();
-        $this->productId = $productId;
     }
 
     public function getContext(): Context

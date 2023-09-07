@@ -114,11 +114,11 @@ Full **POST** example to the endpoint `/api/v2/sas-product-esd-serial`:
 ## Add your digital media to the product
 To add the digital media to the product, we will use the [Bulk Edit API](https://shopware.stoplight.io/docs/admin-api/adminapi.json/paths/~1_action~1sync/post) to do it.
 
-First, we need to upload a media file if it doesn't exist in our store, you can take a look at the Admin-API how to add a media file [here](https://shopware.stoplight.io/docs/admin-api/docs/guides/media-handling.md#upload-the-resource-directly).
+First, we need to upload a media file if it doesn't exist in our store, you can take a look at the Admin-API how to add a media file [here](https://shopware.stoplight.io/docs/admin-api/c5267f85b987c-create-a-new-media-resources).
 
 After finished adding the media you've got the mediaId, we will use it to add to the product through the Bulk Edit API with my example below.
 
-Full **POST** example to the endpoint `/api/_action/syncl`:
+Full **POST** example to the endpoint `/api/_action/sync`:
 ```
 [
   {

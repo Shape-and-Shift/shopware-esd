@@ -2,7 +2,7 @@
 
 namespace Sas\Esd\Tests\Service;
 
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
@@ -20,7 +20,6 @@ use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -28,19 +27,19 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class EsdServiceTest extends TestCase
 {
-    private EntityRepositoryInterface $esdProductRepository;
+    private EntityRepository $esdProductRepository;
 
-    private EntityRepositoryInterface $esdOrderRepository;
+    private EntityRepository $esdOrderRepository;
 
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
     private UrlGeneratorInterface $urlGenerator;
 
-    private FilesystemInterface $filesystemPrivate;
+    private FilesystemOperator $filesystemPrivate;
 
-    private FilesystemInterface $filesystemPublic;
+    private FilesystemOperator $filesystemPublic;
 
-    private EntityRepositoryInterface $esdVideoRepository;
+    private EntityRepository $esdVideoRepository;
 
     private SystemConfigService $systemConfigService;
 
@@ -64,9 +63,9 @@ class EsdServiceTest extends TestCase
 
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
 
-        $this->filesystemPrivate = $this->createMock(FilesystemInterface::class);
+        $this->filesystemPrivate = $this->createMock(FilesystemOperator::class);
 
-        $this->filesystemPublic = $this->createMock(FilesystemInterface::class);
+        $this->filesystemPublic = $this->createMock(FilesystemOperator::class);
 
         $this->esdVideoRepository = $this->createMock(EntityRepository::class);
 

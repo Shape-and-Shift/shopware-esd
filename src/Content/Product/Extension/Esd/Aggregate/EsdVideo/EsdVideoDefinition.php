@@ -37,7 +37,7 @@ class EsdVideoDefinition extends EntityDefinition
             (new IdField('id', 'id'))->setFlags(new Required(), new PrimaryKey()),
 
             (new FkField('esd_media_id', 'esdMediaId', EsdMediaDefinition::class))->addFlags(new Required()),
-            new OneToOneAssociationField('esdMedia', 'esd_media_id', 'id', EsdMediaDefinition::class),
+            new OneToOneAssociationField('esdMedia', 'esd_media_id', 'id', EsdMediaDefinition::class, false),
 
             new IntField('option', 'option'),
         ]);

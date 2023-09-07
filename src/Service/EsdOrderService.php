@@ -14,7 +14,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -23,20 +23,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class EsdOrderService
 {
-    private EntityRepositoryInterface $esdOrderRepository;
-
-    private EntityRepositoryInterface $esdSerialRepository;
-
-    private EsdService $esdService;
-
     public function __construct(
-        EntityRepositoryInterface $esdOrderRepository,
-        EntityRepositoryInterface $esdSerialRepository,
-        EsdService $esdService
+        private readonly EntityRepository $esdOrderRepository,
+        private readonly EntityRepository $esdSerialRepository,
+        private readonly EsdService $esdService
     ) {
-        $this->esdOrderRepository = $esdOrderRepository;
-        $this->esdSerialRepository = $esdSerialRepository;
-        $this->esdService = $esdService;
     }
 
     public function addNewEsdOrders(
@@ -130,7 +121,7 @@ class EsdOrderService
         /** @var EsdOrderEntity $esdOrder */
         foreach ($esdOrders as $esdOrder) {
             $esd = $esdOrder->getEsd();
-            if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
+            if (!$esd || !$esd->getEsdMedia() instanceof EsdMediaCollection) {
                 continue;
             }
 
@@ -160,7 +151,7 @@ class EsdOrderService
             }
 
             $esd = $esdByLineItemIds[$orderLineItem->getId()];
-            if ($esd->getEsdMedia() === null) {
+            if (!$esd instanceof EsdEntity || $esd->getEsdMedia() === null) {
                 continue;
             }
 
@@ -198,6 +189,10 @@ class EsdOrderService
         /** @var EsdOrderEntity $serialOfEsdOrder */
         foreach ($serialOfEsdOrders as $serialOfEsdOrder) {
             if (!$serialOfEsdOrder->getSerial() instanceof EsdSerialEntity) {
+                continue;
+            }
+
+            if (!$serialOfEsdOrder->getOrderLineItem() instanceof OrderLineItemEntity) {
                 continue;
             }
 

@@ -3,7 +3,7 @@
     {% if isEsdVideo and (esdMedia.media.fileExtension|lower == 'mp4' or esdMedia.media.fileExtension|lower == 'webm') %}
         {% if esdMediaByEsdIds[esdOrder.esdId][esdMedia.id] %}
             {% set esdMedia = esdMediaByEsdIds[esdOrder.esdId][esdMedia.id] %}
-            {% set actionOption = esdMedia.option %}
+            {% set actionOption = esdMedia.esdVideo.option %}
         {% endif %}
     {% endif %}
 
@@ -21,14 +21,14 @@
     {% endif %}
 
     {% block page_account_sas_esd_download_table_action_buttons %}
-        {% if actionOption == 0 %}
+        {% if actionOption === 0 %}
             {% block page_account_sas_esd_download_table_action_buttons_play_and_download %}
                 <div class="esd-video-actions">
                     <button type="button"
                             class="btn btn-primary esd-video-action-btn"
-                            data-toggle="modal"
+                            data-bs-toggle="modal"
                             data-backdrop="static"
-                            data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}">
+                            data-bs-target="#watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}">
                         {{ "sasEsd.account.downloadTable.playButton"|trans|sw_sanitize }}
                     </button>
                     <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}js-esd-item-download-selector{% endif %}"
@@ -37,17 +37,17 @@
                     </a>
                 </div>
             {% endblock %}
-        {% elseif actionOption == 1 %}
+        {% elseif actionOption === 1 %}
             {% block page_account_sas_esd_download_table_action_buttons_play %}
                 <button type="button"
                         class="btn btn-primary esd-video-action-btn"
-                        data-toggle="modal"
+                        data-bs-toggle="modal"
                         data-backdrop="static"
-                        data-target="#watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}">
+                        data-bs-target="#watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}">
                     {{ "sasEsd.account.downloadTable.playButton"|trans|sw_sanitize }}
                 </button>
             {% endblock %}
-        {% elseif actionOption == 2 %}
+        {% elseif actionOption === 2 %}
             {% block page_account_sas_esd_download_table_action_buttons_download %}
                 <a class="btn btn-primary esd-video-action-btn {% if isDisabledDownload %}disabled{% else %}js-esd-item-download-selector{% endif %}"
                    href="{{ path('frontend.sas.lineItem.media.url', {'esdOrderId': esdOrder.id, 'mediaId': esdMedia.media.id }) }}">
@@ -58,7 +58,7 @@
     {% endblock %}
 
     {% block page_account_sas_esd_download_table_action_modal_esd_video %}
-        {% if actionOption == 0 or actionOption == 1 %}
+        {% if actionOption === 0 or actionOption === 1 %}
             <div class="modal fade esd-watch-video-modal"
                  id="watchVideo{{ esdOrder.esdId }}_{{ esdMedia.media.id }}"
                  tabindex="-1"
@@ -76,7 +76,7 @@
                             {% block page_account_sas_esd_download_table_action_modal_esd_video_modal_button_close %}
                                 <button type="button"
                                         class="modal-close close js-close-esd-video-player"
-                                        data-dismiss="modal"
+                                        data-bs-dismiss="modal"
                                         aria-label="Close">
                                     <span aria-hidden="true">{% sw_icon 'x' style { 'size': 'sm' } %}</span>
                                 </button>
