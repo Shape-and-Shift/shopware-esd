@@ -1,8 +1,7 @@
-{% block sw_order_detail_base_document_grid %}
-    {% parent %}
-
+{% block sw_order_detail_details_custom_fields %}
     <sw-card v-if="transaction.stateMachineState.technicalName === 'paid' && (isEnableDownloadButton || isEnableSerialButton)"
              :title="$tc('sas-esd.esdMail.cardTitle')"
+             positionIdentifier="sas-sw-order-detail-base__document"
              :isLoading="isLoading">
         <sw-container columns="1fr 1fr" gap="10px">
             <sw-button @click="onSendDownloadMail"
@@ -19,4 +18,6 @@
             </sw-button>
         </sw-container>
     </sw-card>
+
+    {% parent %}
 {% endblock %}

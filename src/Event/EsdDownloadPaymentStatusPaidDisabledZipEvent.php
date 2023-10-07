@@ -4,6 +4,7 @@ namespace Sas\Esd\Event;
 
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Flow\Dispatching\Aware\ScalarValuesAware;
 use Shopware\Core\Content\Flow\Exception\CustomerDeletedException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\AssociationNotFoundException;
@@ -18,29 +19,19 @@ use Shopware\Core\Framework\Event\OrderAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements SalesChannelAware, OrderAware, MailAware, CustomerAware
+class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements ScalarValuesAware, SalesChannelAware, OrderAware, MailAware, CustomerAware
 {
     public const EVENT_NAME = 'esd.download.disabled.zip.payment.status.paid';
 
-    private Context $context;
-
-    private OrderEntity $order;
-
-    private array $templateData;
-
-    private ?MailRecipientStruct $mailRecipientStruct;
+    private ?MailRecipientStruct $mailRecipientStruct = null;
 
     private string $salesChannelId;
 
     public function __construct(
-        Context $context,
-        OrderEntity $order,
-        array $templateData = []
+        private readonly Context $context,
+        private readonly OrderEntity $order,
+        private readonly array $templateData = []
     ) {
-        $this->context = $context;
-        $this->order = $order;
-        $this->templateData = $templateData;
-
         $this->salesChannelId = $order->getSalesChannelId();
     }
 
@@ -104,6 +95,9 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Sale
         return $this->context;
     }
 
+    /**
+     * @throws CustomerDeletedException
+     */
     public function getCustomerId(): string
     {
         $customer = $this->getOrder()->getOrderCustomer();
@@ -118,5 +112,12 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Sale
     public function getOrderId(): string
     {
         return $this->order->getId();
+    }
+
+    public function getValues(): array
+    {
+        return [
+            'esdData' => $this->templateData,
+        ];
     }
 }

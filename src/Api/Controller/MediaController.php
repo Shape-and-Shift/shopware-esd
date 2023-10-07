@@ -17,14 +17,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class MediaController extends AbstractController
 {
-    private EsdMediaService $esdMediaService;
-
-    private FileNameProvider $fileNameProvider;
-
-    public function __construct(EsdMediaService $esdMediaService, FileNameProvider $fileNameProvider)
+    public function __construct(private readonly EsdMediaService $esdMediaService, private readonly FileNameProvider $fileNameProvider)
     {
-        $this->esdMediaService = $esdMediaService;
-        $this->fileNameProvider = $fileNameProvider;
     }
 
     /**

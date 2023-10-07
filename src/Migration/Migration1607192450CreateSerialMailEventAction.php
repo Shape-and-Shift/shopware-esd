@@ -5,7 +5,6 @@ namespace Sas\Esd\Migration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Sas\Esd\Utils\EsdMailTemplate;
-use Shopware\Core\Content\MailTemplate\MailTemplateActions;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -31,8 +30,6 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
 
     private function insertEventAction(Connection $connection): void
     {
-        $templateId = null;
-        $templateTypeId = null;
         $fetchTemplateTypeId = $this->fetchTemplateTypeId(EsdMailTemplate::TEMPLATE_TYPE_SERIAL_TECHNICAL_NAME, $connection);
         if ($fetchTemplateTypeId) {
             $templateTypeId = $fetchTemplateTypeId;
@@ -42,24 +39,6 @@ class Migration1607192450CreateSerialMailEventAction extends MigrationStep
             $templateId = Uuid::randomBytes();
             $this->insertMailTemplateType($templateTypeId, $connection);
             $this->insertMailTemplate($templateId, $templateTypeId, $connection);
-        }
-
-        if ($templateId && $templateTypeId) {
-            $connection->insert(
-                'event_action',
-                [
-                    'id' => Uuid::randomBytes(),
-                    'title' => 'ESD - Serial mail',
-                    'event_name' => 'esd.serial.payment.status.paid',
-                    'action_name' => MailTemplateActions::MAIL_TEMPLATE_MAIL_SEND_ACTION,
-                    'active' => 0,
-                    'config' => json_encode([
-                        'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),
-                        'mail_template_id' => Uuid::fromBytesToHex($templateId),
-                    ]),
-                    'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-                ]
-            );
         }
     }
 

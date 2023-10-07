@@ -8,11 +8,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ReadEsdFileSubscriber implements EventSubscriberInterface
 {
-    private EsdService $esdService;
-
-    public function __construct(EsdService $esdService)
+    public function __construct(private readonly EsdService $esdService)
     {
-        $this->esdService = $esdService;
     }
 
     public static function getSubscribedEvents(): array

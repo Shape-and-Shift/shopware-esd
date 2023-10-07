@@ -1,10 +1,10 @@
 .sas-account-esd {
-    .plyr__controls__item.plyr__progress__container {
+    .psyr__controls__item.psyr__progress__container {
         pointer-events: none;
     }
 
     .esd-video-action-btn {
-        margin-bottom: $custom-select-padding-y-sm;
+        margin-bottom: $input-padding-y-sm;
     }
 
     .sas-esd-table {
@@ -100,14 +100,14 @@
     .sas-esd-item-detail {
         .esd-file-name {
             @extend .col-10;
-            @extend .pl-0;
+            @extend .ps-0;
         }
 
         .esd-file-type,
         .esd-file-download,
         .esd-file-limit {
-            @extend .pl-3;
-            @extend .pr-3;
+            @extend .ps-3;
+            @extend .pe-3;
         }
 
         .sas-esd-item-detail-file-name {
@@ -131,7 +131,7 @@
 
             .sas-esd-item-detail-file-name {
                 @extend .col-md-6;
-                @extend .pr-1;
+                @extend .pe-1;
             }
         }
     }

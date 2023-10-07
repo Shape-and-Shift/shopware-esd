@@ -9,15 +9,9 @@ class EsdMediaDownloadHistoryEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string
-     */
-    protected $esdOrderId;
+    protected string $esdOrderId;
 
-    /**
-     * @var string
-     */
-    protected $esdMediaId;
+    protected string $esdMediaId;
 
     public function getEsdOrderId(): string
     {

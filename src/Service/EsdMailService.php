@@ -8,31 +8,19 @@ use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EsdMailService
 {
-    private EntityRepositoryInterface $orderRepository;
-
-    private EsdOrderService $esdOrderService;
-
-    private SystemConfigService $systemConfigService;
-
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        EntityRepositoryInterface $orderRepository,
-        EsdOrderService $esdOrderService,
-        SystemConfigService $systemConfigService,
-        EventDispatcherInterface $eventDispatcher
+        private readonly EntityRepository $orderRepository,
+        private readonly EsdOrderService $esdOrderService,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
-        $this->orderRepository = $orderRepository;
-        $this->esdOrderService = $esdOrderService;
-        $this->systemConfigService = $systemConfigService;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function sendMailDownload(string $orderId, Context $context): void

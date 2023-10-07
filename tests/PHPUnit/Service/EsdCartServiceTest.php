@@ -9,25 +9,25 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Exception\ProductNotEnoughSerialException;
 use Sas\Esd\Service\EsdCartService;
-use Sas\Esd\Tests\Fakes\FakeEntityRepository;
+use Sas\Esd\Tests\Stubs\StaticEntityRepository;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
-use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 
 class EsdCartServiceTest extends TestCase
 {
-    private FakeEntityRepository $productRepository;
+    private StaticEntityRepository $productRepository;
+
+    private EsdCartService $esdCartService;
+
+    private Context $context;
 
     public function setUp(): void
     {
-        $this->productRepository = new FakeEntityRepository(new ProductDefinition());
         $this->context = Context::createDefaultContext();
-        $this->esdCartService = new EsdCartService($this->productRepository);
     }
 
     /**
@@ -36,7 +36,7 @@ class EsdCartServiceTest extends TestCase
     public function testIsCanCheckoutOrder(array $productIds, bool $hasEsd, bool $hasSerial, bool $outOfSerialKey): void
     {
         $entities = $this->getProducts($productIds, $hasEsd, $hasSerial, $outOfSerialKey);
-        $this->mockProducts($entities);
+        $this->productRepository = $this->mockProducts($entities);
 
         $lineItems = new LineItemCollection();
 
@@ -47,6 +47,8 @@ class EsdCartServiceTest extends TestCase
         $mockCart = $this->createMock(Cart::class);
         $mockCart->method('getLineItems')->willReturn($lineItems);
 
+        $this->esdCartService = new EsdCartService($this->productRepository);
+
         static::assertSame($this->esdCartService->isCanCheckoutOrder($mockCart, $this->context), !$outOfSerialKey);
     }
 
@@ -56,7 +58,8 @@ class EsdCartServiceTest extends TestCase
     public function testCheckProductsWithSerialKey(array $productIds, bool $hasEsd, bool $hasSerial, bool $outOfSerialKey): void
     {
         $entities = $this->getProducts($productIds, $hasEsd, $hasSerial, $outOfSerialKey);
-        $this->mockProducts($entities);
+        $this->productRepository = $this->mockProducts($entities);
+        $this->esdCartService = new EsdCartService($this->productRepository);
 
         if ($hasEsd) {
             static::assertInstanceOf(EsdEntity::class, $entities[0]->getExtension('esd'));
@@ -107,14 +110,11 @@ class EsdCartServiceTest extends TestCase
         ];
     }
 
-    private function mockProducts(array $entities): void
+    private function mockProducts(array $entities): StaticEntityRepository
     {
-        $collection = $this->createMock(EntityCollection::class);
-        $collection->method('getIterator')->willReturn($this->arrayAsGenerator($entities));
-        $result = $this->createMock(EntitySearchResult::class);
-        $result->method('getEntities')->willReturn($collection);
-
-        $this->productRepository->entitySearchResults[] = $result;
+        return new StaticEntityRepository([
+            new ProductCollection($entities),
+        ]);
     }
 
     private function getProducts(array $productIds, bool $hasEsd = false, bool $hasSerial = false, bool $outOfSerialKey = false): array
@@ -155,12 +155,5 @@ class EsdCartServiceTest extends TestCase
         }
 
         return $products;
-    }
-
-    private function arrayAsGenerator(array $array): \Generator
-    {
-        foreach ($array as $item) {
-            yield $item;
-        }
     }
 }

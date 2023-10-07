@@ -10,17 +10,14 @@ use Sas\Esd\Exception\ProductNotEnoughSerialException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 class EsdCartService
 {
-    private EntityRepositoryInterface $productRepository;
-
     public function __construct(
-        EntityRepositoryInterface $productRepository
+        private readonly EntityRepository $productRepository
     ) {
-        $this->productRepository = $productRepository;
     }
 
     public function isCanCheckoutOrder(Cart $cart, Context $context): bool
@@ -35,7 +32,7 @@ class EsdCartService
             $this->checkProductsWithSerialKey($lineItemIds, $context);
 
             return true;
-        } catch (ProductNotEnoughSerialException $exception) {
+        } catch (ProductNotEnoughSerialException) {
             return false;
         }
     }

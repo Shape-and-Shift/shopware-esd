@@ -11,7 +11,7 @@ use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -19,43 +19,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderStateChangedSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
-
-    /**
-     * @var EsdService
-     */
-    private $esdService;
-
-    /**
-     * @var EsdOrderService
-     */
-    private $esdOrderService;
-
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
     public function __construct(
-        EntityRepositoryInterface $orderRepository,
-        EsdService $esdService,
-        EsdOrderService $esdOrderService,
-        SystemConfigService $systemConfigService,
-        EventDispatcherInterface $eventDispatcher
+        private readonly EntityRepository $orderRepository,
+        private readonly EsdService $esdService,
+        private readonly EsdOrderService $esdOrderService,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
-        $this->orderRepository = $orderRepository;
-        $this->esdService = $esdService;
-        $this->esdOrderService = $esdOrderService;
-        $this->systemConfigService = $systemConfigService;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents(): array

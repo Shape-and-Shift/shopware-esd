@@ -1,11 +1,15 @@
-import template from './sw-order-detail-base.html.twig';
+import template from './sw-order-detail-details.html.twig';
 
 const { Component, Mixin } = Shopware;
 
-Component.override('sw-order-detail-base', {
+Component.override('sw-order-detail-details', {
     template,
 
-    inject: ['esdSendMailService'],
+    inject: [
+        'esdSendMailService',
+        'repositoryFactory',
+        'acl',
+    ],
 
     mixins: [
         Mixin.getByName('notification')
@@ -13,36 +17,18 @@ Component.override('sw-order-detail-base', {
 
     data() {
         return {
-            order: null,
             isSendMailLoading: false,
             isEnableDownloadButton: false,
             isEnableSerialButton: false
         }
     },
 
-    created() {
-        this.getEnableMailButtons();
-    },
-
-    computed: {
-        transaction() {
-            for (let i = 0; i < this.order.transactions.length; i += 1) {
-                if (this.order.transactions[i].stateMachineState.technicalName !== 'cancelled') {
-                    return this.order.transactions[i];
-                }
-            }
-            return this.order.transactions.last();
+    methods: {
+        createdComponent() {
+            this.$super('createdComponent');
+            this.getEnableMailButtons();
         },
 
-        orderCriteria() {
-            const criteria = this.$super('orderCriteria');
-            criteria.addAssociation('lineItems.product.esd.serial.esdOrder');
-
-            return criteria;
-        }
-    },
-
-    methods: {
         getEnableMailButtons() {
             this.esdSendMailService.getEnableMailButtons(this.$route.params.id).then((data) => {
                 this.isEnableDownloadButton = data.download;

@@ -14,31 +14,19 @@ use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderPlacedSubscriber
 {
-    private EntityRepositoryInterface $productRepository;
-
-    private EsdOrderService $esdOrderService;
-
-    private SystemConfigService $systemConfigService;
-
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        EntityRepositoryInterface $productRepository,
-        EsdOrderService $esdOrderService,
-        SystemConfigService $systemConfigService,
-        EventDispatcherInterface $eventDispatcher
+        private readonly EntityRepository $productRepository,
+        private readonly EsdOrderService $esdOrderService,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
-        $this->productRepository = $productRepository;
-        $this->esdOrderService = $esdOrderService;
-        $this->systemConfigService = $systemConfigService;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function __invoke(CheckoutOrderPlacedEvent $event): void

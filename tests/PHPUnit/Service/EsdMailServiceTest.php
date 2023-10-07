@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Tests\Service;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvokedCount as InvokedCountMatcher;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
@@ -19,9 +20,21 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EsdMailServiceTest extends TestCase
 {
+    private Context $context;
+
+    private MockObject $systemConfigService;
+
+    private MockObject $esdOrderRepository;
+
+    private MockObject $esdOrderService;
+
+    private MockObject $eventDispatcher;
+
+    private EsdMailService $esdMailService;
+
     public function setUp(): void
     {
-        $this->context = $this->createMock(Context::class);
+        $this->context = Context::createDefaultContext();
 
         $this->systemConfigService = $this->createMock(SystemConfigService::class);
         $this->esdOrderRepository = $this->createMock(EntityRepository::class);

@@ -12,40 +12,19 @@ class EsdOrderEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string
-     */
-    protected $esdId;
+    protected string $esdId;
 
-    /**
-     * @var EsdEntity
-     */
-    protected $esd;
+    protected ?EsdEntity $esd = null;
 
-    /**
-     * @var string
-     */
-    protected $orderLineItemId;
+    protected string $orderLineItemId;
 
-    /**
-     * @var string|null
-     */
-    protected $serialId;
+    protected ?string $serialId = null;
 
-    /**
-     * @var EsdSerialEntity
-     */
-    protected $serial;
+    protected ?EsdSerialEntity $serial = null;
 
-    /**
-     * @var int|null
-     */
-    protected $countDownload;
+    protected ?int $countDownload = null;
 
-    /**
-     * @var OrderLineItemEntity
-     */
-    protected $orderLineItem;
+    protected ?OrderLineItemEntity $orderLineItem = null;
 
     public function getEsdId(): string
     {
@@ -57,12 +36,12 @@ class EsdOrderEntity extends Entity
         $this->esdId = $esdId;
     }
 
-    public function getEsd(): EsdEntity
+    public function getEsd(): ?EsdEntity
     {
         return $this->esd;
     }
 
-    public function setEsd(EsdEntity $esd): void
+    public function setEsd(?EsdEntity $esd): void
     {
         $this->esd = $esd;
     }
@@ -77,12 +56,12 @@ class EsdOrderEntity extends Entity
         $this->orderLineItemId = $orderLineItemId;
     }
 
-    public function getOrderLineItem(): OrderLineItemEntity
+    public function getOrderLineItem(): ?OrderLineItemEntity
     {
         return $this->orderLineItem;
     }
 
-    public function setOrderLineItem(OrderLineItemEntity $orderLineItem): void
+    public function setOrderLineItem(?OrderLineItemEntity $orderLineItem): void
     {
         $this->orderLineItem = $orderLineItem;
     }
@@ -102,7 +81,7 @@ class EsdOrderEntity extends Entity
         return $this->serial;
     }
 
-    public function setSerial(EsdSerialEntity $serial): void
+    public function setSerial(?EsdSerialEntity $serial): void
     {
         $this->serial = $serial;
     }

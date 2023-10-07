@@ -4,11 +4,11 @@ Please find the details of your download product of order {{order.orderNumber}}.
 
 {% set pos = 0 %}
 {% for lineItem in order.lineItems %}
-{% if lineItem.id in esdOrderListIds|keys %}
-{% set esdOrderIds = esdOrderListIds[lineItem.id] %}
+{% if lineItem.id in esdData.esdOrderListIds|keys %}
+{% set esdOrderIds = esdData.esdOrderListIds[lineItem.id] %}
 {% for esdOrderId in esdOrderIds %}
 {% set pos = pos + 1 %}
-Pos.: {{ pos }} | Name: {{ lineItem.label|u.wordwrap(80) }} | File size: {{ esdFiles[lineItem.productId] }} | Download link: {% if order.orderCustomer.customer.guest %}{{ rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}, salesChannel.domains|first.url) }}{% else %}{{ url('frontend.sas.esd.download', {esdOrderId: esdOrderId}) }}{% endif %}
+Pos.: {{ pos }} | Name: {{ lineItem.label|u.wordwrap(80) }} | File size: {{ esdData.esdFiles[lineItem.productId] }} | Download link: {% if order.orderCustomer.customer.guest %}{{ rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}, salesChannel.domains|first.url) }}{% else %}{{ url('frontend.sas.esd.download', {esdOrderId: esdOrderId}) }}{% endif %}
 
 {% endfor %}
 {% endif %}

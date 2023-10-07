@@ -12,7 +12,7 @@
     </sw-alert>
 
     <template v-if="isLoadedEsd || isLoadedEsdMedia">
-        <sw-card :hero="false">
+        <sw-card :hero="false" positionIdentifier="sas-product-detail-esd-video__upload">
             <sas-upload-listener
                 :uploadTag="product.id"
                 @media-upload-finish="onSetMediaItem"
@@ -109,7 +109,9 @@
         </sw-card>
 
         <sw-card v-if="esdMedia"
-                 :hero="true">
+                 :hero="true"
+                 positionIdentifier="sas-product-detail-esd-video__switch-button"
+        >
             <sas-switch-esd-button
                 class="sas-product-detail-esd__change-esd"
                 :label="$tc('sas-esd.esdChange.changeEsdNormalLabel')"
@@ -119,7 +121,9 @@
         </sw-card>
 
         <sw-card :title="$tc('sas-esd.serialModal.title')"
-                 v-if="esdMedia">
+                 v-if="esdMedia"
+                 positionIdentifier="sas-product-detail-esd-video__switch-serial"
+        >
             <sw-switch-field :disabled="esdMedia.length === 0"
                              :label="$tc('sas-esd.serialModal.serialSwitch')"
                              v-model="product.extensions.esd.hasSerial">
@@ -133,7 +137,7 @@
             </div>
         </sw-card>
 
-        <sw-card :title="$tc('sas-esd.downloadLimit.title')"
+        <sw-card :title="$tc('sas-esd.downloadLimit.title')" positionIdentifier="sas-product-detail-esd-video__switch-custom-limit"
                  v-if="esdMedia">
             <sw-switch-field :disabled="esdMedia.length === 0"
                              :label="$tc('sas-esd.downloadLimit.customLimitToggle')"

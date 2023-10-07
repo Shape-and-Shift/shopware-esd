@@ -2,6 +2,7 @@
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -43,6 +44,7 @@ class EsdMediaDefinition extends EntityDefinition
 
             (new FkField('media_id', 'mediaId', MediaDefinition::class)),
             (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
+            (new OneToOneAssociationField('esdVideo', 'id', 'esd_media_id', EsdVideoDefinition::class, false)),
 
             new IntField('download_limit_number', 'downloadLimitNumber'),
         ]);

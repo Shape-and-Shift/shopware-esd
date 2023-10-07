@@ -4,7 +4,6 @@ namespace Sas\Esd\Api\Controller;
 
 use Sas\Esd\Service\EsdMailService;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,15 +11,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class EsdSendMailController extends AbstractController
 {
-    private EsdMailService $esdMailService;
-
-    public function __construct(EsdMailService $esdMailService)
+    public function __construct(private readonly EsdMailService $esdMailService)
     {
-        $this->esdMailService = $esdMailService;
     }
 
     /**

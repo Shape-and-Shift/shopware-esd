@@ -2,30 +2,22 @@
 
 namespace Sas\Esd\Message;
 
+use League\Flysystem\FilesystemException;
 use Sas\Esd\Service\EsdService;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-class CompressMediaHandler extends AbstractMessageHandler
+#[AsMessageHandler]
+class CompressMediaHandler
 {
-    private EsdService $service;
-
-    public function __construct(EsdService $service)
+    public function __construct(private readonly EsdService $service)
     {
-        $this->service = $service;
     }
 
     /**
-     * @param CompressMediaMessage $message
-     *
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FilesystemException
      */
-    public function handle($message): void
+    public function __invoke(CompressMediaMessage $message): void
     {
         $this->service->compressFiles($message->getProductId());
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [CompressMediaMessage::class];
     }
 }

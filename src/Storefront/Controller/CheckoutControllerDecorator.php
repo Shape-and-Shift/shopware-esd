@@ -4,33 +4,24 @@ namespace Sas\Esd\Storefront\Controller;
 
 use Sas\Esd\Service\EsdCartService;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\CheckoutController;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
 class CheckoutControllerDecorator extends StorefrontController
 {
-    private CheckoutController $decoratedController;
-
-    private CartService $cartService;
-
-    private EsdCartService $esdCartService;
-
     public function __construct(
-        CheckoutController $decoratedController,
-        CartService $cartService,
-        EsdCartService $esdCartService
+        private readonly CheckoutController $decoratedController,
+        private readonly CartService $cartService,
+        private readonly EsdCartService $esdCartService
     ) {
-        $this->decoratedController = $decoratedController;
-        $this->cartService = $cartService;
-        $this->esdCartService = $esdCartService;
     }
 
     public function cartPage(Request $request, SalesChannelContext $context): Response

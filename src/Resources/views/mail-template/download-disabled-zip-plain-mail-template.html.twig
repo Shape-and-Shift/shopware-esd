@@ -4,13 +4,13 @@ Please find the details of your download product of order {{order.orderNumber}}.
 
 {% set pos = 0 %}
 {% for lineItem in order.lineItems %}
-{% if lineItem.id in esdOrderListIds|keys %}
-{% set esdOrderIds = esdOrderListIds[lineItem.id] %}
+{% if lineItem.id in esdData.esdOrderListIds|keys %}
+{% set esdOrderIds = esdData.esdOrderListIds[lineItem.id] %}
 {% for esdOrderId in esdOrderIds %}
 {% set pos = pos + 1 %}
 Pos.: {{ pos }} | Name: {{ lineItem.label|u.wordwrap(80) }}
 Download links:
-{% for esdMedia in esdMediaFiles[esdOrderId] %}
+{% for esdMedia in esdData.esdMediaFiles[esdOrderId] %}
 {% if order.orderCustomer.customer.guest %}
     - {{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension}} | {{ rawUrl('frontend.sas.lineItem.media.url.guest', {esdOrderId: esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}
 {% else %}

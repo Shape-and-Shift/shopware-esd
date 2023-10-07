@@ -56,6 +56,24 @@ Component.override('sw-product-detail', {
     },
 
     methods: {
+        createdComponent() {
+            this.$super('createdComponent');
+            this.registerListeners();
+        },
+
+        registerListeners() {
+            this.$root.$on('esd-sidebar-toggle-open', this.openMediaSidebar);
+        },
+
+        destroyedComponent() {
+            this.$super('destroyedComponent');
+            this.$root.$off('esd-sidebar-toggle-open');
+        },
+
+        openMediaSidebar() {
+            this.$refs.mediaSidebarItem.openContent();
+        },
+
         clearEsd() {
             Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', false);
             Shopware.State.commit('swProductEsdMedia/setEsdMedia', null);

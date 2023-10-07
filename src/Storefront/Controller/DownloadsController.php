@@ -6,9 +6,8 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Service\EsdDownloadService;
 use Sas\Esd\Service\EsdService;
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -18,28 +17,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
 class DownloadsController extends StorefrontController
 {
-    private EsdService $esdService;
-
-    private EsdDownloadService $esdDownloadService;
-
-    private GenericPageLoaderInterface $genericLoader;
-
-    private SystemConfigService $systemConfigService;
-
     public function __construct(
-        EsdService $esdService,
-        EsdDownloadService $esdDownloadService,
-        GenericPageLoaderInterface $genericLoader,
-        SystemConfigService $systemConfigService
+        private readonly EsdService $esdService,
+        private readonly EsdDownloadService $esdDownloadService,
+        private readonly GenericPageLoaderInterface $genericLoader,
+        private readonly SystemConfigService $systemConfigService
     ) {
-        $this->esdService = $esdService;
-        $this->esdDownloadService = $esdDownloadService;
-        $this->genericLoader = $genericLoader;
-        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -52,7 +39,7 @@ class DownloadsController extends StorefrontController
 
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
-            throw new CustomerNotLoggedInException();
+            throw CartException::customerNotLoggedIn();
         }
 
         $esdOrders = $this->esdService->getEsdOrderListByCustomer($customer, $context);
@@ -112,7 +99,7 @@ class DownloadsController extends StorefrontController
 
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
-            throw new CustomerNotLoggedInException();
+            throw CartException::customerNotLoggedIn();
         }
 
         $esdOrders = $this->esdService->getEsdOrderListByCustomer($customer, $context);
@@ -136,7 +123,7 @@ class DownloadsController extends StorefrontController
 
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
-            throw new CustomerNotLoggedInException();
+            throw CartException::customerNotLoggedIn();
         }
 
         $esdOrders = $this->esdService->getEsdOrderListByCustomer($customer, $context);
@@ -158,13 +145,13 @@ class DownloadsController extends StorefrontController
     {
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
-            throw new CustomerNotLoggedInException();
+            throw CartException::customerNotLoggedIn();
         }
 
         if ($allowGuest || $customer->getGuest() === false) {
             return;
         }
 
-        throw new CustomerNotLoggedInException();
+        throw CartException::customerNotLoggedIn();
     }
 }

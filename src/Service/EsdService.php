@@ -2,8 +2,9 @@
 
 namespace Sas\Esd\Service;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToReadFile;
 use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
@@ -17,7 +18,7 @@ use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -32,52 +33,22 @@ class EsdService
 {
     public const FOLDER_COMPRESS_NAME = 'esd-compress';
 
-    private EntityRepositoryInterface $esdProductRepository;
-
-    private EntityRepositoryInterface $esdOrderRepository;
-
-    private EntityRepositoryInterface $productRepository;
-
-    private UrlGeneratorInterface $urlGenerator;
-
-    private EntityRepositoryInterface $esdVideoRepository;
-
-    private SystemConfigService $systemConfigService;
-
-    private FilesystemInterface $filesystemPublic;
-
-    private FilesystemInterface $filesystemPrivate;
-
-    private LoggerInterface $logger;
-
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        EntityRepositoryInterface $esdProductRepository,
-        EntityRepositoryInterface $esdOrderRepository,
-        EntityRepositoryInterface $productRepository,
-        UrlGeneratorInterface $urlGenerator,
-        EntityRepositoryInterface $esdVideoRepository,
-        SystemConfigService $systemConfigService,
-        FilesystemInterface $filesystemPublic,
-        FilesystemInterface $filesystemPrivate,
-        LoggerInterface $logger,
-        EventDispatcherInterface $eventDispatcher
+        private readonly EntityRepository $esdProductRepository,
+        private readonly EntityRepository $esdOrderRepository,
+        private readonly EntityRepository $productRepository,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly EntityRepository $esdVideoRepository,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly FilesystemOperator $filesystemPublic,
+        private readonly FilesystemOperator $filesystemPrivate,
+        private readonly LoggerInterface $logger,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
-        $this->esdProductRepository = $esdProductRepository;
-        $this->esdOrderRepository = $esdOrderRepository;
-        $this->productRepository = $productRepository;
-        $this->urlGenerator = $urlGenerator;
-        $this->esdVideoRepository = $esdVideoRepository;
-        $this->systemConfigService = $systemConfigService;
-        $this->filesystemPublic = $filesystemPublic;
-        $this->filesystemPrivate = $filesystemPrivate;
-        $this->logger = $logger;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FilesystemException
      */
     public function compressFiles(string $productId): void
     {
@@ -135,7 +106,9 @@ class EsdService
         $zip->close();
 
         foreach ($tempFiles as $tempFile) {
-            unlink($tempFile);
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
         }
     }
 
@@ -162,6 +135,7 @@ class EsdService
     {
         $criteria = new Criteria();
         $criteria->addAssociation('esdMedia.media');
+        $criteria->addAssociation('esdMedia.esdVideo');
         $criteria->addFilter(new EqualsAnyFilter('id', $esdIds));
 
         $esdCollection = $this->esdProductRepository->search($criteria, $context)->getEntities();
@@ -296,6 +270,10 @@ class EsdService
         $esdOrders = $this->esdOrderRepository->search($criteria, $context->getContext());
         /** @var EsdOrderEntity $esdOrder */
         foreach ($esdOrders as $esdOrder) {
+            if (!$esdOrder->getEsd()) {
+                continue;
+            }
+
             if (!$esdOrder->getEsd()->getEsdMedia() instanceof EsdMediaCollection) {
                 continue;
             }
@@ -432,20 +410,15 @@ class EsdService
     }
 
     /**
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws UnableToReadFile
      */
     private function loadMediaFile(MediaEntity $media): ?string
     {
         $path = $this->urlGenerator->getRelativeMediaUrl($media);
 
         try {
-            $read = $this->filesystemPublic->read($path);
-            if (\is_string($read)) {
-                return $read;
-            }
-
-            return null;
-        } catch (FileNotFoundException $e) {
+            return $this->filesystemPublic->read($path);
+        } catch (FilesystemException $e) {
             return $this->loadPrivateMediaFile($path);
         }
     }
@@ -453,13 +426,8 @@ class EsdService
     private function loadPrivateMediaFile(string $path): ?string
     {
         try {
-            $read = $this->filesystemPrivate->read($path);
-            if (\is_string($read)) {
-                return $read;
-            }
-
-            return null;
-        } catch (FileNotFoundException $e) {
+            return $this->filesystemPrivate->read($path);
+        } catch (FilesystemException $e) {
             $this->logger->warning('We could not found media from ' . $path);
 
             return null;

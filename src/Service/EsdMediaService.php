@@ -6,23 +6,17 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 
 class EsdMediaService
 {
-    protected LoggerInterface $logger;
-
-    protected EntityRepositoryInterface $mediaRepository;
-
     public function __construct(
-        LoggerInterface $logger,
-        EntityRepositoryInterface $mediaRepository
+        protected readonly LoggerInterface $logger,
+        protected readonly EntityRepository $mediaRepository
     ) {
-        $this->logger = $logger;
-        $this->mediaRepository = $mediaRepository;
     }
 
     public function getAdminSystemMedia(string $fileName, string $fileExtension, Context $context): ?MediaEntity

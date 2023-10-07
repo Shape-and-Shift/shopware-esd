@@ -1,3 +1,6 @@
+# 2.0.0
+* Kompatibilität Shopware Version 6.5.2.0+
+
 # 1.6.3
 * Problem behoben, dass Benutzer die Datei ohne Anmeldung herunterladen können.
 

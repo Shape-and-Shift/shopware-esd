@@ -25,7 +25,7 @@ class Update
         $connection = $container->get(Connection::class);
 
         $esdMediaEntityName = EsdMediaDefinition::ENTITY_NAME;
-        if (!$connection->getSchemaManager()->tablesExist([$esdMediaEntityName])) {
+        if (!$connection->createSchemaManager()->tablesExist([$esdMediaEntityName])) {
             $esdMediaMigration = new Migration1597597704CreateEsdMediaTable();
             $esdMediaMigration->update($connection);
         }
@@ -38,7 +38,7 @@ class Update
         $query->where($query->expr()->isNotNull('media_id'));
         $query->from(EsdDefinition::ENTITY_NAME);
 
-        $esdList = $query->execute()->fetchAllAssociative(); // @phpstan-ignore-line
+        $esdList = $query->executeQuery()->fetchAllAssociative(); // @phpstan-ignore-line
         foreach ($esdList as $esd) {
             $id = Uuid::fromHexToBytes(Uuid::randomHex());
             $connection->insert(EsdMediaDefinition::ENTITY_NAME, [

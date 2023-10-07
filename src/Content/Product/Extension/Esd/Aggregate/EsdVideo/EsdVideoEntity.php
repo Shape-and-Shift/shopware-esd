@@ -9,15 +9,9 @@ class EsdVideoEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string
-     */
-    protected $esdMediaId;
+    protected string $esdMediaId;
 
-    /**
-     * @var int
-     */
-    protected $option;
+    protected int $option;
 
     public function getEsdMediaId(): string
     {

@@ -4,9 +4,7 @@ namespace Sas\Esd\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
-use Shopware\Core\Content\MailTemplate\MailTemplateActions;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -33,8 +31,6 @@ class Migration1617902528CreateDownloadMailEventActionForDisabledZip extends Mig
 
     private function insertEventAction(Connection $connection): void
     {
-        $templateId = null;
-        $templateTypeId = null;
         $fetchTemplateTypeId = $this->fetchTemplateTypeId(
             EsdMailTemplate::TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_TECHNICAL_NAME,
             $connection
@@ -47,24 +43,6 @@ class Migration1617902528CreateDownloadMailEventActionForDisabledZip extends Mig
             $templateId = Uuid::randomBytes();
             $this->insertMailTemplateType($templateTypeId, $connection);
             $this->insertMailTemplate($templateId, $templateTypeId, $connection);
-        }
-
-        if ($templateId && $templateTypeId) {
-            $connection->insert(
-                'event_action',
-                [
-                    'id' => Uuid::randomBytes(),
-                    'title' => 'ESD - Download mail with disabled zip',
-                    'event_name' => EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME,
-                    'action_name' => MailTemplateActions::MAIL_TEMPLATE_MAIL_SEND_ACTION,
-                    'active' => 0,
-                    'config' => json_encode([
-                        'mail_template_type_id' => Uuid::fromBytesToHex($templateTypeId),
-                        'mail_template_id' => Uuid::fromBytesToHex($templateId),
-                    ]),
-                    'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-                ]
-            );
         }
     }
 

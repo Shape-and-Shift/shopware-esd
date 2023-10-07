@@ -18,55 +18,25 @@ class EsdEntity extends Entity
      */
     protected $id;
 
-    /**
-     * @var string
-     */
-    protected $productId;
+    protected string $productId;
 
-    /**
-     * @var ProductEntity|null
-     */
-    protected $product;
+    protected ?ProductEntity $product = null;
 
-    /**
-     * @var bool
-     */
-    protected $hasSerial;
+    protected bool $hasSerial;
 
-    /**
-     * @var string|null
-     */
-    protected $mediaId;
+    protected ?string $mediaId = null;
 
-    /**
-     * @var MediaEntity|null
-     */
-    protected $media;
+    protected ?MediaEntity $media = null;
 
-    /**
-     * @var EsdMediaCollection|null
-     */
-    protected $esdMedia;
+    protected ?EsdMediaCollection $esdMedia = null;
 
-    /**
-     * @var bool|null
-     */
-    protected $hasCustomDownloadLimit;
+    protected ?bool $hasCustomDownloadLimit = null;
 
-    /**
-     * @var bool|null
-     */
-    protected $hasUnlimitedDownload;
+    protected ?bool $hasUnlimitedDownload = null;
 
-    /**
-     * @var int|null
-     */
-    protected $downloadLimitNumber;
+    protected ?int $downloadLimitNumber = null;
 
-    /**
-     * @var EsdSerialCollection|null
-     */
-    protected $serial;
+    protected ?EsdSerialCollection $serial = null;
 
     public function getId(): string
     {

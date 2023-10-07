@@ -5,13 +5,7 @@ namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * @method void                add(EsdOrderEntity $entity)
- * @method void                set(string $key, EsdOrderEntity $entity)
- * @method EsdOrderEntity[]    getIterator()
- * @method EsdOrderEntity[]    getElements()
- * @method EsdOrderEntity|null get(string $key)
- * @method EsdOrderEntity|null first()
- * @method EsdOrderEntity|null last()
+ * @extends EntityCollection<EsdOrderEntity>
  */
 class EsdOrderCollection extends EntityCollection
 {

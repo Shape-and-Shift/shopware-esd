@@ -2,6 +2,6 @@ Dear {{order.orderCustomer.firstName}},
 Thank you for your order.
 Please find the details of your download serial of order {{order.orderNumber}}.
 
-{% for esdSerial in esdSerials %}
+{% for esdSerial in esdData.esdSerials %}
     Pos.: {{ loop.index }} | Name: {{ esdSerial.productName|u.wordwrap(80) }} | Serial Number: {{ esdSerial.serial }}
 {% endfor %}

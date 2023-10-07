@@ -1,3 +1,6 @@
+# 2.0.0
+* Compatibility Shopware version 6.5.2.0+
+
 # 1.6.3
 * Fixed issue user can download the file without login.
 
