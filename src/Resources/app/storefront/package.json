@@ -4,12 +4,14 @@
   "description": "",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node copy-to-vendor.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "plyr": "^3.6.3"
+    "plyr": "^3.6.3",
+    "fs-extra": "11.1.0"
   }
 }
