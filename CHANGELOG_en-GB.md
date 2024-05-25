@@ -1,5 +1,5 @@
 # 2.0.1
-* Fix error while compiling SCSS at Storefront
+* Fix error while compiling SCSS at Storefront.
 
 # 2.0.0
 * Compatibility Shopware version 6.5.2.0+
