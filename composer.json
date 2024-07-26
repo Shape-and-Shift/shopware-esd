@@ -3,7 +3,7 @@
     "description":"ESD / Download plugin",
     "type":"shopware-platform-plugin",
     "keywords": ["esd", "download"],
-    "version":"2.0.2",
+    "version":"2.0.3",
     "license":"proprietary",
     "authors":[
         {
@@ -13,9 +13,7 @@
         }
     ],
     "require":{
-        "shopware/core": "~6.5.2",
-        "shopware/administration": "~6.5.2",
-        "shopware/storefront": "~6.5.2"
+        "shopware/core": "~6.5.2"
     },
     "require-dev":{
         "phpunit/phpunit": "^9.5",
