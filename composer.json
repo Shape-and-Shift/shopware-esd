@@ -53,10 +53,6 @@
             "en-GB": "https://shapeandshift.dev"
         }
     },
-    "conflict": {
-        "shopware/storefront": "<6,>=7",
-        "shopware/administration": "<6,>=7"
-    },
     "config": {
         "platform": {
             "php": "8.1.0"
