@@ -1,3 +1,6 @@
+# 2.0.3
+* Wiederholung der Version 2.0.1 mit behobenem Fehler beim Kompilieren von SCSS im Storefront.
+
 # 2.0.2
 * Wiederholung der Version 2.0.1 mit behobenem Fehler beim Kompilieren von SCSS im Storefront.
 

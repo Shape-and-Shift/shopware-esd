@@ -1,3 +1,6 @@
+# 2.0.3
+* Re-release of version 2.0.1 with fixed error while compiling SCSS at Storefront. 
+
 # 2.0.2
 * Re-release of version 2.0.1 with fixed error while compiling SCSS at Storefront. 
 
