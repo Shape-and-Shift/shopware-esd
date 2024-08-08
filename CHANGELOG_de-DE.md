@@ -1,3 +1,6 @@
+# 2.0.4
+* Problem behoben, dass das Flow-Ereignis beim Upgrade von Shopware 6.4 auf 6.5 nicht ausgelöst wird
+
 # 2.0.3
 * Wiederholung der Version 2.0.1 mit behobenem Fehler beim Kompilieren von SCSS im Storefront.
 

@@ -110,6 +110,7 @@ class EsdSerialPaymentStatusPaidEvent extends Event implements ScalarValuesAware
     {
         return [
             'esdData' => $this->templateData,
+            ...$this->templateData,
         ];
     }
 }
