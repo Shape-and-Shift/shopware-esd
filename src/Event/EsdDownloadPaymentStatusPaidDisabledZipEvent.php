@@ -118,6 +118,7 @@ class EsdDownloadPaymentStatusPaidDisabledZipEvent extends Event implements Scal
     {
         return [
             'esdData' => $this->templateData,
+            ...$this->templateData,
         ];
     }
 }

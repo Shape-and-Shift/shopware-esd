@@ -128,6 +128,7 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAwa
     {
         return [
             'esdData' => $this->templateData,
+            ...$this->templateData,
         ];
     }
 }
