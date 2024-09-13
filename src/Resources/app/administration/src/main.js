@@ -1,8 +1,7 @@
 import './module/sas-esd';
-import './module/sw-order'
-import './app/component/utils/sas-upload-listener'
-import './init/api-service.init'
-import EsdSendMailService from './api/esd-send-mail.api.service'
+import './module/sw-order';
+import './init/api-service.init';
+import EsdSendMailService from './api/esd-send-mail.api.service';
 
 const { Application } = Shopware;
 

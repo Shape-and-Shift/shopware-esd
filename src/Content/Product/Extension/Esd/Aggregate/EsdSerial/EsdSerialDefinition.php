@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial;
 
@@ -39,11 +40,11 @@ class EsdSerialDefinition extends EntityDefinition
             (new IdField('id', 'id'))->setFlags(new Required(), new PrimaryKey()),
 
             (new FkField('esd_id', 'esdId', EsdDefinition::class))->addFlags(new Required()),
-            (new ManyToOneAssociationField('esd', 'esd_id', EsdDefinition::class)),
+            new ManyToOneAssociationField('esd', 'esd_id', EsdDefinition::class),
 
             (new StringField('serial', 'serial'))->addFlags(new Required()),
 
-            (new OneToOneAssociationField('esdOrder', 'id', 'serial_id', EsdOrderDefinition::class, false)),
+            new OneToOneAssociationField('esdOrder', 'id', 'serial_id', EsdOrderDefinition::class, false),
         ]);
     }
 }

@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Event;
 
@@ -14,12 +15,13 @@ use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\MailRecipientStruct;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
+use Shopware\Core\Framework\Event\FlowEventAware;
 use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\OrderAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAware, SalesChannelAware, OrderAware, MailAware, CustomerAware
+class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAware, SalesChannelAware, OrderAware, MailAware, CustomerAware, FlowEventAware
 {
     public const EVENT_NAME = 'esd.download.payment.status.paid';
 

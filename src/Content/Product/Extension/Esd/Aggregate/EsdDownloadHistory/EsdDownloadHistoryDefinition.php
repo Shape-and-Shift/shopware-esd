@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory;
 
@@ -36,7 +37,7 @@ class EsdDownloadHistoryDefinition extends EntityDefinition
             (new IdField('id', 'id'))->setFlags(new Required(), new PrimaryKey()),
 
             (new FkField('esd_order_id', 'esdOrderId', EsdOrderDefinition::class))->addFlags(new Required()),
-            (new ManyToOneAssociationField('esdOrder', 'esd_order_id', EsdOrderDefinition::class)),
+            new ManyToOneAssociationField('esdOrder', 'esd_order_id', EsdOrderDefinition::class),
         ]);
     }
 }

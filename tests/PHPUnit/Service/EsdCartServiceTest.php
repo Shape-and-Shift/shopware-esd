@@ -1,13 +1,15 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Tests\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
-use Sas\Esd\Exception\ProductNotEnoughSerialException;
+use Sas\Esd\Exception\EsdException;
 use Sas\Esd\Service\EsdCartService;
 use Sas\Esd\Tests\Stubs\StaticEntityRepository;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -25,14 +27,12 @@ class EsdCartServiceTest extends TestCase
 
     private Context $context;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->context = Context::createDefaultContext();
     }
 
-    /**
-     * @dataProvider dataIsCanCheckoutOrderProvider
-     */
+    #[DataProvider('dataIsCanCheckoutOrderProvider')]
     public function testIsCanCheckoutOrder(array $productIds, bool $hasEsd, bool $hasSerial, bool $outOfSerialKey): void
     {
         $entities = $this->getProducts($productIds, $hasEsd, $hasSerial, $outOfSerialKey);
@@ -52,9 +52,7 @@ class EsdCartServiceTest extends TestCase
         static::assertSame($this->esdCartService->isCanCheckoutOrder($mockCart, $this->context), !$outOfSerialKey);
     }
 
-    /**
-     * @dataProvider dataCheckProductsProvider
-     */
+    #[DataProvider('dataCheckProductsProvider')]
     public function testCheckProductsWithSerialKey(array $productIds, bool $hasEsd, bool $hasSerial, bool $outOfSerialKey): void
     {
         $entities = $this->getProducts($productIds, $hasEsd, $hasSerial, $outOfSerialKey);
@@ -74,7 +72,7 @@ class EsdCartServiceTest extends TestCase
         }
 
         if ($outOfSerialKey) {
-            static::expectException(ProductNotEnoughSerialException::class);
+            static::expectException(EsdException::class);
         }
 
         $this->esdCartService->checkProductsWithSerialKey($productIds, $this->context);

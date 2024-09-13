@@ -1,31 +1,29 @@
 import template from './sas-process-bar.html.twig';
 import './sas-process-bar.scss';
 
-const { Component } = Shopware;
-
-Component.register('sas-process-bar', {
+export default {
     template,
 
     props: {
         process: {
             type: Number,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
             styleObject: {
-                width: '0%'
-            }
-        }
+                width: '0%',
+            },
+        };
     },
 
     watch: {
-        process: function(newProcess) {
+        process: (newProcess) => {
             this.styleObject = {
-                width: newProcess + '%'
-            }
-        }
-    }
-});
+                width: `${newProcess}%`,
+            };
+        },
+    },
+};

@@ -1,22 +1,22 @@
 import template from './sw-product-detail.html.twig';
 import swProductEsdMediaState from './state';
 
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
-Component.override('sw-product-detail', {
+export default {
     template,
 
     inject: ['systemConfigApiService', 'repositoryFactory'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     data() {
         return {
-            isShowTheEsdVideo: false
-        }
+            isShowTheEsdVideo: false,
+        };
     },
 
     beforeCreate() {
@@ -30,7 +30,7 @@ Component.override('sw-product-detail', {
     watch: {
         productId() {
             this.clearEsd();
-        }
+        },
     },
 
     created() {
@@ -39,11 +39,11 @@ Component.override('sw-product-detail', {
 
     computed: {
         ...mapState('swProductDetail', [
-            'product'
+            'product',
         ]),
 
         ...mapGetters('swProductDetail', [
-            'isLoading'
+            'isLoading',
         ]),
 
         esdMediaRepository() {
@@ -95,9 +95,9 @@ Component.override('sw-product-detail', {
             }
 
             if (this.$route.name === 'sas.product.detail.esd.video') {
-                if (mediaItem.mediaType.name !== "VIDEO" && this.getConfigShowTheEsdVideo) {
+                if (mediaItem.mediaType.name !== 'VIDEO' && this.getConfigShowTheEsdVideo) {
                     this.createNotificationError({
-                        message: this.$tc('sas-esd.videoDoesntSupport')
+                        message: this.$tc('sas-esd.videoDoesntSupport'),
                     });
                     return;
                 }
@@ -130,11 +130,11 @@ Component.override('sw-product-detail', {
 
             this.productRepository.save(this.product, Shopware.Context.api).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('sas-esd.notification.messageSaveSuccess')
+                    message: this.$tc('sas-esd.notification.messageSaveSuccess'),
                 });
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('sas-esd.notification.messageSaveError')
+                    message: this.$tc('sas-esd.notification.messageSaveError'),
                 });
             });
         },
@@ -150,7 +150,7 @@ Component.override('sw-product-detail', {
         },
 
         isVideoFileSupportPlay(mediaItem) {
-            return mediaItem.fileExtension.toLowerCase() === 'mp4' || mediaItem.fileExtension.toLowerCase() === 'webp'
-        }
-    }
-});
+            return mediaItem.fileExtension.toLowerCase() === 'mp4' || mediaItem.fileExtension.toLowerCase() === 'webp';
+        },
+    },
+};

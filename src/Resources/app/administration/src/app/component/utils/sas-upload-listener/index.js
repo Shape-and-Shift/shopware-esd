@@ -1,7 +1,7 @@
-import { UploadEventProcess } from '../../../../core/service/api/sas.media.api.service';
-import { UploadEvents } from '../../../../core/service/api/sas.media.api.service';
+import { UploadEventProcess, UploadEvents } from '../../../../core/service/api/sas.media.api.service';
+import template from './sas-upload-listener.html.twig';
 
-const { Component, Mixin, Context, Utils } = Shopware;
+const { Mixin, Context, Utils } = Shopware;
 
 function isIllegalFileNameException(error) {
     return error.response.data.errors.some((err) => {
@@ -21,40 +21,38 @@ function isIllegalUrlException(error) {
     });
 }
 
-Component.register('sas-upload-listener', {
-    render() {
-        return document.createComment('');
-    },
+export default {
+    template,
 
     inject: ['repositoryFactory', 'mediaService', 'sasMediaService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     props: {
         uploadTag: {
             type: String,
-            required: true
+            required: true,
         },
 
         autoUpload: {
             type: Boolean,
             required: false,
-            default: false
-        }
+            default: false,
+        },
     },
 
     computed: {
         mediaRepository() {
             return this.repositoryFactory.create('media');
-        }
+        },
     },
 
     data() {
         return {
             id: Utils.createId(),
-            notificationId: null
+            notificationId: null,
         };
     },
 
@@ -62,7 +60,7 @@ Component.register('sas-upload-listener', {
         uploadTag(newVal, oldVal) {
             this.mediaService.removeListener(oldVal, this.convertStoreEventToVueEvent);
             this.mediaService.addListener(newVal, this.convertStoreEventToVueEvent);
-        }
+        },
     },
 
     created() {
@@ -145,10 +143,10 @@ Component.register('sas-upload-listener', {
                     payload.successAmount,
                     {
                         count: payload.successAmount,
-                        total: payload.totalAmount
-                    }
+                        total: payload.totalAmount,
+                    },
                 ),
-                growl: payload.successAmount + payload.failureAmount === payload.totalAmount
+                growl: payload.successAmount + payload.failureAmount === payload.totalAmount,
             };
 
             if (payload.successAmount + payload.failureAmount === payload.totalAmount) {
@@ -158,7 +156,7 @@ Component.register('sas-upload-listener', {
             if (this.notificationId !== null) {
                 Shopware.State.dispatch('notification/updateNotification', {
                     uuid: this.notificationId,
-                    ...notification
+                    ...notification,
                 }).then(() => {
                     if (payload.successAmount + payload.failureAmount === payload.totalAmount) {
                         this.notificationId = null;
@@ -169,7 +167,7 @@ Component.register('sas-upload-listener', {
 
             Shopware.State.dispatch('notification/createNotification', {
                 variant: 'success',
-                ...notification
+                ...notification,
             }).then((newNotificationId) => {
                 if (payload.successAmount + payload.failureAmount < payload.totalAmount) {
                     this.notificationId = newNotificationId;
@@ -184,27 +182,27 @@ Component.register('sas-upload-listener', {
                     message: this.$root.$tc(
                         'global.sw-media-upload.notification.illegalFilename.message',
                         0,
-                        { fileName: payload.fileName }
-                    )
+                        { fileName: payload.fileName },
+                    ),
                 });
             } else if (isIllegalUrlException(payload.error)) {
                 this.createNotificationError({
                     title: this.$root.$tc('global.sw-media-upload.notification.illegalFileUrl.title'),
                     message: this.$root.$tc(
                         'global.sw-media-upload.notification.illegalFileUrl.message',
-                        0
-                    )
+                        0,
+                    ),
                 });
             } else {
                 this.createNotificationError({
                     title: this.$root.$tc('global.default.error'),
-                    message: this.$root.$tc('global.sw-media-upload.notification.failure.message')
+                    message: this.$root.$tc('global.sw-media-upload.notification.failure.message'),
                 });
             }
         },
 
         syncEntitiesAndRunUploads() {
             this.sasMediaService.runUploads(this.mediaService, this.uploadTag);
-        }
-    }
-});
+        },
+    },
+};

@@ -21,7 +21,7 @@ class SasMediaApiService extends ApiService {
         this.name = 'sasMediaService';
         this.mediaService = MediaApiService;
         this.tag = '';
-        this.fileNameUploading = ''
+        this.fileNameUploading = '';
     }
 
     runUploads(mediaService, tag) {
@@ -56,8 +56,8 @@ class SasMediaApiService extends ApiService {
                             targetId: task.targetId,
                             successAmount: successUploads,
                             failureAmount: failureUploads,
-                            totalAmount: totalUploads
-                        }
+                            totalAmount: totalUploads,
+                        },
                     ));
                 });
             }).catch((cause) => {
@@ -72,7 +72,7 @@ class SasMediaApiService extends ApiService {
                     listener(this.mediaService._createUploadEvent(
                         UploadEvents.UPLOAD_FAILED,
                         tag,
-                        task
+                        task,
                     ));
                 });
             });
@@ -89,7 +89,7 @@ class SasMediaApiService extends ApiService {
                     task.src.type,
                     buffer,
                     task.extension,
-                    task.fileName
+                    task.fileName,
                 );
             });
         }
@@ -99,7 +99,7 @@ class SasMediaApiService extends ApiService {
                 task.targetId,
                 task.src.href,
                 task.extension,
-                task.fileName
+                task.fileName,
             );
         }
 
@@ -111,7 +111,7 @@ class SasMediaApiService extends ApiService {
         const headers = this.getBasicHeaders({ 'Content-Type': mimeType });
         const params = {
             extension,
-            fileName
+            fileName,
         };
 
         const config = this.getHttpConfig(params, headers);
@@ -119,7 +119,7 @@ class SasMediaApiService extends ApiService {
         return this.httpClient.post(
             apiRoute,
             data,
-            config
+            config,
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -130,7 +130,7 @@ class SasMediaApiService extends ApiService {
         const headers = this.getBasicHeaders({ 'Content-Type': 'application/json' });
         const params = {
             extension,
-            fileName
+            fileName,
         };
 
         const body = JSON.stringify({ url });
@@ -140,27 +140,28 @@ class SasMediaApiService extends ApiService {
         return this.httpClient.post(
             apiRoute,
             body,
-            config
+            config,
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
     }
 
     getHttpConfig(params, headers) {
-        return  {
+        return {
             params,
             headers,
-            onUploadProgress: function (progressEvent) {
+            onUploadProgress: (progressEvent) => {
                 const process = Math.round((progressEvent.loaded / progressEvent.total) * 100);
                 this.saveUploadProcess(process);
-            }.bind(this)
+            },
         };
     }
 
     saveUploadProcess(process) {
         this.mediaService.getListenerForTag(this.tag).forEach((listener) => {
-            listener(this.mediaService._createUploadEvent(
-                UploadEventProcess, this.tag, { fileName: this.fileNameUploading, process })
+            listener(
+                // eslint-disable-next-line max-len
+                this.mediaService._createUploadEvent(UploadEventProcess, this.tag, { fileName: this.fileNameUploading, process }),
             );
         });
     }

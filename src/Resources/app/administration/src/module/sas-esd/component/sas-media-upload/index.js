@@ -1,14 +1,14 @@
 import template from './sas-media-upload-v2.html.twig';
 
-Shopware.Component.extend('sas-media-upload', 'sw-media-upload-v2', {
+export default {
     template,
 
     props: {
         fileAccept: {
             type: String,
             required: false,
-            default: '*/*'
-        }
+            default: '*/*',
+        },
 
     },
 
@@ -21,4 +21,4 @@ Shopware.Component.extend('sas-media-upload', 'sw-media-upload-v2', {
             return mediaItem;
         },
     },
-});
+};

@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Tests\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderDefinition;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
@@ -18,6 +21,7 @@ use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 
 class EsdOrderServiceTest extends TestCase
@@ -32,7 +36,7 @@ class EsdOrderServiceTest extends TestCase
 
     private Context $context;
 
-    public function setup(): void
+    protected function setup(): void
     {
         $this->esdOrderRepository = $this->createMock(EntityRepository::class);
 
@@ -49,9 +53,7 @@ class EsdOrderServiceTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider  addNewEsdOrdersProvider
-     */
+    #[DataProvider('addNewEsdOrdersProvider')]
     public function testAddNewEsdOrders(?ProductCollection $products): void
     {
         $this->esdOrderRepository->expects(static::once())->method('create');
@@ -142,10 +144,15 @@ class EsdOrderServiceTest extends TestCase
 
         $esdOrderCollection->add($esdOrder);
 
-        $orderSearch = $this->createConfiguredMock(EntitySearchResult::class, [
-            'getEntities' => $esdOrderCollection,
-            'filter' => $esdOrderCollection,
-        ]);
+        $orderSearch = new EntitySearchResult(
+            EsdOrderDefinition::ENTITY_NAME,
+            1,
+            $esdOrderCollection,
+            null,
+            new Criteria(),
+            $this->context
+        );
+
 
         $this->esdOrderRepository->expects(static::once())->method('search')->willReturn($orderSearch);
 

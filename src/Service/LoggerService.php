@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Service;
 
@@ -11,7 +12,12 @@ class LoggerService extends AbstractLogger
     {
     }
 
-    public function log($level, $message, array $context = []): void
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @throws \Psr\Log\InvalidArgumentException
+     */
+    public function log($level, string|\Stringable $message, array $context = []): void
     {
         $this->logger->log($level, $message, $context);
     }

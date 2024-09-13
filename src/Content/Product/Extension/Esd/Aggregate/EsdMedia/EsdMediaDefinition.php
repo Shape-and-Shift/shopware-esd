@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia;
 
@@ -40,11 +41,11 @@ class EsdMediaDefinition extends EntityDefinition
             (new IdField('id', 'id'))->setFlags(new Required(), new PrimaryKey()),
 
             (new FkField('esd_id', 'esdId', EsdDefinition::class))->addFlags(new Required()),
-            (new ManyToOneAssociationField('esd', 'esd_id', EsdDefinition::class)),
+            new ManyToOneAssociationField('esd', 'esd_id', EsdDefinition::class),
 
-            (new FkField('media_id', 'mediaId', MediaDefinition::class)),
-            (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
-            (new OneToOneAssociationField('esdVideo', 'id', 'esd_media_id', EsdVideoDefinition::class, false)),
+            new FkField('media_id', 'mediaId', MediaDefinition::class),
+            new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true),
+            new OneToOneAssociationField('esdVideo', 'id', 'esd_media_id', EsdVideoDefinition::class, false),
 
             new IntField('download_limit_number', 'downloadLimitNumber'),
         ]);

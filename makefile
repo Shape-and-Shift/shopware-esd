@@ -49,7 +49,18 @@ ecs: ## Starts the ESC checker
 csfix: ## Starts the PHP CS Fixer, set [mode=fix] to auto fix
 	php ./vendor/bin/ecs check src tests --config easy-coding-standard.php --fix
 
+eslint: ## Starts the ESLinter
+	cd ./src/Resources/app/administration && ./node_modules/.bin/eslint --config ./.eslintrc.js ./src --ext .js,.ts,.vue,.html.twig
+
+lint-fix: ## Starts the ESLint Fixer
+	cd ./src/Resources/app/administration && ./node_modules/.bin/eslint --config ./.eslintrc.js ./src --ext .js,.ts,.vue,.html.twig --fix
+
+fix: ## Starts the PHP CS Fixer and ESLint Fixer
+	@make csfix -B
+	@make lint-fix -B
+
 review: ## Review
 	make stan -B
 	make ecs -B
 	make phpunit -B
+	make eslint -B

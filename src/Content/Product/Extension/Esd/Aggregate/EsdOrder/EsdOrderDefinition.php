@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder;
 
@@ -40,13 +41,13 @@ class EsdOrderDefinition extends EntityDefinition
             (new IdField('id', 'id'))->setFlags(new Required(), new PrimaryKey()),
 
             (new FkField('esd_id', 'esdId', EsdDefinition::class))->addFlags(new Required()),
-            (new ManyToOneAssociationField('esd', 'esd_id', EsdDefinition::class)),
+            new ManyToOneAssociationField('esd', 'esd_id', EsdDefinition::class),
 
-            (new FkField('order_line_item_id', 'orderLineItemId', OrderLineItemDefinition::class)),
-            (new OneToOneAssociationField('orderLineItem', 'order_line_item_id', 'id', OrderLineItemDefinition::class, false)),
+            new FkField('order_line_item_id', 'orderLineItemId', OrderLineItemDefinition::class),
+            new OneToOneAssociationField('orderLineItem', 'order_line_item_id', 'id', OrderLineItemDefinition::class, false),
 
-            (new FkField('serial_id', 'serialId', EsdSerialDefinition::class)),
-            (new OneToOneAssociationField('serial', 'serial_id', 'id', EsdSerialDefinition::class, false)),
+            new FkField('serial_id', 'serialId', EsdSerialDefinition::class),
+            new OneToOneAssociationField('serial', 'serial_id', 'id', EsdSerialDefinition::class, false),
 
             new IntField('count_download', 'countDownload'),
         ]);

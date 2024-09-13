@@ -6,54 +6,64 @@
         variant="warning"
         appearance="default"
         :title="$tc('sas-esd.videoPlayAlertTitle')"
-        :showIcon="true"
-        :closable="false">
+        :show-icon="true"
+        :closable="false"
+>
             {{ $tc('sas-esd.videoPlayAlertMessage') }}
     </sw-alert>
 
     <template v-if="isLoadedEsd || isLoadedEsdMedia">
-        <sw-card :hero="false" positionIdentifier="sas-product-detail-esd-video__upload">
+        <sw-card
+:hero="false"
+position-identifier="sas-product-detail-esd-video__upload"
+>
             <sas-upload-listener
-                :uploadTag="product.id"
+                :upload-tag="product.id"
+                auto-upload
                 @media-upload-finish="onSetMediaItem"
                 @media-upload-process="onShowProcess"
-                autoUpload>
-            </sas-upload-listener>
+/>
 
             <sw-media-upload-v2
                 variant="regular"
-                defaultFolder="sas_product_esd"
+                default-folder="sas_product_esd"
                 :label="$tc('sas-esd.media.label')"
-                :uploadTag="product.id"
-                :fileAccept="fileAccept"
+                :upload-tag="product.id"
+                :file-accept="fileAccept"
                 @media-drop="onMediaDropped"
-                @media-upload-sidebar-open="onMediaUploadButtonOpenSidebar">
-            </sw-media-upload-v2>
+                @media-upload-sidebar-open="onMediaUploadButtonOpenSidebar"
+/>
 
-            <sw-data-grid class="sas-product-detail-esd__esd-list"
-                          v-if="esdMedia && esdMedia.length > 0"
-                          :dataSource="esdMedia"
+            <sw-data-grid
+v-if="esdMedia && esdMedia.length > 0"
+                          class="sas-product-detail-esd__esd-list"
+                          :data-source="esdMedia"
                           :columns="mediaColumns"
-                          :fullPage="false"
-                          :showSettings="true"
-                          :allowInlineEdit="true"
-                          :allowColumnEdit="true"
-                          :allowEdit="true"
+                          :full-page="false"
+                          :show-settings="true"
+                          :allow-inline-edit="true"
+                          :allow-column-edit="true"
+                          :allow-edit="true"
+                          :is-loading="isStoreLoading || isLoading"
                           @selection-change="onSelectionChanged"
                           @inline-edit-save="onInlineEditSave"
-                          :isLoading="isStoreLoading || isLoading">
+>
                 <template #preview-fileName="{ item }">
-                    <sw-media-preview-v2 :source="item.media.id" :mediaIsPrivate="item.media.private"></sw-media-preview-v2>
+                    <sw-media-preview-v2
+:source="item.media.id"
+:media-is-private="item.media.private"
+/>
                 </template>
 
                 <template #column-title="{ item, isInlineEdit }">
                     <template v-if="!item.media.title">
                         <template v-if="isInlineEdit">
-                            <sw-field v-model="item.media.title"
+                            <sw-text-field
+v-model:value="item.media.title"
                                       type="text"
                                       :value="item.media.fileName"
-                                      :placeholder="item.media.fileName">
-                            </sw-field>
+                                      :placeholder="item.media.fileName"
+/>
                         </template>
                         <a v-else>
                             {{ item.media.fileName }}
@@ -61,7 +71,10 @@
                     </template>
                     <template v-else>
                         <template v-if="isInlineEdit">
-                            <sw-field v-model="item.media.title" size="small"></sw-field>
+                            <sw-text-field
+v-model:value="item.media.title"
+size="small"
+/>
                         </template>
                         <a v-else>
                             {{ item.media.title }}
@@ -74,100 +87,136 @@
                 </template>
 
                 <template #column-option="{ item, isInlineEdit }">
-                    <sw-select-field v-if="isInlineEdit && (item.media.fileExtension.toLowerCase() === 'mp4' || item.media.fileExtension.toLowerCase() === 'webp')"
+                    <sw-select-field
+v-if="isInlineEdit && (item.media.fileExtension.toLowerCase() === 'mp4' || item.media.fileExtension.toLowerCase() === 'webp')"
                                      class="sas-product-detail-esd__esd-list-select"
                                      size="small"
                                      :value="getEsdVideoOptionByMediaId(item)"
-                                     @change="onChangeEsdVideoOption($event, item)">
-                        <option value="0">{{ $tc('sas-esd.video.playAndDownloadOptionLabel') }}</option>
-                        <option value="1">{{ $tc('sas-esd.video.playOptionLabel') }}</option>
-                        <option value="2">{{ $tc('sas-esd.video.downloadOptionLabel') }}</option>
+                                     @@update:value="onChangeEsdVideoOption($event, item)"
+>
+                        <option value="0">
+{{ $tc('sas-esd.video.playAndDownloadOptionLabel') }}
+</option>
+                        <option value="1">
+{{ $tc('sas-esd.video.playOptionLabel') }}
+</option>
+                        <option value="2">
+{{ $tc('sas-esd.video.downloadOptionLabel') }}
+</option>
                     </sw-select-field>
-                    <sw-select-field v-else
+                    <sw-select-field
+v-else
                                      disabled
                                      class="sas-product-detail-esd__esd-list-select"
                                      size="small"
-                                     :value="getEsdVideoOptionByMediaId(item)">
-                        <option value="0">{{ $tc('sas-esd.video.playAndDownloadOptionLabel') }}</option>
-                        <option value="1">{{ $tc('sas-esd.video.playOptionLabel') }}</option>
-                        <option value="2">{{ $tc('sas-esd.video.downloadOptionLabel') }}</option>
+                                     :value="getEsdVideoOptionByMediaId(item)"
+>
+                        <option value="0">
+{{ $tc('sas-esd.video.playAndDownloadOptionLabel') }}
+</option>
+                        <option value="1">
+{{ $tc('sas-esd.video.playOptionLabel') }}
+</option>
+                        <option value="2">
+{{ $tc('sas-esd.video.downloadOptionLabel') }}
+</option>
                     </sw-select-field>
                 </template>
 
                 <template #actions="{ item }">
-                    <sw-context-menu-item variant="danger" @click="onDeleteEsdMediaItem(item.media.id)">
+                    <sw-context-menu-item
+variant="danger"
+@click="onDeleteEsdMediaItem(item.media.id)"
+>
                         {{ $tc('global.default.delete') }}
                     </sw-context-menu-item>
                 </template>
 
                 <template #bulk>
-                    <a class="link link-danger" @click="onDeleteEsdSelectedMedia">
+                    <button
+class="link link-danger"
+@keypress.enter="onDeleteEsdSelectedMedia"
+@click="onDeleteEsdSelectedMedia"
+>
                         {{ $tc('global.default.delete') }}
-                    </a>
+                    </button>
                 </template>
             </sw-data-grid>
         </sw-card>
 
-        <sw-card v-if="esdMedia"
+        <sw-card
+v-if="esdMedia"
                  :hero="true"
-                 positionIdentifier="sas-product-detail-esd-video__switch-button"
+                 position-identifier="sas-product-detail-esd-video__switch-button"
         >
             <sas-switch-esd-button
                 class="sas-product-detail-esd__change-esd"
                 :label="$tc('sas-esd.esdChange.changeEsdNormalLabel')"
-                :confirmMessage="$tc('sas-esd.esdChange.confirmChangeToNormalMessage')"
-                esdType="normal">
-            </sas-switch-esd-button>
+                :confirm-message="$tc('sas-esd.esdChange.confirmChangeToNormalMessage')"
+                esd-type="normal"
+/>
         </sw-card>
 
-        <sw-card :title="$tc('sas-esd.serialModal.title')"
-                 v-if="esdMedia"
-                 positionIdentifier="sas-product-detail-esd-video__switch-serial"
+        <sw-card
+v-if="esdMedia"
+                 :title="$tc('sas-esd.serialModal.title')"
+                 position-identifier="sas-product-detail-esd-video__switch-serial"
         >
-            <sw-switch-field :disabled="esdMedia.length === 0"
+            <sw-switch-field
+v-model:value="product.extensions.esd.hasSerial"
+                             :disabled="esdMedia.length === 0"
                              :label="$tc('sas-esd.serialModal.serialSwitch')"
-                             v-model="product.extensions.esd.hasSerial">
-            </sw-switch-field>
+/>
 
-            <div v-if="product.extensions.esd.hasSerial"
-                 class="sas-esd-serial-overview">
+            <div
+v-if="product.extensions.esd.hasSerial"
+                 class="sas-esd-serial-overview"
+>
                 <sas-esd-serial-overview
                     @serial-open="openModal('serialModal')"
-                ></sas-esd-serial-overview>
+                />
             </div>
         </sw-card>
 
-        <sw-card :title="$tc('sas-esd.downloadLimit.title')" positionIdentifier="sas-product-detail-esd-video__switch-custom-limit"
-                 v-if="esdMedia">
-            <sw-switch-field :disabled="esdMedia.length === 0"
+        <sw-card
+v-if="esdMedia"
+:title="$tc('sas-esd.downloadLimit.title')"
+                 position-identifier="sas-product-detail-esd-video__switch-custom-limit"
+>
+            <sw-switch-field
+v-model:value="product.extensions.esd.hasCustomDownloadLimit"
+                             :disabled="esdMedia.length === 0"
                              :label="$tc('sas-esd.downloadLimit.customLimitToggle')"
-                             v-model="product.extensions.esd.hasCustomDownloadLimit">
-            </sw-switch-field>
+/>
 
             <template v-if="product.extensions.esd.hasCustomDownloadLimit">
-                <sw-switch-field :disabled="!product.extensions.esd.hasCustomDownloadLimit"
+                <sw-switch-field
+v-model:value="product.extensions.esd.hasUnlimitedDownload"
+                                 :disabled="!product.extensions.esd.hasCustomDownloadLimit"
                                  :label="$tc('sas-esd.downloadLimit.unlimitedToggle')"
-                                 v-model="product.extensions.esd.hasUnlimitedDownload">
-                </sw-switch-field>
+/>
 
-                <sw-field v-if="!product.extensions.esd.hasUnlimitedDownload"
+                <sw-number-field
+v-if="!product.extensions.esd.hasUnlimitedDownload"
+                          v-model:value="product.extensions.esd.downloadLimitNumber"
                           class="sas-product-detail-esd__download-limit-number"
                           type="number"
                           :placeholder="$tc('sas-esd.downloadLimit.downloadLimitPlaceholder')"
                           :label="$tc('sas-esd.downloadLimit.downloadLimitLabel')"
-                          v-model="product.extensions.esd.downloadLimitNumber">
-                </sw-field>
+/>
             </template>
         </sw-card>
 
-        <sw-modal v-if="isShowUploadProcessModal"
+        <sw-modal
+v-if="isShowUploadProcessModal"
                   :title="$tc('sas-esd.uploadingMediaModalTitle')"
                   :closable="false"
-                  variant="small">
+                  variant="small"
+>
             <div class="sas-product-detail-esd__file-name-uploading">
                 <strong>{{ $tc('sas-esd.fileNameUploadingLabel') }}</strong> {{ fileNameUploading }}
             </div>
-            <sas-process-bar :process="uploadProcess"></sas-process-bar>
+            <sas-process-bar :process="uploadProcess" />
         </sw-modal>
     </template>
 </div>

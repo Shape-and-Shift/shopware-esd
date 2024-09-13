@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Service;
 
@@ -24,7 +25,7 @@ class EsdMediaService
         $contextSource = $context->getSource();
         if (!$contextSource instanceof AdminApiSource) {
             $this->logger->critical(
-                sprintf('Cannot view media with file name: %s Context source is not AdminApiSource', $fileName)
+                \sprintf('Cannot view media with file name: %s Context source is not AdminApiSource', $fileName)
             );
 
             return null;
@@ -38,7 +39,7 @@ class EsdMediaService
         $contextSource = $context->getSource();
         if (!$contextSource instanceof AdminApiSource) {
             $this->logger->critical(
-                sprintf('Cannot view media with ID: %s Context source is not AdminApiSource', $mediaId)
+                \sprintf('Cannot view media with ID: %s Context source is not AdminApiSource', $mediaId)
             );
 
             return null;
@@ -78,7 +79,7 @@ class EsdMediaService
 
         if (!$media instanceof MediaEntity) {
             $this->logger->critical(
-                sprintf('Could not fetch media with file name %s', $fileName)
+                \sprintf('Could not fetch media with file name %s', $fileName)
             );
 
             return null;

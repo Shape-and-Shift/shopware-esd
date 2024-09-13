@@ -1,17 +1,17 @@
 import template from './sas-product-detail-esd.html.twig';
 import './sas-product-detail-esd.scss';
 
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 const { Criteria, EntityCollection } = Shopware.Data;
 const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
-Component.register('sas-product-detail-esd', {
+export default {
     template,
 
     inject: ['repositoryFactory', 'systemConfigApiService', 'sasMediaService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     data() {
@@ -28,23 +28,23 @@ Component.register('sas-product-detail-esd', {
             fileNameUploading: '',
             isPublicMedia: true,
             isEsdVideo: false,
-            isDisableZipFile: false
+            isDisableZipFile: false,
         };
     },
 
     computed: {
         ...mapState('swProductDetail', [
             'product',
-            'parentProduct'
+            'parentProduct',
         ]),
 
         ...mapGetters('swProductDetail', {
-            isStoreLoading: 'isLoading'
+            isStoreLoading: 'isLoading',
         }),
 
         ...mapState('swProductEsdMedia', [
             'esdMedia',
-            'isLoadedEsdMedia'
+            'isLoadedEsdMedia',
         ]),
 
         esdRepository() {
@@ -127,8 +127,8 @@ Component.register('sas-product-detail-esd', {
                     this.loadEsd();
                     this.loadMedia();
                 }
-            }
-        }
+            },
+        },
     },
 
     created() {
@@ -195,13 +195,13 @@ Component.register('sas-product-detail-esd', {
 
                 const esdMediaList = this.createMediaCollection();
                 Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
-                esdMedia.forEach((esdMedia) => {
-                    if (this.isEsdVideo && esdMedia.media.mediaType.name === 'VIDEO') {
+                esdMedia.forEach((item) => {
+                    if (this.isEsdVideo && item.media.mediaType.name === 'VIDEO') {
                         // We don't show video in this list if the user enable esd video mode
                     } else {
-                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', item);
                     }
-                })
+                });
 
                 this.isLoading = false;
                 Shopware.State.commit('swProductEsdMedia/setIsLoadedEsdMedia', true);
@@ -209,14 +209,14 @@ Component.register('sas-product-detail-esd', {
         },
 
         getMediaColumns() {
-            let columns = [
+            const columns = [
                 {
                     property: 'media.fileName',
-                    label: 'sas-esd.media.fileName'
+                    label: 'sas-esd.media.fileName',
                 },
                 {
                     property: 'fileType',
-                    label: 'sas-esd.media.fileType'
+                    label: 'sas-esd.media.fileType',
                 },
             ];
 
@@ -224,7 +224,7 @@ Component.register('sas-product-detail-esd', {
                 columns.push({
                     property: 'downloadLimit',
                     label: 'sas-esd.media.downloadLimit',
-                    inlineEdit: 'string'
+                    inlineEdit: 'string',
                 });
             }
 
@@ -246,11 +246,11 @@ Component.register('sas-product-detail-esd', {
             this.productRepository.save(this.product, Shopware.Context.api).then(() => {
                 this.loadMedia();
                 this.createNotificationSuccess({
-                    message: this.$tc('sas-esd.notification.messageSaveSuccess')
+                    message: this.$tc('sas-esd.notification.messageSaveSuccess'),
                 });
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('sas-esd.notification.messageSaveError')
+                    message: this.$tc('sas-esd.notification.messageSaveError'),
                 });
             }).finally(() => {
                 this.isLoading = false;
@@ -267,12 +267,12 @@ Component.register('sas-product-detail-esd', {
         getEsdMedia() {
             const esdMedia = this.createMediaCollection();
             Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMedia);
-            this.product.extensions.esd.esdMedia.forEach((esdMedia) => {
-                if (esdMedia.media && esdMedia.mediaId) {
-                    if (this.isEsdVideo && esdMedia.media.mediaType.name === 'VIDEO') {
+            this.product.extensions.esd.esdMedia.forEach((item) => {
+                if (item.media && item.mediaId) {
+                    if (this.isEsdVideo && item.media.mediaType.name === 'VIDEO') {
                         // We don't show video in this list if the user enable esd video mode
                     } else {
-                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', item);
                     }
                 }
             });
@@ -306,7 +306,7 @@ Component.register('sas-product-detail-esd', {
             media.private = updatedMedia.private;
             media.userId = updatedMedia.userId;
 
-            return media
+            return media;
         },
 
         onDeleteMediaItem(mediaId) {
@@ -363,5 +363,5 @@ Component.register('sas-product-detail-esd', {
         async onInlineEditSave(esdMedia) {
             await this.esdMediaRepository.save(esdMedia, Shopware.Context.api);
         },
-    }
-})
+    },
+};

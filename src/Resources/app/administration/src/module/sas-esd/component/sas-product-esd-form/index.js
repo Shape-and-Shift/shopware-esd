@@ -4,7 +4,7 @@ import './sas-product-esd-form.scss';
 const { Component } = Shopware;
 const { mapGetters, mapState } = Component.getComponentHelper();
 
-Component.register('sas-product-esd-form', {
+export default {
     template,
 
     inject: ['repositoryFactory'],
@@ -12,17 +12,17 @@ Component.register('sas-product-esd-form', {
     props: {
         esd: {
             type: Object,
-            required: true
-        }
+            required: true,
+        },
     },
 
     computed: {
         ...mapState('swProductDetail', [
-            'product'
+            'product',
         ]),
 
         ...mapGetters('swProductDetail', [
-            'isLoading'
-        ])
-    }
-})
+            'isLoading',
+        ]),
+    },
+};

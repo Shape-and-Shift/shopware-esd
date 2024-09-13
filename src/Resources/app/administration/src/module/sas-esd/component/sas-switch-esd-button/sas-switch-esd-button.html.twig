@@ -1,24 +1,35 @@
 {% block sas_switch_esd %}
     <div>
         {% block sas_switch_esd_button %}
-            <sw-button :isLoading="isLoading"
+            <sw-button
+:is-loading="isLoading"
                        size="small"
                        variant="ghost"
-                       @click="onConfirmChange">
+                       @click="onConfirmChange"
+>
                 {{ label }}
             </sw-button>
         {% endblock %}
 
         {% block sas_switch_esd_confirm_modal %}
-            <sw-modal v-if="isShowConfirmModal"
+            <sw-modal
+v-if="isShowConfirmModal"
                       :title="$tc('sas-esd.esdChange.confirmChangeTitle')"
-                      @modal-close="onCancelChange">
+                      @modal-close="onCancelChange"
+>
                 <div>{{ confirmMessage }}</div>
-                <template slot="modal-footer">
-                    <sw-button size="small" @click="onCancelChange">
+                <template #modal-footer>
+                    <sw-button
+size="small"
+@click="onCancelChange"
+>
                         {{ $tc('sas-esd.esdChange.closeButton') }}
                     </sw-button>
-                    <sw-button size="small" variant="primary" @click="onChange">
+                    <sw-button
+size="small"
+variant="primary"
+@click="onChange"
+>
                         {{ $tc('sas-esd.esdChange.changeButton') }}
                     </sw-button>
                 </template>
