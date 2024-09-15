@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Service;
 
@@ -6,7 +7,7 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
-use Sas\Esd\Exception\ProductNotEnoughSerialException;
+use Sas\Esd\Exception\EsdException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
@@ -32,7 +33,7 @@ class EsdCartService
             $this->checkProductsWithSerialKey($lineItemIds, $context);
 
             return true;
-        } catch (ProductNotEnoughSerialException) {
+        } catch (EsdException) {
             return false;
         }
     }
@@ -64,7 +65,7 @@ class EsdCartService
             });
 
             if ($availableSerials->count() <= 0) {
-                throw new ProductNotEnoughSerialException($product->getId());
+                throw EsdException::productNotEnoughSerialKey($product->getId());
             }
         }
     }

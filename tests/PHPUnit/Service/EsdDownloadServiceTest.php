@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Tests\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryCollection;
@@ -28,7 +30,7 @@ class EsdDownloadServiceTest extends TestCase
 
     private Context $context;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->context = Context::createDefaultContext();
         $this->systemConfigService = new StaticSystemConfigService();
@@ -59,9 +61,7 @@ class EsdDownloadServiceTest extends TestCase
         $this->esdDownloadService->checkLimitDownload($esdOrder);
     }
 
-    /**
-     * @dataProvider getLimitDownloadNumberProvider
-     */
+    #[DataProvider('getLimitDownloadNumberProvider')]
     public function testGetLimitDownloadNumber(?int $systemConfigData, bool $isHasCustomDownloadLimit, bool $isHasUnlimitedDownload, bool $isNotDownloadLimitation): void
     {
         $esdEntity = new EsdEntity();

@@ -1,8 +1,8 @@
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 
-Component.override('sw-order-state-history-card', {
+Shopware.Component.override('sw-order-state-history-card', {
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     methods: {
@@ -20,7 +20,7 @@ Component.override('sw-order-state-history-card', {
                     return;
                 }
 
-                const availableSerials = item.product.extensions.esd.serial.filter(item => !item.esdOrder);
+                const availableSerials = item.product.extensions.esd.serial.filter(tmp => !tmp.esdOrder);
 
                 if (availableSerials.length <= 0) {
                     isSelected = false;
@@ -30,13 +30,13 @@ Component.override('sw-order-state-history-card', {
             if (!isSelected) {
                 this.createNotificationError({
                     title: this.$tc('sas-esd.orderStatusChange.errorTitle'),
-                    message: this.$tc('sas-esd.orderStatusChange.errorMessage')
+                    message: this.$tc('sas-esd.orderStatusChange.errorMessage'),
                 });
 
                 return;
             }
 
-            this.$super('onTransactionStateSelected', actionName)
+            this.$super('onTransactionStateSelected', actionName);
         },
     },
 });

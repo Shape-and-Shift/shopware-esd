@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         bootstrap="tests/TestBootstrap.php"
-         cacheResult="false"
-         colors="true"
-         resolveDependencies="true"
->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" bootstrap="phpunit.autoload.php" cacheResult="false" colors="true" executionOrder="random" resolveDependencies="true">
     <testsuites>
         <testsuite name="SasEsd Tests">
-            <directory>tests/PHPUnit/</directory>
+            <directory>./tests/PHPUnit/</directory>
         </testsuite>
     </testsuites>
-
-    <coverage>
+    <source>
         <include>
-            <directory>./src</directory>
+            <directory suffix=".php">./src</directory>
         </include>
-    </coverage>
+    </source>
 </phpunit>

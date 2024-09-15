@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Migration;
 
@@ -62,7 +63,7 @@ class Migration1606395595FixUrlMailTemplate extends MigrationStep
     {
         $urlString = "url('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId})";
         $rawString = "rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdOrderId}, salesChannel.domains|first.url)";
-        if (strpos($content, $urlString) !== false) {
+        if (str_contains($content, $urlString)) {
             return str_replace($urlString, $rawString, $content);
         }
 

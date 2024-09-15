@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Storefront\Controller;
 
@@ -14,11 +15,9 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Page\GenericPageLoaderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class DownloadsController extends StorefrontController
 {
     public function __construct(
@@ -29,9 +28,7 @@ class DownloadsController extends StorefrontController
     ) {
     }
 
-    /**
-     * @Route("/account/downloads", name="frontend.account.downloads.page", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/account/downloads', name: 'frontend.account.downloads.page', options: ['seo' => 'false'], methods: ['GET'])]
     public function getAccountDownloads(Request $request, SalesChannelContext $context): Response
     {
         $this->denyAccessUnlessLoggedIn($context);
@@ -89,9 +86,7 @@ class DownloadsController extends StorefrontController
         );
     }
 
-    /**
-     * @Route("/account/downloads/remaining", name="frontend.account.downloads.remaining", methods={"GET"}, options={"seo"="false"}, defaults={"XmlHttpRequest": true})
-     */
+    #[Route('/account/downloads/remaining', name: 'frontend.account.downloads.remaining', options: ['seo' => 'false'], defaults: ['XmlHttpRequest' => true], methods: ['GET'])]
     public function getDownloadRemaining(Request $request, SalesChannelContext $context): Response
     {
         $this->denyAccessUnlessLoggedIn($context);
@@ -113,9 +108,7 @@ class DownloadsController extends StorefrontController
         ]);
     }
 
-    /**
-     * @Route("/account/downloads/item/remaining", name="frontend.account.downloads.item-remaining", methods={"GET"}, options={"seo"="false"}, defaults={"XmlHttpRequest": true})
-     */
+    #[Route('/account/downloads/item/remaining', name: 'frontend.account.downloads.item-remaining', options: ['seo' => 'false'], defaults: ['XmlHttpRequest' => true], methods: ['GET'])]
     public function getItemDownloadRemaining(Request $request, SalesChannelContext $context): Response
     {
         $this->denyAccessUnlessLoggedIn($context);

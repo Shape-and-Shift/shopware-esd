@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
@@ -50,8 +51,8 @@ class EsdDefinition extends EntityDefinition
             (new ReferenceVersionField(ProductDefinition::class))->addFlags(new Required()),
             (new ManyToOneAssociationField('product', 'product_id', ProductDefinition::class, 'id', false))->addFlags(new CascadeDelete()),
 
-            (new FkField('media_id', 'mediaId', MediaDefinition::class)),
-            (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
+            new FkField('media_id', 'mediaId', MediaDefinition::class),
+            new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true),
 
             new OneToManyAssociationField('esdMedia', EsdMediaDefinition::class, 'esd_id'),
             new OneToManyAssociationField('orders', EsdOrderDefinition::class, 'esd_id'),
@@ -63,7 +64,7 @@ class EsdDefinition extends EntityDefinition
 
             new CreatedAtField(),
 
-            (new OneToManyAssociationField('serial', EsdSerialDefinition::class, 'esd_id')),
+            new OneToManyAssociationField('serial', EsdSerialDefinition::class, 'esd_id'),
         ]);
     }
 }

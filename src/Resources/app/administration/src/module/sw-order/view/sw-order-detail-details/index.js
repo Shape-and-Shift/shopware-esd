@@ -1,8 +1,8 @@
 import template from './sw-order-detail-details.html.twig';
 
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 
-Component.override('sw-order-detail-details', {
+Shopware.Component.override('sw-order-detail-details', {
     template,
 
     inject: [
@@ -12,15 +12,15 @@ Component.override('sw-order-detail-details', {
     ],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     data() {
         return {
             isSendMailLoading: false,
             isEnableDownloadButton: false,
-            isEnableSerialButton: false
-        }
+            isEnableSerialButton: false,
+        };
     },
 
     methods: {
@@ -41,12 +41,12 @@ Component.override('sw-order-detail-details', {
             this.esdSendMailService.sendMailDownload(this.order.id).then(() => {
                 this.createNotificationSuccess({
                     title: this.$tc('sas-esd.esdMail.alertSendMailDownloadSuccessTitle'),
-                    message: this.$tc('sas-esd.esdMail.alertSendMailDownloadSuccessMessage')
+                    message: this.$tc('sas-esd.esdMail.alertSendMailDownloadSuccessMessage'),
                 });
             }).catch(() => {
                 this.createNotificationError({
                     title: this.$tc('sas-esd.esdMail.alertSendMailDownloadErrorTitle'),
-                    message: this.$tc('sas-esd.esdMail.alertSendMailDownloadErrorMessage')
+                    message: this.$tc('sas-esd.esdMail.alertSendMailDownloadErrorMessage'),
                 });
             }).finally(() => {
                 this.isSendMailLoading = false;
@@ -60,16 +60,16 @@ Component.override('sw-order-detail-details', {
 
                 this.createNotificationSuccess({
                     title: this.$tc('sas-esd.esdMail.alertSendMailSerialSuccessTitle'),
-                    message: this.$tc('sas-esd.esdMail.alertSendMailSerialSuccessMessage')
-                })
+                    message: this.$tc('sas-esd.esdMail.alertSendMailSerialSuccessMessage'),
+                });
             }).catch(() => {
                 this.createNotificationError({
                     title: this.$tc('sas-esd.esdMail.alertSendMailSerialErrorTitle'),
-                    message: this.$tc('sas-esd.esdMail.alertSendMailSerialErrorMessage')
+                    message: this.$tc('sas-esd.esdMail.alertSendMailSerialErrorMessage'),
                 });
             }).finally(() => {
                 this.isSendMailLoading = false;
             });
-        }
-    }
+        },
+    },
 });

@@ -1,3 +1,6 @@
+# 3.0.0
+- Shopware 6 Kompatibilität
+
 # 2.0.4
 * Problem behoben, dass das Flow-Ereignis beim Upgrade von Shopware 6.4 auf 6.5 nicht ausgelöst wird
 

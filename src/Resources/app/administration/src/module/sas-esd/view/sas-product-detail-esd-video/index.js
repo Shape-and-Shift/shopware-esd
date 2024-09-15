@@ -1,16 +1,16 @@
 import template from './sas-product-detail-esd-video.html.twig';
 
-const { Component, Mixin, Context } = Shopware;
+const { Mixin, Context } = Shopware;
 const { Criteria, EntityCollection } = Shopware.Data;
 const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
-Component.register('sas-product-detail-esd-video', {
+export default {
     template,
 
     inject: ['repositoryFactory', 'systemConfigApiService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     data() {
@@ -31,17 +31,17 @@ Component.register('sas-product-detail-esd-video', {
     computed: {
         ...mapState('swProductDetail', [
             'product',
-            'parentProduct'
+            'parentProduct',
         ]),
 
         ...mapGetters('swProductDetail', {
-            isStoreLoading: 'isLoading'
+            isStoreLoading: 'isLoading',
         }),
 
         ...mapState('swProductEsdMedia', [
             'esdMedia',
             'esdVideos',
-            'isLoadedEsdMedia'
+            'isLoadedEsdMedia',
         ]),
 
         esdRepository() {
@@ -66,7 +66,7 @@ Component.register('sas-product-detail-esd-video', {
 
         mediaColumns() {
             return this.getVideoColumns();
-        }
+        },
     },
 
     watch: {
@@ -76,8 +76,8 @@ Component.register('sas-product-detail-esd-video', {
                     this.loadEsd();
                     this.loadMedia();
                 }
-            }
-        }
+            },
+        },
     },
 
     created() {
@@ -132,11 +132,11 @@ Component.register('sas-product-detail-esd-video', {
 
                 const esdMediaList = this.createEsdMediaCollection();
                 Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMediaList);
-                esdMedia.forEach((esdMedia) => {
-                    if (esdMedia.media.mediaType.name === 'VIDEO') {
-                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
+                esdMedia.forEach((item) => {
+                    if (item.media.mediaType.name === 'VIDEO') {
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', item);
                     }
-                })
+                });
 
                 this.loadEsdVideos();
                 this.isLoading = false;
@@ -148,7 +148,7 @@ Component.register('sas-product-detail-esd-video', {
             return new EntityCollection(
                 this.esdVideoRepository.route,
                 this.esdVideoRepository.entityName,
-                Shopware.Context.api
+                Shopware.Context.api,
             );
         },
 
@@ -163,7 +163,7 @@ Component.register('sas-product-detail-esd-video', {
                         if (esdVideo.esdMedia.media.mediaType.name === 'VIDEO') {
                             Shopware.State.commit('swProductEsdMedia/addEsdVideo', esdVideo);
                         }
-                    })
+                    });
                 });
             }
         },
@@ -190,7 +190,7 @@ Component.register('sas-product-detail-esd-video', {
                 return esdVideo.esdMediaId === esdMedia.id;
             });
 
-            const option = parseInt(value);
+            const option = parseInt(value, 10);
             if (
                 esdMedia.media.fileExtension.toLowerCase() === 'mp4' ||
                 esdMedia.media.fileExtension.toLowerCase() === 'webp') {
@@ -219,14 +219,14 @@ Component.register('sas-product-detail-esd-video', {
                 property: 'title',
                 label: 'sas-esd.video.title',
                 inlineEdit: 'string',
-                allowResize: true
+                allowResize: true,
             }, {
                 property: 'fileType',
-                label: 'sas-esd.video.fileType'
+                label: 'sas-esd.video.fileType',
             }, {
                 property: 'option',
                 label: 'sas-esd.video.option',
-                inlineEdit: 'string'
+                inlineEdit: 'string',
             }];
         },
 
@@ -249,11 +249,11 @@ Component.register('sas-product-detail-esd-video', {
             this.productRepository.save(this.product, Shopware.Context.api).then(() => {
                 this.loadMedia();
                 this.createNotificationSuccess({
-                    message: this.$tc('sas-esd.notification.messageSaveSuccess')
+                    message: this.$tc('sas-esd.notification.messageSaveSuccess'),
                 });
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('sas-esd.notification.messageSaveError')
+                    message: this.$tc('sas-esd.notification.messageSaveError'),
                 });
             }).finally(() => {
                 this.isLoading = false;
@@ -270,10 +270,10 @@ Component.register('sas-product-detail-esd-video', {
         getEsdMedia() {
             const esdMedia = this.createEsdMediaCollection();
             Shopware.State.commit('swProductEsdMedia/setEsdMedia', esdMedia);
-            this.product.extensions.esd.esdMedia.forEach((esdMedia) => {
-                if (esdMedia.media && esdMedia.mediaId) {
-                    if (esdMedia.media.mediaType.name === 'VIDEO') {
-                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', esdMedia);
+            this.product.extensions.esd.esdMedia.forEach((item) => {
+                if (item.media && item.mediaId) {
+                    if (item.media.mediaType.name === 'VIDEO') {
+                        Shopware.State.commit('swProductEsdMedia/addEsdMedia', item);
                     }
                 }
             });
@@ -337,11 +337,11 @@ Component.register('sas-product-detail-esd-video', {
             this.mediaRepository.save(item.media, Context.api).then(() => {
                 this.getEsdMedia();
                 this.createNotificationSuccess({
-                    message: this.$tc('sas-esd.notification.messageSaveSuccess')
+                    message: this.$tc('sas-esd.notification.messageSaveSuccess'),
                 });
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('sas-esd.notification.messageSaveError')
+                    message: this.$tc('sas-esd.notification.messageSaveError'),
                 });
             });
             this.isLoading = false;
@@ -360,7 +360,7 @@ Component.register('sas-product-detail-esd-video', {
         },
 
         onMediaUploadButtonOpenSidebar() {
-            this.$root.$emit('sidebar-toggle-open');
+            this.$root.$emit('esd-sidebar-toggle-open');
         },
-    }
-})
+    },
+};

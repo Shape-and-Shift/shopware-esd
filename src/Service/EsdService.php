@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Service;
 
@@ -15,7 +16,6 @@ use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Event\ReadEsdFileEvent;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -37,7 +37,6 @@ class EsdService
         private readonly EntityRepository $esdProductRepository,
         private readonly EntityRepository $esdOrderRepository,
         private readonly EntityRepository $productRepository,
-        private readonly UrlGeneratorInterface $urlGenerator,
         private readonly EntityRepository $esdVideoRepository,
         private readonly SystemConfigService $systemConfigService,
         private readonly FilesystemOperator $filesystemPublic,
@@ -233,7 +232,7 @@ class EsdService
 
     public function getPathVideoMedia(MediaEntity $media): string
     {
-        return $this->urlGenerator->getRelativeMediaUrl($media);
+        return $media->getPath();
     }
 
     public function getEsdOrderByCustomer(CustomerEntity $customer, string $esdOrderId, SalesChannelContext $context): ?EsdOrderEntity
@@ -328,7 +327,7 @@ class EsdService
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
 
         return number_format(
-            $size / pow(1024, $power),
+            $size / 1024 ** $power,
             2,
             '.',
             ','
@@ -414,7 +413,7 @@ class EsdService
      */
     private function loadMediaFile(MediaEntity $media): ?string
     {
-        $path = $this->urlGenerator->getRelativeMediaUrl($media);
+        $path = $media->getPath();
 
         try {
             return $this->filesystemPublic->read($path);

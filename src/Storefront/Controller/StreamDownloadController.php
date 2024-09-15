@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Storefront\Controller;
 
@@ -19,11 +20,9 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class StreamDownloadController extends StorefrontController
 {
     public function __construct(
@@ -36,9 +35,7 @@ class StreamDownloadController extends StorefrontController
     ) {
     }
 
-    /**
-     * @Route("/esd/download/{esdOrderId}", name="frontend.sas.esd.download", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/esd/download/{esdOrderId}', name: 'frontend.sas.esd.download', options: ['seo' => 'false'], methods: ['GET'])]
     public function downloadByUserLoggedIn(SalesChannelContext $context, string $esdOrderId): Response
     {
         $this->denyAccessUnlessLoggedIn($context);
@@ -56,9 +53,7 @@ class StreamDownloadController extends StorefrontController
         return $this->downloadProcess($esdOrder, $context);
     }
 
-    /**
-     * @Route("/esd/download/guest/{esdOrderId}", name="frontend.sas.esd.download.guest", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/esd/download/guest/{esdOrderId}', name: 'frontend.sas.esd.download.guest', options: ['seo' => 'false'], methods: ['GET'])]
     public function downloadByGuest(SalesChannelContext $context, string $esdOrderId): Response
     {
         $esdOrder = $this->esdService->getEsdOrderByGuest($esdOrderId, $context);
@@ -69,9 +64,7 @@ class StreamDownloadController extends StorefrontController
         return $this->downloadProcess($esdOrder, $context);
     }
 
-    /**
-     * @Route("/esd/item/{esdOrderId}/{mediaId}", name="frontend.sas.lineItem.media.url", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/esd/item/{esdOrderId}/{mediaId}', name: 'frontend.sas.lineItem.media.url', options: ['seo' => 'false'], methods: ['GET'])]
     public function streamMediaLineItemByUser(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
         $this->denyAccessUnlessLoggedIn($context);
@@ -79,9 +72,7 @@ class StreamDownloadController extends StorefrontController
         return $this->streamMediaLineItem($context, $esdOrderId, $mediaId);
     }
 
-    /**
-     * @Route("/esd/item/guest/{esdOrderId}/{mediaId}", name="frontend.sas.lineItem.media.url.guest", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/esd/item/guest/{esdOrderId}/{mediaId}', name: 'frontend.sas.lineItem.media.url.guest', options: ['seo' => 'false'], methods: ['GET'])]
     public function streamMediaLineItemByGuest(SalesChannelContext $context, string $esdOrderId, string $mediaId): ?StreamedResponse
     {
         $esdOrder = $this->esdService->getEsdOrderByGuest($esdOrderId, $context);
@@ -92,9 +83,7 @@ class StreamDownloadController extends StorefrontController
         return $this->streamMediaLineItem($context, $esdOrderId, $mediaId);
     }
 
-    /**
-     * @Route("/esd/video/{esdId}/{mediaId}", name="frontend.sas.esd.video.url", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route('/esd/video/{esdId}/{mediaId}', name: 'frontend.sas.esd.video.url', options: ['seo' => 'false'], methods: ['GET'])]
     public function streamVideo(SalesChannelContext $context, string $esdId, string $mediaId): ?StreamedResponse
     {
         $this->denyAccessUnlessLoggedIn($context);
@@ -168,7 +157,7 @@ class StreamDownloadController extends StorefrontController
         $fileSystem = $this->getFileSystem($path);
 
         return new StreamedResponse(function () use ($fileSystem, $path): void {
-            $outputStream = fopen('php://output', 'rb');
+            $outputStream = fopen('php://output', 'r');
             $fileStream = $fileSystem->readStream($path);
             if (\is_resource($outputStream) && \is_resource($fileStream)) {
                 stream_copy_to_stream($fileStream, $outputStream);

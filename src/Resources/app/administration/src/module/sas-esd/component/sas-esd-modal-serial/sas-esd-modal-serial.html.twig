@@ -1,40 +1,47 @@
 {% block sas_esd_modal_serial %}
-<sw-modal :title="$tc('sas-esd.serialModal.modalHeadline')"
-          @modal-close="$emit('modal-close')"
+<sw-modal
+:title="$tc('sas-esd.serialModal.modalHeadline')"
           class="sas-esl-modal-serial"
-          :isLoading="isLoading">
+          :is-loading="isLoading"
+          @modal-close="$emit('modal-close')"
+>
 
     {% block sas_esd_modal_serial_main %}
         <div class="sas-esl-modal-serial__main">
             <sw-textarea-field
-                v-model="serials"
+                v-model:value="serials"
                 type="textarea"
                 :label="$tc('sas-esd.serialModal.textAreaSerialNumber.label')"
-                :placeholder="$tc('sas-esd.serialModal.textAreaSerialNumber.placeholder')">
-            </sw-textarea-field>
+                :placeholder="$tc('sas-esd.serialModal.textAreaSerialNumber.placeholder')"
+/>
 
             <sw-switch-field
+                v-model:value="isIncreaseStock"
                 :label="$tc('sas-esd.serialModal.increaseStockLabel')"
-                v-model="isIncreaseStock"
-            ></sw-switch-field>
+            />
         </div>
     {% endblock %}
 
     {% block ssas_esd_modal_serial_footer %}
-        <template slot="modal-footer">
+        <template #modal-footer>
             {% block ssas_esd_modal_serial_footer_button_cancel %}
-            <sw-button size="small" variant="danger" @click="$emit('modal-close')">
+            <sw-button
+size="small"
+variant="danger"
+@click="$emit('modal-close')"
+>
                 {{ $tc('sas-esd.serialModal.cancel') }}
             </sw-button>
             {% endblock %}
 
             {% block ssas_esd_modal_serial_footer_button_save %}
             <sw-button
-                @click="saveSerials"
                 :disabled="serials ? false : true"
-                :isLoading="isLoading"
+                :is-loading="isLoading"
                 variant="primary"
-                size="small">
+                size="small"
+                @click="saveSerials"
+>
                 {{ $tc('sas-esd.serialModal.save') }}
             </sw-button>
             {% endblock %}

@@ -1,50 +1,50 @@
 import template from './sas-switch-esd-button.html.twig';
 
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
-Component.register('sas-switch-esd-button', {
+export default {
     template,
 
     inject: ['repositoryFactory'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
     ],
 
     props: {
         esdType: {
             type: String,
             required: true,
-            default: 'normal'
+            default: 'normal',
         },
         label: {
             type: String,
             required: true,
-            default: ''
+            default: '',
         },
         confirmMessage: {
             type: String,
             required: true,
-            default: ''
-        }
+            default: '',
+        },
     },
 
     data() {
         return {
             isShowConfirmModal: false,
-            isLoading: false
-        }
+            isLoading: false,
+        };
     },
 
     computed: {
         ...mapGetters('swProductDetail', {
-            isStoreLoading: 'isLoading'
+            isStoreLoading: 'isLoading',
         }),
 
         ...mapState('swProductDetail', [
             'product',
-            'parentProduct'
+            'parentProduct',
         ]),
 
         productRepository() {
@@ -54,15 +54,15 @@ Component.register('sas-switch-esd-button', {
 
     methods: {
         onConfirmChange() {
-            this.isShowConfirmModal =  true;
+            this.isShowConfirmModal = true;
         },
 
         onCancelChange() {
-            this.isShowConfirmModal =  false;
+            this.isShowConfirmModal = false;
         },
 
-        onChange() {
-            this.isShowConfirmModal =  false;
+        async onChange() {
+            this.isShowConfirmModal = false;
             this.isLoading = true;
 
             let routerName = 'sas.product.detail.esd';
@@ -70,12 +70,11 @@ Component.register('sas-switch-esd-button', {
                 routerName = 'sas.product.detail.esd.video';
             }
 
-            this.productRepository.save(this.product, Shopware.Context.api).then(() => {
-                this.$router.push({ name: routerName, params: { id: this.$route.params.id } });
-                this.createNotificationSuccess({
-                    message: this.$tc('sas-esd.esdChange.messageChangeSuccess')
-                });
-            });
-        }
-    }
-});
+            await this.productRepository.save(this.product, Shopware.Context.api);
+            await this.$router.push({ name: routerName, params: { id: this.$route.params.id } });
+            // this.createNotificationSuccess({
+            //     message: this.$tc('sas-esd.esdChange.messageChangeSuccess'),
+            // });
+        },
+    },
+};

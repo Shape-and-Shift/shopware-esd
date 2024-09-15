@@ -151,7 +151,6 @@
             <argument type="service" id="sas_product_esd.repository"/>
             <argument type="service" id="sas_product_esd_order.repository"/>
             <argument type="service" id="product.repository"/>
-            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="sas_product_esd_video.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="shopware.filesystem.public"/>

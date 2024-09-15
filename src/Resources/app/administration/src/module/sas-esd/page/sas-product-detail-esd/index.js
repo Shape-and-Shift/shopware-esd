@@ -1,11 +1,11 @@
 import template from './sas-product-detail-esd.html.twig';
 
-Shopware.Component.register('sas-product-detail-esd', {
+export default {
     template,
 
     metaInfo() {
         return {
-            title: 'Custom'
+            title: 'Custom',
         };
     },
-});
+};

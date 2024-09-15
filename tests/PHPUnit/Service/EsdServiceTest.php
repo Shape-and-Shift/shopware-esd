@@ -1,8 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Tests\Service;
 
 use League\Flysystem\FilesystemOperator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
@@ -16,7 +18,6 @@ use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Service\EsdService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -32,8 +33,6 @@ class EsdServiceTest extends TestCase
     private EntityRepository $esdOrderRepository;
 
     private EntityRepository $productRepository;
-
-    private UrlGeneratorInterface $urlGenerator;
 
     private FilesystemOperator $filesystemPrivate;
 
@@ -53,15 +52,13 @@ class EsdServiceTest extends TestCase
 
     private EventDispatcherInterface $eventDispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->esdProductRepository = $this->createMock(EntityRepository::class);
 
         $this->esdOrderRepository = $this->createMock(EntityRepository::class);
 
         $this->productRepository = $this->createMock(EntityRepository::class);
-
-        $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
 
         $this->filesystemPrivate = $this->createMock(FilesystemOperator::class);
 
@@ -83,7 +80,6 @@ class EsdServiceTest extends TestCase
             $this->esdProductRepository,
             $this->esdOrderRepository,
             $this->productRepository,
-            $this->urlGenerator,
             $this->esdVideoRepository,
             $this->systemConfigService,
             $this->filesystemPublic,
@@ -100,6 +96,7 @@ class EsdServiceTest extends TestCase
         $esd = $this->getEsd();
 
         $media = $this->getMedia();
+        $media->setPath(__DIR__ . '/Image/logo.svg');
 
         $esdMedia = $this->getEsdMedia($media);
 
@@ -119,14 +116,10 @@ class EsdServiceTest extends TestCase
 
         $this->productRepository->expects(static::once())->method('search')->willReturn($searchProduct);
 
-        $this->urlGenerator->expects(static::any())->method('getRelativeMediaUrl')->willReturn(__DIR__ . '/Image/logo.svg');
-
         $this->esdService->compressFiles('productId');
     }
 
-    /**
-     * @dataProvider getEsdMediaByProductIdProvider
-     */
+    #[DataProvider('getEsdMediaByProductIdProvider')]
     public function testGetEsdMediaByProductId(?EsdEntity $esd): void
     {
         $search = $this->createConfiguredMock(EntitySearchResult::class, [
@@ -371,8 +364,6 @@ class EsdServiceTest extends TestCase
 
     public function testGetPathVideoMedia(): void
     {
-        $this->urlGenerator->expects(static::once())->method('getRelativeMediaUrl')->willReturn('/test/image.png');
-
         $media = $this->getMedia();
 
         $pathVideoMedia = $this->esdService->getPathVideoMedia($media);
@@ -483,9 +474,7 @@ class EsdServiceTest extends TestCase
         static::assertStringContainsString('/files/', $path);
     }
 
-    /**
-     * @dataProvider getSystemConfigProvider
-     */
+    #[DataProvider('getSystemConfigProvider')]
     public function testGetSystemConfig(string $name, $actual): void
     {
         $this->systemConfigService->expects(static::once())->method('get')->willReturn($name);
@@ -535,6 +524,7 @@ class EsdServiceTest extends TestCase
         $media->setId('mediaId');
         $media->setFileName('logo');
         $media->setFileExtension('svg');
+        $media->setPath('/test/image.png');
 
         return $media;
     }
@@ -545,6 +535,7 @@ class EsdServiceTest extends TestCase
         $esdMedia->setId('esdMediaId');
         $esdMedia->setUniqueIdentifier('esdMediaUniqueIdentifier');
         $esdMedia->setMedia($media);
+
 
         return $esdMedia;
     }

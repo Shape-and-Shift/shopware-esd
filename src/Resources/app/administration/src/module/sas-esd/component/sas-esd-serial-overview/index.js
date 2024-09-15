@@ -1,11 +1,11 @@
 import template from './sas-esd-serial-overview.html.twig';
 import './sas-esd-serial-overview.scss';
 
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
-Component.register('sas-esd-serial-overview', {
+export default {
     template,
 
     inject: ['repositoryFactory'],
@@ -18,7 +18,7 @@ Component.register('sas-esd-serial-overview', {
     data() {
         return {
             serials: [],
-            activeModal: "",
+            activeModal: '',
             showDeleteModal: false,
             showDeleteListModal: false,
             modalLoading: false,
@@ -42,6 +42,10 @@ Component.register('sas-esd-serial-overview', {
             return this.repositoryFactory.create('sas_product_esd_serial');
         },
 
+        assetFilter() {
+            return Shopware.Filter.getByName('asset');
+        },
+
         serialColumns() {
             return [
                 {
@@ -55,7 +59,7 @@ Component.register('sas-esd-serial-overview', {
                     label: 'Assigned client',
                     allowResize: true,
                     sortable: true,
-                }
+                },
             ];
         },
     },
@@ -65,7 +69,7 @@ Component.register('sas-esd-serial-overview', {
     },
 
     methods: {
-        getList()  {
+        getList() {
             this.getSerials();
         },
 
@@ -153,5 +157,5 @@ Component.register('sas-esd-serial-overview', {
         loadProduct() {
             this.$emit('load-product');
         },
-    }
-});
+    },
+};

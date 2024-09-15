@@ -1,4 +1,4 @@
-const { Component, Mixin } = Shopware;
+const { Component } = Shopware;
 
 Component.override('sw-order-detail', {
     computed: {
@@ -7,6 +7,6 @@ Component.override('sw-order-detail', {
             criteria.addAssociation('lineItems.product.esd.serial.esdOrder');
 
             return criteria;
-        }
+        },
     },
 });

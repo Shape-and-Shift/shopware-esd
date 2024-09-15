@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 use PhpCsFixer\Fixer\CastNotation\ModernizeTypesCastingFixer;
 use PhpCsFixer\Fixer\ClassNotation\ClassAttributesSeparationFixer;
@@ -37,74 +38,68 @@ use PhpCsFixerCustomFixers\Fixer\NoUselessParenthesisFixer;
 use PhpCsFixerCustomFixers\Fixer\NoUselessStrlenFixer;
 use PhpCsFixerCustomFixers\Fixer\PhpdocNoIncorrectVarAnnotationFixer;
 use PhpCsFixerCustomFixers\Fixer\SingleSpaceAfterStatementFixer;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symplify\CodingStandard\Fixer\ArrayNotation\ArrayListItemNewlineFixer;
 use Symplify\CodingStandard\Fixer\ArrayNotation\ArrayOpenerAndCloserNewlineFixer;
 use Symplify\CodingStandard\Fixer\ArrayNotation\StandaloneLineInMultilineArrayFixer;
-use Symplify\EasyCodingStandard\ValueObject\Option;
+use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $services = $containerConfigurator->services();
+return static function (ECSConfig $ecsConfig): void {
+    $ecsConfig->dynamicSets([
+        '@Symfony',
+        '@Symfony:risky',
+    ]);
 
-    $containerConfigurator->import(SetList::SYMFONY);
-    $containerConfigurator->import(SetList::SYMFONY_RISKY);
-    $containerConfigurator->import(SetList::ARRAY);
-    $containerConfigurator->import(SetList::CONTROL_STRUCTURES);
-    $containerConfigurator->import(SetList::STRICT);
-    $containerConfigurator->import(SetList::PSR_12);
+    $ecsConfig->sets([
+        SetList::ARRAY,
+        SetList::CONTROL_STRUCTURES,
+        SetList::STRICT,
+        SetList::PSR_12,
+    ]);
 
-    $services->set(ModernizeTypesCastingFixer::class);
-    $services->set(ClassAttributesSeparationFixer::class)
-        ->call('configure', [['elements' => ['property' => 'one', 'method' => 'one']]]);
-    $services->set(FopenFlagsFixer::class);
-    $services->set(MethodArgumentSpaceFixer::class)
-        ->call('configure', [['on_multiline' => 'ensure_fully_multiline']]);
-    $services->set(NativeFunctionInvocationFixer::class)
-        ->call('configure', [[
-            'include' => [NativeFunctionInvocationFixer::SET_COMPILER_OPTIMIZED],
-            'scope' => 'namespaced',
-            'strict' => false,
-        ]]);
-    $services->set(NativeConstantInvocationFixer::class);
-    $services->set(NullableTypeDeclarationForDefaultNullValueFixer::class);
-    $services->set(VoidReturnFixer::class);
-    $services->set(ConcatSpaceFixer::class)
-        ->call('configure', [['spacing' => 'one']]);
-    $services->set(OperatorLinebreakFixer::class);
-    $services->set(GeneralPhpdocAnnotationRemoveFixer::class)
-        ->call('configure', [['annotations' => ['copyright', 'category']]]);
-    $services->set(NoSuperfluousPhpdocTagsFixer::class)
-        ->call('configure', [['allow_unused_params' => true]]);
-    $services->set(PhpdocLineSpanFixer::class);
-    $services->set(PhpdocOrderFixer::class);
-    $services->set(PhpUnitConstructFixer::class);
-    $services->set(PhpUnitDedicateAssertFixer::class)
-        ->call('configure', [['target' => 'newest']]);
-    $services->set(PhpUnitDedicateAssertInternalTypeFixer::class);
-    $services->set(PhpUnitMockFixer::class);
-    $services->set(PhpUnitMockShortWillReturnFixer::class);
-    $services->set(PhpUnitTestCaseStaticMethodCallsFixer::class);
-    $services->set(NoUselessReturnFixer::class);
-    $services->set(DeclareStrictTypesFixer::class);
-    $services->set(BlankLineBeforeStatementFixer::class);
-    $services->set(CompactNullableTypehintFixer::class);
-    $services->set(NoImportFromGlobalNamespaceFixer::class);
-    $services->set(NoSuperfluousConcatenationFixer::class);
-    $services->set(NoUselessCommentFixer::class);
-    $services->set(PhpdocNoIncorrectVarAnnotationFixer::class);
-    $services->set(SingleSpaceAfterStatementFixer::class);
-    $services->set(NoUselessParenthesisFixer::class);
-    $services->set(NoUselessStrlenFixer::class);
+    $ecsConfig->rule(ModernizeTypesCastingFixer::class);
+    $ecsConfig->ruleWithConfiguration(ClassAttributesSeparationFixer::class, ['elements' => ['property' => 'one', 'method' => 'one']]);
+    $ecsConfig->rule(FopenFlagsFixer::class);
+    $ecsConfig->ruleWithConfiguration(MethodArgumentSpaceFixer::class, ['on_multiline' => 'ensure_fully_multiline']);
+    $ecsConfig->ruleWithConfiguration(NativeFunctionInvocationFixer::class, [
+        'include' => [NativeFunctionInvocationFixer::SET_COMPILER_OPTIMIZED],
+        'scope' => 'namespaced',
+        'strict' => false,
+    ]);
+    $ecsConfig->rule(NativeConstantInvocationFixer::class);
+    $ecsConfig->rule(NullableTypeDeclarationForDefaultNullValueFixer::class);
+    $ecsConfig->rule(VoidReturnFixer::class);
+    $ecsConfig->ruleWithConfiguration(ConcatSpaceFixer::class, ['spacing' => 'one']);
 
-    $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PATHS, [
+    $ecsConfig->rule(OperatorLinebreakFixer::class);
+    $ecsConfig->ruleWithConfiguration(GeneralPhpdocAnnotationRemoveFixer::class, ['annotations' => ['copyright', 'category']]);
+    $ecsConfig->ruleWithConfiguration(NoSuperfluousPhpdocTagsFixer::class, ['allow_unused_params' => true]);
+    $ecsConfig->rule(PhpdocLineSpanFixer::class);
+    $ecsConfig->rule(PhpdocOrderFixer::class);
+    $ecsConfig->rule(PhpUnitConstructFixer::class);
+    $ecsConfig->ruleWithConfiguration(PhpUnitDedicateAssertFixer::class, ['target' => 'newest']);
+    $ecsConfig->rule(PhpUnitDedicateAssertInternalTypeFixer::class);
+    $ecsConfig->rule(PhpUnitMockFixer::class);
+    $ecsConfig->rule(PhpUnitMockShortWillReturnFixer::class);
+    $ecsConfig->rule(PhpUnitTestCaseStaticMethodCallsFixer::class);
+    $ecsConfig->rule(NoUselessReturnFixer::class);
+    $ecsConfig->rule(DeclareStrictTypesFixer::class);
+    $ecsConfig->rule(BlankLineBeforeStatementFixer::class);
+    $ecsConfig->rule(CompactNullableTypehintFixer::class);
+    $ecsConfig->rule(NoImportFromGlobalNamespaceFixer::class);
+    $ecsConfig->rule(NoSuperfluousConcatenationFixer::class);
+    $ecsConfig->rule(NoUselessCommentFixer::class);
+    $ecsConfig->rule(PhpdocNoIncorrectVarAnnotationFixer::class);
+    $ecsConfig->rule(SingleSpaceAfterStatementFixer::class);
+    $ecsConfig->rule(NoUselessParenthesisFixer::class);
+    $ecsConfig->rule(NoUselessStrlenFixer::class);
+
+    $ecsConfig->paths([
         'src',
-        'tests',
         'easy-coding-standard.php',
     ]);
 
-    $parameters->set(Option::SKIP, [
+    $ecsConfig->skip([
         ArrayOpenerAndCloserNewlineFixer::class => null,
         ArrayListItemNewlineFixer::class => null,
         SingleLineThrowFixer::class => null,
@@ -114,7 +109,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         PhpdocSummaryFixer::class => null,
         ExplicitStringVariableFixer::class => null,
         StandaloneLineInMultilineArrayFixer::class => null,
-        PhpCsFixer\Fixer\Phpdoc\NoSuperfluousPhpdocTagsFixer::class => [
+        NoSuperfluousPhpdocTagsFixer::class => [
             __DIR__ . '/.gitlab-ci/tools/src/Service/ProcessBuilder.php',
         ],
         '**/node_modules',

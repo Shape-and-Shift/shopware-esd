@@ -1,29 +1,25 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Api\Controller;
 
 use Sas\Esd\Service\EsdMediaService;
-use Shopware\Core\Content\Media\Exception\EmptyMediaFilenameException;
-use Shopware\Core\Content\Media\Exception\MissingFileExtensionException;
 use Shopware\Core\Content\Media\File\FileNameProvider;
+use Shopware\Core\Content\Media\MediaException;
 use Shopware\Core\Framework\Context;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class MediaController extends AbstractController
 {
     public function __construct(private readonly EsdMediaService $esdMediaService, private readonly FileNameProvider $fileNameProvider)
     {
     }
 
-    /**
-     * @Route("/api/_action/media/esd/provide-name", name="api.action.media-esd.provide-name", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/media/esd/provide-name', name: 'api.action.media-esd.provide-name', methods: ['GET'])]
     public function provideName(Request $request, Context $context): JsonResponse
     {
         $fileName = (string) $request->query->get('fileName');
@@ -31,10 +27,10 @@ class MediaController extends AbstractController
         $mediaId = $request->query->has('mediaId') ? (string) $request->query->get('mediaId') : null;
 
         if ($fileName === '') {
-            throw new EmptyMediaFilenameException();
+            throw MediaException::emptyMediaFilename();
         }
         if ($fileExtension === '') {
-            throw new MissingFileExtensionException();
+            throw MediaException::missingFileExtension();
         }
 
         $name = $context->scope(Context::SYSTEM_SCOPE, function ($context) use ($fileName, $fileExtension, $mediaId) {
@@ -46,19 +42,18 @@ class MediaController extends AbstractController
 
     /**
      * Get media entity by file name and extension
-     *
-     * @Route("/api/_action/media/esd", name="api.action.media-esd.get", methods={"GET"})
      */
+    #[Route(path: '/api/_action/media/esd', name: 'api.action.media-esd.get', methods: ['GET'])]
     public function getAdminSystemMedia(Request $request, Context $context): JsonResponse
     {
         $fileName = (string) $request->get('fileName');
         $fileExtension = (string) $request->get('extension');
 
         if ($fileName === '') {
-            throw new EmptyMediaFilenameException();
+            throw MediaException::emptyMediaFilename();
         }
         if ($fileExtension === '') {
-            throw new MissingFileExtensionException();
+            throw MediaException::missingFileExtension();
         }
 
         $media = $this->esdMediaService->getAdminSystemMedia($fileName, $fileExtension, $context);
@@ -68,9 +63,8 @@ class MediaController extends AbstractController
 
     /**
      * Get media entity by id
-     *
-     * @Route("/api/_action/media/esd/{mediaId}", name="api.action.media-esd.get.byId", methods={"GET"})
      */
+    #[Route(path: '/api/_action/media/esd/{mediaId}', name: 'api.action.media-esd.get.byId', methods: ['GET'])]
     public function getAdminSystemMediaById(string $mediaId, Context $context): JsonResponse
     {
         $media = $this->esdMediaService->getAdminSystemMediaById($mediaId, $context);

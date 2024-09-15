@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Sas\Esd\Tests\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvokedCount as InvokedCountMatcher;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +34,7 @@ class EsdMailServiceTest extends TestCase
 
     private EsdMailService $esdMailService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->context = Context::createDefaultContext();
 
@@ -49,9 +51,7 @@ class EsdMailServiceTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider sendMailDownloadProvider()
-     */
+    #[DataProvider('sendMailDownloadProvider')]
     public function testSendMailDownload(bool $hasOrder, bool $hasEsdOrderLineItems, bool $isDisableZipFile): void
     {
         $order = null;
@@ -84,9 +84,7 @@ class EsdMailServiceTest extends TestCase
         $this->esdMailService->sendMailDownload('id', $this->context);
     }
 
-    /**
-     * @dataProvider sendMailSerialProvider()
-     */
+    #[DataProvider('sendMailSerialProvider')]
     public function testSendMailSerial(bool $hasOrder, bool $hasEsdSerials): void
     {
         if ($hasOrder) {
@@ -108,9 +106,7 @@ class EsdMailServiceTest extends TestCase
         $this->esdMailService->sendMailSerial('id', $this->context);
     }
 
-    /**
-     * @dataProvider enableMailButtonsProvider()
-     */
+    #[DataProvider('enableMailButtonsProvider')]
     public function testEnableMailButtons(bool $hasOrder, array $esdOrderService, array $config, array $buttonsExpect): void
     {
         if ($hasOrder) {

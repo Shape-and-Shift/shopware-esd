@@ -6,23 +6,23 @@ class EsdSendMailService extends ApiService {
     }
 
     sendMailDownload(orderId, additionalParams = {}) {
-        const route = `/esd-mail/download`;
+        const route = '/esd-mail/download';
         const headers = {
-            ...this.getBasicHeaders({})
+            ...this.getBasicHeaders({}),
         };
 
-        return this.httpClient.post(route, {orderId}, { additionalParams, headers }).then((response) => {
+        return this.httpClient.post(route, { orderId }, { additionalParams, headers }).then((response) => {
             return ApiService.handleResponse(response);
         });
     }
 
     sendMailSerial(orderId, additionalParams = {}) {
-        const route = `/esd-mail/serial`;
+        const route = '/esd-mail/serial';
         const headers = {
-            ...this.getBasicHeaders({})
+            ...this.getBasicHeaders({}),
         };
 
-        return this.httpClient.post(route, {orderId}, { additionalParams, headers }).then((response) => {
+        return this.httpClient.post(route, { orderId }, { additionalParams, headers }).then((response) => {
             return ApiService.handleResponse(response);
         });
     }
@@ -30,7 +30,7 @@ class EsdSendMailService extends ApiService {
     getEnableMailButtons(orderId, additionalParams = {}) {
         const route = `/esd-mail/${orderId}/buttons`;
         const headers = {
-            ...this.getBasicHeaders({})
+            ...this.getBasicHeaders({}),
         };
 
         return this.httpClient.get(route, { additionalParams, headers }).then((response) => {

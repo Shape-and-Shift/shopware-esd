@@ -1,7 +1,6 @@
-const { Component, Context } = Shopware;
-const { Criteria } = Shopware.Data;
+const { Context } = Shopware;
 
-Component.override( 'sw-duplicated-media-v2', {
+export default {
     inject: ['sasMediaService'],
 
     methods: {
@@ -17,7 +16,8 @@ Component.override( 'sw-duplicated-media-v2', {
                 return;
             }
 
-            this.existingMedia = await this.sasMediaService.getAdminSystemMedia(this.currentTask.fileName, this.currentTask.extension)
+            // eslint-disable-next-line max-len
+            this.existingMedia = await this.sasMediaService.getAdminSystemMedia(this.currentTask.fileName, this.currentTask.extension);
             const provided = await this.sasMediaService.provideName(this.currentTask.fileName, this.currentTask.extension);
             this.suggestedName = provided.fileName;
         },
@@ -28,7 +28,7 @@ Component.override( 'sw-duplicated-media-v2', {
                 return;
             }
 
-            const newTask = Object.assign({}, uploadTask);
+            const newTask = { ...uploadTask };
 
             const { fileName } = await this.sasMediaService.provideName(uploadTask.fileName, uploadTask.extension);
             newTask.fileName = fileName;
@@ -43,7 +43,7 @@ Component.override( 'sw-duplicated-media-v2', {
                 return;
             }
 
-            const newTarget = await this.sasMediaService.getAdminSystemMedia(uploadTask.fileName, uploadTask.extension)
+            const newTarget = await this.sasMediaService.getAdminSystemMedia(uploadTask.fileName, uploadTask.extension);
 
             if (!newTarget) {
                 return;
@@ -65,4 +65,4 @@ Component.override( 'sw-duplicated-media-v2', {
             await this.sasMediaService.getAdminSystemMediaById(uploadTask.targetId);
         },
     },
-});
+};

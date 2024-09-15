@@ -1,11 +1,18 @@
 {% block sw_media_upload_v2_file_input %}
-    <form class="sw-media-upload-v2__form" ref="fileForm">
-        <input class="sw-media-upload-v2__file-input"
-               type="file"
-               id="files"
+    <form
+ref="fileForm"
+class="sw-media-upload-v2__form"
+aria-label="sw-media-upload-v2__form"
+data-label="sw-media-upload-v2__form"
+>
+        <input
+id="files"
                ref="fileInput"
+               class="sw-media-upload-v2__file-input"
+               type="file"
                :accept="fileAccept"
                :multiple="multiSelect"
-               @change="onFileInputChange"/>
+               @change="onFileInputChange"
+>
     </form>
 {% endblock %}

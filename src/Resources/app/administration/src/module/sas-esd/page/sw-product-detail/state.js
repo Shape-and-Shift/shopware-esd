@@ -5,7 +5,7 @@ export default {
         return {
             esdMedia: [],
             esdVideos: [],
-            isLoadedEsdMedia: false
+            isLoadedEsdMedia: false,
         };
     },
 
@@ -29,8 +29,10 @@ export default {
         updateEsdVideo(state, newEsdVideo) {
             const i = state.esdVideos.filter((esdVideo, index) => {
                 if (esdVideo.id === newEsdVideo.id) {
-                    return index
+                    return index;
                 }
+
+                return null;
             });
 
             state.esdVideos[i] = newEsdVideo;
@@ -38,6 +40,6 @@ export default {
 
         setIsLoadedEsdMedia(state, isLoadedEsdMedia) {
             state.isLoadedEsdMedia = isLoadedEsdMedia;
-        }
-    }
+        },
+    },
 };
