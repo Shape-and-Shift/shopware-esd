@@ -1,3 +1,6 @@
+# 2.0.4
+* Fixed issue that the flow event is not triggered when upgrading from Shopware 6.4 to 6.5
+
 # 2.0.3
 * Re-release of version 2.0.1 with fixed error while compiling SCSS at Storefront. 
 
