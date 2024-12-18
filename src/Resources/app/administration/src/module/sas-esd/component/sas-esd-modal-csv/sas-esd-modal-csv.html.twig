@@ -24,7 +24,7 @@ name="hasHeaders"
 :value="hasHeaders"
 :class="checkboxClass"
 :label="$tc('sas-esd.sas-esd-modal-csv.checkboxLabel')"
-@@update:value="toggleHasHeaders"
+@update:value="toggleHasHeaders"
 />
                     </slot>
                 </div>
@@ -84,7 +84,10 @@ size="small"
 v-if="sample"
 class="vue-csv-mapping"
 >
-                    <table :class="tableClass">
+                    <table
+v-if="hasHeaders"
+:class="tableClass"
+>
                         <slot name="thead">
                             <thead>
                             <tr>
