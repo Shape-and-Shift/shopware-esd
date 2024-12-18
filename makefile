@@ -64,3 +64,6 @@ review: ## Review
 	make ecs -B
 	make phpunit -B
 	make eslint -B
+
+zip:
+	shopware-cli extension zip . --release --disable-git --output-directory ../

@@ -179,8 +179,8 @@ export default {
             _this.callback(this.form.csv);
         },
         buildMappedCsv() {
-            const _this = this;
             const csv = this.hasHeaders ? drop(this.csv) : this.csv;
+            const _this = this;
             return map(csv, (row) => {
                 const newRow = {};
                 forEach(_this.map, (column, field) => {
@@ -224,6 +224,7 @@ export default {
         },
         toggleHasHeaders() {
             this.hasHeaders = !this.hasHeaders;
+            this.map = this.hasHeaders ? { serial: null } : { serial: 0 };
         },
         makeId(id) {
             return `${id}${this._uid}`;
@@ -242,12 +243,13 @@ export default {
     watch: {
         map: {
             deep: true,
-            handler: (newVal) => {
+            immediate: true,
+            handler(newVal) {
                 if (!this.url) {
                     const hasAllKeys = Array.isArray(this.mapFields) ? every(this.mapFields, (item) => {
-                        return newVal.hasOwnProperty(item);
+                        return newVal.hasOwnProperty(item) && newVal[item] !== null;
                     }) : every(this.mapFields, (item, key) => {
-                        return newVal.hasOwnProperty(key);
+                        return newVal.hasOwnProperty(key) && newVal[key] !== null;
                     });
                     if (hasAllKeys) {
                         this.createNotificationSuccess({
@@ -257,6 +259,8 @@ export default {
                             ),
                         });
                         this.isDisabled = false;
+                    } else {
+                        this.isDisabled = true;
                     }
                 }
             },
@@ -276,6 +280,12 @@ export default {
                         });
                     });
                 }
+            }
+        },
+        isValidFileMimeType() {
+            if (this.isValidFileMimeType) {
+                this.load();
+                this.map = this.hasHeaders ? this.map : { serial: 0 };
             }
         },
     },

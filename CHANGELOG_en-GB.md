@@ -1,3 +1,6 @@
+# 3.0.1
+- Improved the upload serial number by csv file
+ 
 # 3.0.0
 - Shopware 6 compatibility
 
