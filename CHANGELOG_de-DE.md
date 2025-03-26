@@ -1,3 +1,6 @@
+# 2.0.5
+* Problem mit dem freien ESD-Element behoben.
+
 # 2.0.4
 * Problem behoben, dass das Flow-Ereignis beim Upgrade von Shopware 6.4 auf 6.5 nicht ausgelöst wird
 

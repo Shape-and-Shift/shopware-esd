@@ -1,3 +1,6 @@
+# 2.0.5
+* Fixed issue that regarding the free ESD item
+
 # 2.0.4
 * Fixed issue that the flow event is not triggered when upgrading from Shopware 6.4 to 6.5
 
