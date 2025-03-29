@@ -1,3 +1,6 @@
+# 2.0.6
+* Fixed issue that regarding the free ESD item
+
 # 2.0.5
 * Fixed issue that regarding the free ESD item
 
