@@ -50,6 +50,7 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
 
         if ($this->esdOrderService->isEsdOrder($order)
             && !empty($order->getLineItems())
+            && $order->getAmountTotal() > 0
         ) {
             $orderLineItemIds = array_filter($order->getLineItems()->fmap(static function (OrderLineItemEntity $orderLineItem) {
                 return $orderLineItem->getId();

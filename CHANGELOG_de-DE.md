@@ -1,3 +1,6 @@
+# 3.0.2
+* Problem mit dem freien ESD-Element behoben.
+
 # 3.0.1
 - Verbessert den Upload der Seriennummer per csv-Datei
 

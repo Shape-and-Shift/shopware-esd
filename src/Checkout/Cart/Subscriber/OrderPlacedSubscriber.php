@@ -18,9 +18,10 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class OrderPlacedSubscriber
+class OrderPlacedSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly EntityRepository $productRepository,
@@ -30,11 +31,18 @@ class OrderPlacedSubscriber
     ) {
     }
 
-    public function __invoke(CheckoutOrderPlacedEvent $event): void
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            CheckoutOrderPlacedEvent::class => 'handle',
+        ];
+    }
+
+    public function handle(CheckoutOrderPlacedEvent $event): void
     {
         $orderLineItems = $event->getOrder()->getLineItems();
 
-        if ($orderLineItems === null) {
+        if ($orderLineItems === null || $event->getOrder()->getAmountTotal() > 0.0) {
             return;
         }
 
