@@ -1,0 +1,37 @@
+{
+  "base": "/bundles/sasesd/administration/",
+  "entryPoints": {
+    "sas-esd": {
+      "css": [],
+      "dynamic": [
+        "/bundles/sasesd/administration/assets/index-C6HTPJyI.js",
+        "/bundles/sasesd/administration/assets/index-wEnhmz2n.js",
+        "/bundles/sasesd/administration/assets/index-Cqef57dS.js",
+        "/bundles/sasesd/administration/assets/index-B4UM54_0.js",
+        "/bundles/sasesd/administration/assets/index-C2iV8tT9.js",
+        "/bundles/sasesd/administration/assets/index-DgAsESlh.js",
+        "/bundles/sasesd/administration/assets/index-CRU767AT.js",
+        "/bundles/sasesd/administration/assets/index-BDNaQR5u.js",
+        "/bundles/sasesd/administration/assets/index-BzNerSgy.js",
+        "/bundles/sasesd/administration/assets/index-DGXetGed.js",
+        "/bundles/sasesd/administration/assets/index-DlSxLPly.js",
+        "/bundles/sasesd/administration/assets/index-BeLfoEV-.js",
+        "/bundles/sasesd/administration/assets/index-B22bq9MF.js"
+      ],
+      "js": [
+        "/bundles/sasesd/administration/assets/sas-esd-BK1G2klY.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

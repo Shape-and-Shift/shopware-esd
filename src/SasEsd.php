@@ -4,9 +4,13 @@ declare(strict_types=1);
 namespace Sas\Esd;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Sas\Esd\Service\EsdService;
 use Sas\Esd\Utils\InstallUninstall;
 use Sas\Esd\Utils\Update;
+use Shopware\Core\Content\Flow\FlowCollection;
+use Shopware\Core\Content\MailTemplate\Aggregate\MailTemplateType\MailTemplateTypeCollection;
+use Shopware\Core\Content\MailTemplate\MailTemplateCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -35,13 +39,13 @@ class SasEsd extends Plugin
 
         \assert($this->container instanceof ContainerInterface);
 
-        /** @var EntityRepository $mailTemplateTypeRepository */
+        /** @var EntityRepository<MailTemplateTypeCollection> $mailTemplateTypeRepository */
         $mailTemplateTypeRepository = $this->container->get('mail_template_type.repository');
 
-        /** @var EntityRepository $mailTemplateRepository */
+        /** @var EntityRepository<MailTemplateCollection> $mailTemplateRepository */
         $mailTemplateRepository = $this->container->get('mail_template.repository');
 
-        /** @var EntityRepository $flowRepository */
+        /** @var EntityRepository<FlowCollection> $flowRepository */
         $flowRepository = $this->container->get('flow.repository');
         (new InstallUninstall(
             $mailTemplateTypeRepository,
@@ -68,7 +72,7 @@ class SasEsd extends Plugin
      * We need to drop the database tables
      * in case if the plugin is uninstalled
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     protected function dropDatabaseTable(): void
     {

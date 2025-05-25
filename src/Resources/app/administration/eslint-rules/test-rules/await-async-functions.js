@@ -2,7 +2,7 @@
  * @package admin
  */
 
-/* eslint-disable max-len */
+ 
 
 const getAsyncExpressionName = (node) => {
     // Shopware.Component.build

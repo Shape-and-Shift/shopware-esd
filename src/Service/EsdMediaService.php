@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Sas\Esd\Service;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\Media\MediaCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -14,6 +15,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 
 class EsdMediaService
 {
+    /**
+     * @param EntityRepository<MediaCollection> $mediaRepository
+     */
     public function __construct(
         protected readonly LoggerInterface $logger,
         protected readonly EntityRepository $mediaRepository
@@ -45,11 +49,8 @@ class EsdMediaService
             return null;
         }
 
-        $criteria = new Criteria();
+        $criteria = new Criteria([$mediaId]);
         $criteria->setLimit(1);
-        $criteria->addFilter(
-            new EqualsFilter('id', $mediaId),
-        );
 
         $media = $context->scope(Context::SYSTEM_SCOPE, function ($context) use ($criteria) {
             return $this->mediaRepository->search($criteria, $context)->first();

@@ -11,6 +11,7 @@ use Sas\Esd\Service\EsdService;
 use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -20,6 +21,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderStateChangedSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @param EntityRepository<OrderCollection> $orderRepository
+     */
     public function __construct(
         private readonly EntityRepository $orderRepository,
         private readonly EsdService $esdService,
@@ -64,7 +68,7 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
             $templateData = $this->esdOrderService->mailTemplateData($order, $event->getContext());
 
             if (!empty($templateData['esdOrderLineItems'])) {
-                if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)) {
+                if ($this->getSystemConfig()) {
                     $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($event->getContext(), $order, $templateData);
                     $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
                 } else {
@@ -80,9 +84,9 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
         }
     }
 
-    private function getSystemConfig(string $name): bool
+    private function getSystemConfig(): bool
     {
-        $config = $this->systemConfigService->get('SasEsd.config.' . $name);
+        $config = $this->systemConfigService->get('SasEsd.config.' . EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME);
         if (empty($config)) {
             return false;
         }

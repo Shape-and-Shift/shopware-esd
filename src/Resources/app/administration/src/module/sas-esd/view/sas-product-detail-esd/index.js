@@ -3,7 +3,7 @@ import './sas-product-detail-esd.scss';
 
 const { Mixin } = Shopware;
 const { Criteria, EntityCollection } = Shopware.Data;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
+const { mapVuexState } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -33,16 +33,19 @@ export default {
     },
 
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-            'parentProduct',
-        ]),
+        isStoreLoading() {
+            return Shopware.Store.get('swProductDetail').isLoading;
+        },
 
-        ...mapGetters('swProductDetail', {
-            isStoreLoading: 'isLoading',
-        }),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
 
-        ...mapState('swProductEsdMedia', [
+        parentProduct() {
+            return Shopware.Store.get('swProductDetail').parentProduct;
+        },
+
+        ...mapVuexState('swProductEsdMedia', [
             'esdMedia',
             'isLoadedEsdMedia',
         ]),
@@ -179,7 +182,10 @@ export default {
         loadProduct() {
             this.productRepository.get(this.product.id, Shopware.Context.api, this.productCriteria)
                 .then((res) => {
-                    Shopware.State.commit('swProductDetail/setProduct', res);
+                    Shopware.Store.get('swProductDetail').setLoading([
+                        'product',
+                        res,
+                    ]);
                 });
         },
 
@@ -357,7 +363,7 @@ export default {
         },
 
         onMediaUploadButtonOpenSidebar() {
-            this.$root.$emit('esd-sidebar-toggle-open');
+            Shopware.Utils.EventBus.emit('esd-sidebar-toggle-open');
         },
 
         async onInlineEditSave(esdMedia) {

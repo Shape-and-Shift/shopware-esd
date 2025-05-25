@@ -7,6 +7,7 @@ use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
 use Sas\Esd\Utils\EsdMailTemplate;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -16,6 +17,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EsdMailService
 {
+    /**
+     * @param EntityRepository<OrderCollection> $orderRepository
+     */
     public function __construct(
         private readonly EntityRepository $orderRepository,
         private readonly EsdOrderService $esdOrderService,
@@ -26,9 +30,8 @@ class EsdMailService
 
     public function sendMailDownload(string $orderId, Context $context): void
     {
-        /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
-        if (!empty($order)) {
+        if ($order instanceof OrderEntity) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
 
             if (empty($templateData['esdOrderLineItems'])) {
@@ -49,9 +52,8 @@ class EsdMailService
 
     public function sendMailSerial(string $orderId, Context $context): void
     {
-        /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
-        if (!empty($order)) {
+        if ($order instanceof OrderEntity) {
             $templateData = $this->esdOrderService->mailTemplateData($order, $context);
             if (empty($templateData['esdSerials'])) {
                 return;
@@ -62,14 +64,16 @@ class EsdMailService
         }
     }
 
+    /**
+     * @return array<string, bool>
+     */
     public function enableMailButtons(string $orderId, Context $context): array
     {
         $buttons['download'] = false;
         $buttons['serial'] = false;
 
-        /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($this->getCriteria($orderId), $context)->get($orderId);
-        if (!$order) {
+        if (!$order instanceof OrderEntity) {
             return $buttons;
         }
 

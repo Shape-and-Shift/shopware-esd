@@ -218,7 +218,6 @@ class StreamDownloadController extends StorefrontController
         $response->headers->set('Cache-Control', 'no-cache, must-revalidate');
         $response->headers->set('Content-Type', 'zip');
         $response->headers->set('Content-Disposition', $disposition);
-        $response->headers->set('Content-Length', (string) $filesize);
         $response->headers->set('Pragma', 'public');
 
         $content = file_get_contents($path);

@@ -2,7 +2,7 @@
  * @package admin
  */
 
-/* eslint-disable max-len */
+ 
 module.exports = {
     create(context) {
         return {

@@ -16,8 +16,11 @@ export default {
                 return;
             }
 
-            // eslint-disable-next-line max-len
-            this.existingMedia = await this.sasMediaService.getAdminSystemMedia(this.currentTask.fileName, this.currentTask.extension);
+
+            this.existingMedia = await this.sasMediaService.getAdminSystemMedia(
+                this.currentTask.fileName,
+                this.currentTask.extension,
+            );
             const provided = await this.sasMediaService.provideName(this.currentTask.fileName, this.currentTask.extension);
             this.suggestedName = provided.fileName;
         },

@@ -3,7 +3,6 @@ import './sas-esd-serial-overview.scss';
 
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -29,14 +28,17 @@ export default {
     },
 
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-            'variants',
-        ]),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
 
-        ...mapGetters('swProductDetail', [
-            'isLoading',
-        ]),
+        variants() {
+            return Shopware.Store.get('swProductDetail').variants;
+        },
+
+        isLoading() {
+            return Shopware.Store.get('swProductDetail').isLoading;
+        },
 
         esdSerialRepository() {
             return this.repositoryFactory.create('sas_product_esd_serial');

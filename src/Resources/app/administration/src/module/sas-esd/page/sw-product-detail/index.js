@@ -2,7 +2,6 @@ import template from './sw-product-detail.html.twig';
 import swProductEsdMediaState from './state';
 
 const { Mixin } = Shopware;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -38,13 +37,13 @@ export default {
     },
 
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-        ]),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
 
-        ...mapGetters('swProductDetail', [
-            'isLoading',
-        ]),
+        isLoading() {
+            return Shopware.Store.get('swProductDetail').isLoading;
+        },
 
         esdMediaRepository() {
             return this.repositoryFactory.create('sas_product_esd_media');
@@ -62,12 +61,12 @@ export default {
         },
 
         registerListeners() {
-            this.$root.$on('esd-sidebar-toggle-open', this.openMediaSidebar);
+            Shopware.Utils.EventBus.on('esd-sidebar-toggle-open', this.openMediaSidebar);
         },
 
         destroyedComponent() {
             this.$super('destroyedComponent');
-            this.$root.$off('esd-sidebar-toggle-open');
+            Shopware.Utils.EventBus.off('esd-sidebar-toggle-open');
         },
 
         openMediaSidebar() {
@@ -103,13 +102,19 @@ export default {
                 }
             }
 
-            Shopware.State.commit('swProductDetail/setLoading', ['product', true]);
+            Shopware.Store.get('swProductDetail').setLoading([
+                'product',
+                true,
+            ]);
             if (this.product.extensions.esd.isNew) {
                 await this.productRepository.save(this.product, Shopware.Context.api);
             }
 
             this.createEsdMediaAssoc(mediaItem).then(() => {
-                Shopware.State.commit('swProductDetail/setLoading', ['product', false]);
+                Shopware.Store.get('swProductDetail').setLoading([
+                    'product',
+                    false,
+                ]);
             });
         },
 

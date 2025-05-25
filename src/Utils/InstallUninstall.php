@@ -6,6 +6,9 @@ namespace Sas\Esd\Utils;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidDisabledZipEvent;
 use Sas\Esd\Event\EsdDownloadPaymentStatusPaidEvent;
 use Sas\Esd\Event\EsdSerialPaymentStatusPaidEvent;
+use Shopware\Core\Content\Flow\FlowCollection;
+use Shopware\Core\Content\MailTemplate\Aggregate\MailTemplateType\MailTemplateTypeCollection;
+use Shopware\Core\Content\MailTemplate\MailTemplateCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -13,6 +16,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
 class InstallUninstall
 {
+    /**
+     * @param EntityRepository<MailTemplateTypeCollection> $mailTemplateTypeRepository
+     * @param EntityRepository<MailTemplateCollection>     $mailTemplateRepository
+     * @param EntityRepository<FlowCollection>             $flowRepository
+     */
     public function __construct(
         private readonly EntityRepository $mailTemplateTypeRepository,
         private readonly EntityRepository $mailTemplateRepository,

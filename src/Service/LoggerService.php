@@ -5,6 +5,7 @@ namespace Sas\Esd\Service;
 
 use Monolog\Logger;
 use Psr\Log\AbstractLogger;
+use Psr\Log\InvalidArgumentException;
 
 class LoggerService extends AbstractLogger
 {
@@ -15,7 +16,7 @@ class LoggerService extends AbstractLogger
     /**
      * Logs with an arbitrary level.
      *
-     * @throws \Psr\Log\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function log($level, string|\Stringable $message, array $context = []): void
     {

@@ -11,11 +11,14 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoEntity;
+use Sas\Esd\Content\Product\Extension\Esd\EsdCollection;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Event\ReadEsdFileEvent;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -33,6 +36,12 @@ class EsdService
 {
     public const FOLDER_COMPRESS_NAME = 'esd-compress';
 
+    /**
+     * @param EntityRepository<EsdCollection>      $esdProductRepository
+     * @param EntityRepository<EsdOrderCollection> $esdOrderRepository
+     * @param EntityRepository<ProductCollection>  $productRepository
+     * @param EntityRepository<EsdVideoCollection> $esdVideoRepository
+     */
     public function __construct(
         private readonly EntityRepository $esdProductRepository,
         private readonly EntityRepository $esdOrderRepository,
@@ -55,13 +64,14 @@ class EsdService
             return;
         }
 
+        /** @phpstan-ignore-next-line */
         $esdMedia = $this->getEsdMediaByProductId($productId, Context::createDefaultContext());
         if (empty($esdMedia)) {
             return;
         }
 
         $criteria = new Criteria([$productId]);
-        /** @var ProductEntity $product */
+        /** @phpstan-ignore-next-line */
         $product = $this->productRepository->search($criteria, Context::createDefaultContext())->first();
         if (!$product instanceof ProductEntity) {
             return;
@@ -117,7 +127,6 @@ class EsdService
         $criteria->addAssociation('esdMedia');
         $criteria->addFilter(new EqualsFilter('productId', $productId));
 
-        /** @var EsdEntity $esd */
         $esd = $this->esdProductRepository->search($criteria, $context)->first();
         if (!$esd instanceof EsdEntity) {
             return null;
@@ -130,12 +139,16 @@ class EsdService
         return $esd->getEsdMedia();
     }
 
+    /**
+     * @param array<string> $esdIds
+     *
+     * @return array<string, array<string, EsdMediaEntity>>
+     */
     public function getEsdMediaByEsdIds(array $esdIds, Context $context): array
     {
-        $criteria = new Criteria();
+        $criteria = new Criteria($esdIds);
         $criteria->addAssociation('esdMedia.media');
         $criteria->addAssociation('esdMedia.esdVideo');
-        $criteria->addFilter(new EqualsAnyFilter('id', $esdIds));
 
         $esdCollection = $this->esdProductRepository->search($criteria, $context)->getEntities();
         if ($esdCollection->count() === 0) {
@@ -143,13 +156,11 @@ class EsdService
         }
 
         $esdMediaByEsdIds = [];
-        /** @var EsdEntity $esd */
         foreach ($esdCollection as $esd) {
             if (!$esd->getEsdMedia() instanceof EsdMediaCollection) {
                 continue;
             }
 
-            /** @var EsdMediaEntity $esdMedia */
             foreach ($esd->getEsdMedia() as $esdMedia) {
                 if (empty($esdMedia->getMedia())) {
                     continue;
@@ -162,6 +173,11 @@ class EsdService
         return $esdMediaByEsdIds;
     }
 
+    /**
+     * @param array<string> $esdMediaIds
+     *
+     * @return array<string, EsdVideoEntity>
+     */
     public function getEsdVideo(array $esdMediaIds, Context $context): array
     {
         $criteria = new Criteria();
@@ -173,7 +189,6 @@ class EsdService
             return [];
         }
 
-        /** @var EsdVideoEntity $esdVideo */
         foreach ($esdVideoCollection as $esdVideo) {
             $esdVideoByEsdIds[$esdVideo->getEsdMediaId()] = $esdVideo;
         }
@@ -204,11 +219,9 @@ class EsdService
 
     public function getMedia(string $esdId, string $mediaId, Context $context): ?EsdMediaEntity
     {
-        $criteria = new Criteria();
+        $criteria = new Criteria([$esdId]);
         $criteria->addAssociation('esdMedia');
-        $criteria->addFilter(new EqualsFilter('id', $esdId));
 
-        /** @var EsdEntity $esd */
         $esd = $this->esdProductRepository->search($criteria, $context)->first();
         if (!$esd instanceof EsdEntity) {
             return null;
@@ -262,6 +275,9 @@ class EsdService
         return $esdOrder;
     }
 
+    /**
+     * @return EntitySearchResult<EsdOrderCollection>
+     */
     public function getEsdOrderListByCustomer(CustomerEntity $customer, SalesChannelContext $context): EntitySearchResult
     {
         $criteria = $this->createCriteriaEsdOrder($customer->getId());
@@ -287,6 +303,9 @@ class EsdService
         return $esdOrders;
     }
 
+    /**
+     * @param array<string> $ids
+     */
     public function getEsdOrderByOrderLineItemIds(array $ids, Context $context): EsdOrderCollection
     {
         $criteria = new Criteria();
@@ -318,9 +337,9 @@ class EsdService
         return \dirname(__DIR__, 5) . '/files/';
     }
 
-    public function getFileSize(string $productId): string
+    public function getFileSize(string $productId, Context $context): string
     {
-        $this->eventDispatcher->dispatch(new ReadEsdFileEvent($productId));
+        $this->eventDispatcher->dispatch(new ReadEsdFileEvent($productId, $context));
 
         $size = filesize($this->getCompressFile($productId));
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];

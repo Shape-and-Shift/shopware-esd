@@ -1,0 +1,116 @@
+{
+  "app/component/utils/sas-upload-listener/index.js": {
+    "file": "assets/index-C6HTPJyI.js",
+    "name": "index",
+    "src": "app/component/utils/sas-upload-listener/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "main.js"
+    ]
+  },
+  "main.js": {
+    "file": "assets/sas-esd-BK1G2klY.js",
+    "name": "sas-esd",
+    "src": "main.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "app/component/utils/sas-upload-listener/index.js",
+      "module/sas-esd/component/sas-media-upload/index.js",
+      "module/sas-esd/component/sas-product-esd-form/index.js",
+      "module/sas-esd/component/sas-esd-modal-serial/index.js",
+      "module/sas-esd/component/sas-esd-serial-overview/index.js",
+      "module/sas-esd/component/sas-esd-modal-csv/index.js",
+      "module/sas-esd/component/sas-process-bar/index.js",
+      "module/sas-esd/component/sas-switch-esd-button/index.js",
+      "module/sas-esd/component/sas-duplicated-media/index.js",
+      "module/sas-esd/page/sw-product-detail/index.js",
+      "module/sas-esd/page/sas-product-detail-esd/index.js",
+      "module/sas-esd/view/sas-product-detail-esd/index.js",
+      "module/sas-esd/view/sas-product-detail-esd-video/index.js"
+    ]
+  },
+  "module/sas-esd/component/sas-duplicated-media/index.js": {
+    "file": "assets/index-BzNerSgy.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-duplicated-media/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/component/sas-esd-modal-csv/index.js": {
+    "file": "assets/index-DgAsESlh.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-esd-modal-csv/index.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-VfcWjpXD.css"
+    ]
+  },
+  "module/sas-esd/component/sas-esd-modal-serial/index.js": {
+    "file": "assets/index-B4UM54_0.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-esd-modal-serial/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/component/sas-esd-serial-overview/index.js": {
+    "file": "assets/index-C2iV8tT9.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-esd-serial-overview/index.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-DEAfSPmA.css"
+    ]
+  },
+  "module/sas-esd/component/sas-media-upload/index.js": {
+    "file": "assets/index-wEnhmz2n.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-media-upload/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/component/sas-process-bar/index.js": {
+    "file": "assets/index-CRU767AT.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-process-bar/index.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-DIclAYDy.css"
+    ]
+  },
+  "module/sas-esd/component/sas-product-esd-form/index.js": {
+    "file": "assets/index-Cqef57dS.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-product-esd-form/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/component/sas-switch-esd-button/index.js": {
+    "file": "assets/index-BDNaQR5u.js",
+    "name": "index",
+    "src": "module/sas-esd/component/sas-switch-esd-button/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/page/sas-product-detail-esd/index.js": {
+    "file": "assets/index-DlSxLPly.js",
+    "name": "index",
+    "src": "module/sas-esd/page/sas-product-detail-esd/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/page/sw-product-detail/index.js": {
+    "file": "assets/index-DGXetGed.js",
+    "name": "index",
+    "src": "module/sas-esd/page/sw-product-detail/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/view/sas-product-detail-esd-video/index.js": {
+    "file": "assets/index-B22bq9MF.js",
+    "name": "index",
+    "src": "module/sas-esd/view/sas-product-detail-esd-video/index.js",
+    "isDynamicEntry": true
+  },
+  "module/sas-esd/view/sas-product-detail-esd/index.js": {
+    "file": "assets/index-BeLfoEV-.js",
+    "name": "index",
+    "src": "module/sas-esd/view/sas-product-detail-esd/index.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-EmEcX-yv.css"
+    ]
+  }
+}

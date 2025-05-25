@@ -1,39 +1,40 @@
 {% block sas_switch_esd %}
     <div>
         {% block sas_switch_esd_button %}
-            <sw-button
-:is-loading="isLoading"
-                       size="small"
-                       variant="ghost"
-                       @click="onConfirmChange"
->
+        <mt-button
+            :is-loading="isLoading"
+            size="small"
+            ghost
+            variant="primary"
+            @click="onConfirmChange"
+        >
                 {{ label }}
-            </sw-button>
+            </mt-button>
         {% endblock %}
 
         {% block sas_switch_esd_confirm_modal %}
-            <sw-modal
-v-if="isShowConfirmModal"
-                      :title="$tc('sas-esd.esdChange.confirmChangeTitle')"
-                      @modal-close="onCancelChange"
->
-                <div>{{ confirmMessage }}</div>
-                <template #modal-footer>
-                    <sw-button
-size="small"
-@click="onCancelChange"
->
-                        {{ $tc('sas-esd.esdChange.closeButton') }}
-                    </sw-button>
-                    <sw-button
-size="small"
-variant="primary"
-@click="onChange"
->
-                        {{ $tc('sas-esd.esdChange.changeButton') }}
-                    </sw-button>
-                </template>
-            </sw-modal>
+        <sw-modal
+            v-if="isShowConfirmModal"
+            :title="$tc('sas-esd.esdChange.confirmChangeTitle')"
+            @modal-close="onCancelChange"
+        >
+            <div>{{ confirmMessage }}</div>
+            <template #modal-footer>
+                <mt-button
+                    size="small"
+                    @click="onCancelChange"
+                >
+                    {{ $tc('sas-esd.esdChange.closeButton') }}
+                </mt-button>
+                <mt-button
+                    size="small"
+                    variant="primary"
+                    @click="onChange"
+                >
+                    {{ $tc('sas-esd.esdChange.changeButton') }}
+                </mt-button>
+            </template>
+        </sw-modal>
         {% endblock %}
     </div>
 {% endblock %}

@@ -38,7 +38,7 @@ function iterateFromDirectories(directories) {
         const fullToPath = path.join(__dirname, toDirectory, folderName);
         return fs.copy(fullFromPath, fullToPath)
             .then(() => {
-                console.log(`- copied "${fullFromPath}" to "${fullToPath}"`);
+                console.warn(`- copied "${fullFromPath}" to "${fullToPath}"`);
             });
     });
 }
@@ -47,18 +47,18 @@ function onCopyProcess(results) {
     // React to the result of the copy process
     Promise.all(results)
         .then(() => {
-            console.log('');
-            console.log('✓ Done, all directories / files copied successfully.');
+            console.warn('');
+            console.warn('✓ Done, all directories / files copied successfully.');
 
             const endTime = process.hrtime(startTime);
-            console.log(`Execution time: ${endTime[1] / 1000000}ms`);
+            console.warn(`Execution time: ${endTime[1] / 1000000}ms`);
         })
         .catch((err) => {
-            console.log('');
+            console.warn('');
             console.error('✖ An error occurred while copying files');
 
             const endTime = process.hrtime(startTime);
-            console.log(`Execution time: ${endTime[1] / 1000000}ms`);
+            console.warn(`Execution time: ${endTime[1] / 1000000}ms`);
 
             throw err;
         })

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -11,6 +12,18 @@ class EsdDownloadHistoryEntity extends Entity
     use EntityIdTrait;
 
     protected ?string $esdOrderId = null;
+
+    protected ?EsdOrderEntity $esdOrder = null;
+
+    public function getEsdOrder(): ?EsdOrderEntity
+    {
+        return $this->esdOrder;
+    }
+
+    public function setEsdOrder(?EsdOrderEntity $esdOrder): void
+    {
+        $this->esdOrder = $esdOrder;
+    }
 
     public function getId(): string
     {

@@ -1,18 +1,17 @@
 {% block sas_product_detail_esd %}
-<div class="sas-product-detail-esd__generated-esd">
-    <template v-if="isLoadedEsd || isLoadedEsdMedia">
-        <sw-card
-:hero="false"
-position-identifier="sas-product-detail-esd__upload"
->
-            <sas-upload-listener
-                :upload-tag="product.id"
-                auto-upload
-                @media-upload-finish="onSetMediaItem"
-                @media-upload-process="onShowProcess"
-/>
-
-            <sw-media-upload-v2
+    <div class="sas-product-detail-esd__generated-esd">
+        <template v-if="isLoadedEsd || isLoadedEsdMedia">
+            <mt-card
+                :hero="false"
+                position-identifier="sas-product-detail-esd__upload"
+            >
+                <sas-upload-listener
+                    :upload-tag="product.id"
+                    auto-upload
+                    @media-upload-finish="onSetMediaItem"
+                    @media-upload-process="onShowProcess"
+                />
+                <sw-media-upload-v2
                     variant="regular"
                     default-folder="sas_product_esd"
                     :label="$tc('sas-esd.media.label')"
@@ -20,148 +19,147 @@ position-identifier="sas-product-detail-esd__upload"
                     :file-accept="fileAccept"
                     @media-drop="onMediaDropped"
                     @media-upload-sidebar-open="onMediaUploadButtonOpenSidebar"
-/>
+                />
+                <sw-data-grid
+                    v-if="esdMedia && esdMedia.length > 0"
+                    class="sas-product-detail-esd__esd-list"
+                    :data-source="esdMedia"
+                    :columns="mediaColumns"
+                    :full-page="false"
+                    :show-settings="false"
+                    :allow-column-edit="true"
+                    :allow-inline-edit="true"
+                    :compact-mode="false"
+                    :is-loading="isStoreLoading || isLoading"
+                    @selection-change="(esdMedia) => onSelectionChanged(esdMedia)"
+                    @inline-edit-save="onInlineEditSave"
+                >
+                    <template #preview-fileName="{ item }">
+                        <sw-media-preview-v2
+                            :source="item.media.id"
+                            :media-is-private="item.media.private"
+                        />
+                    </template>
 
-            <sw-data-grid
-v-if="esdMedia && esdMedia.length > 0"
-                          class="sas-product-detail-esd__esd-list"
-                          :data-source="esdMedia"
-                          :columns="mediaColumns"
-                          :full-page="false"
-                          :show-settings="false"
-                          :allow-column-edit="true"
-                          :allow-inline-edit="true"
-                          :compact-mode="false"
-                          :is-loading="isStoreLoading || isLoading"
-                          @selection-change="(esdMedia) => onSelectionChanged(esdMedia)"
-                          @inline-edit-save="onInlineEditSave"
->
-                <template #preview-fileName="{ item }">
-                    <sw-media-preview-v2
-:source="item.media.id"
-:media-is-private="item.media.private"
-/>
-                </template>
-
-                <template #column-fileType="{ item }">
+                    <template #column-fileType="{ item }">
                     {{ item.media.fileExtension }}
                 </template>
 
-                <template
-v-if="isDisableZipFile"
-#column-downloadLimit="{ item, isInlineEdit }"
->
-                    <template v-if="isInlineEdit">
-                        <sw-number-field
-v-model:value="item.downloadLimitNumber"
-                                  type="number"
-                                  size="small"
-/>
-                    </template>
-                    <template v-else>
-                        <template v-if="item.downloadLimitNumber">
+                    <template
+                        v-if="isDisableZipFile"
+                        #column-downloadLimit="{ item, isInlineEdit }"
+                    >
+                        <template v-if="isInlineEdit">
+                            <mt-number-field
+                                v-model="item.downloadLimitNumber"
+                                type="number"
+                                size="small"
+                            />
+                        </template>
+
+                        <template v-else>
+                            <template v-if="item.downloadLimitNumber">
                             {{ item.downloadLimitNumber }}
                         </template>
-                        <template v-else>
-                            {{ $tc('sas-esd.downloadLimit.unlimitedToggle') }}
+
+                            <template v-else>
+                                {{ $tc('sas-esd.downloadLimit.unlimitedToggle') }}
+                            </template>
                         </template>
                     </template>
-                </template>
 
-                <template #actions="{ item }">
-                    <sw-context-menu-item
-variant="danger"
-@click="onDeleteMediaItem(item.media.id)"
->
-                        {{ $tc('global.default.delete') }}
-                    </sw-context-menu-item>
-                </template>
+                    <template #actions="{ item }">
+                        <sw-context-menu-item
+                            variant="danger"
+                            @click="onDeleteMediaItem(item.media.id)"
+                        >
+                            {{ $tc('global.default.delete') }}
+                        </sw-context-menu-item>
+                    </template>
 
-                <template #bulk>
-                    <a
-class="link link-danger"
-@click="onDeleteSelectedMedia"
->
-                        {{ $tc('global.default.delete') }}
-                    </a>
-                </template>
-            </sw-data-grid>
-        </sw-card>
-
-        <sw-card
-v-if="isEsdVideo && esdMedia"
-                 position-identifier="sas-product-detail-esd__switch-esd-btn"
-                 :hero="true"
->
-            <sas-switch-esd-button
-                class="sas-product-detail-esd__change-esd"
-                :label="$tc('sas-esd.esdChange.changeEsdVideoLabel')"
-                :confirm-message="$tc('sas-esd.esdChange.confirmChangeToVideoMessage')"
-                esd-type="video"
-/>
-        </sw-card>
-
-        <sw-card
-v-if="esdMedia"
-                 :title="$tc('sas-esd.serialModal.title')"
-                 position-identifier="sas-product-detail-esd__switch-serial"
->
-            <sw-switch-field
-                v-model:value="product.extensions.esd.hasSerial"
-                :label="$tc('sas-esd.serialModal.serialSwitch')"
-            />
-
-            <div
-v-if="product.extensions.esd.hasSerial"
-                 class="sas-esd-serial-overview"
->
-                <sas-esd-serial-overview
-                    @load-product="loadProduct"
-                    @serial-open="openModal('serialModal')"
+                    <template #bulk>
+                        <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
+                        <a
+                            class="link link-danger"
+                            @click="onDeleteSelectedMedia"
+                            @keydown.enter="onDeleteSelectedMedia"
+                        >
+                            {{ $tc('global.default.delete') }}
+                        </a>
+                    </template>
+                </sw-data-grid>
+            </mt-card>
+            <mt-card
+                v-if="isEsdVideo && esdMedia"
+                position-identifier="sas-product-detail-esd__switch-esd-btn"
+                :hero="true"
+            >
+                <sas-switch-esd-button
+                    class="sas-product-detail-esd__change-esd"
+                    :label="$tc('sas-esd.esdChange.changeEsdVideoLabel')"
+                    :confirm-message="$tc('sas-esd.esdChange.confirmChangeToVideoMessage')"
+                    esd-type="video"
                 />
-            </div>
-        </sw-card>
-
-        <sw-card
-v-if="esdMedia"
-:title="$tc('sas-esd.downloadLimit.title')"
-                 position-identifier="sas-product-detail-esd__switch-custom-limit"
->
-            <sw-switch-field
-v-model:value="product.extensions.esd.hasCustomDownloadLimit"
-                             :disabled="esdMedia.length === 0"
-                             :label="$tc('sas-esd.downloadLimit.customLimitToggle')"
-/>
-
-            <template v-if="product.extensions.esd.hasCustomDownloadLimit">
-                <sw-switch-field
-v-model:value="product.extensions.esd.hasUnlimitedDownload"
-                                 :disabled="!product.extensions.esd.hasCustomDownloadLimit"
-                                 :label="$tc('sas-esd.downloadLimit.unlimitedToggle')"
-/>
-
-                <sw-number-field
-v-if="!product.extensions.esd.hasUnlimitedDownload"
-                          v-model:value="product.extensions.esd.downloadLimitNumber"
-                          class="sas-product-detail-esd__download-limit-number"
-                          type="number"
-                          :placeholder="$tc('sas-esd.downloadLimit.downloadLimitPlaceholder')"
-                          :label="$tc('sas-esd.downloadLimit.downloadLimitLabel')"
-/>
-            </template>
-        </sw-card>
-
-        <sw-modal
-v-if="isShowUploadProcessModal"
-                  :title="$tc('sas-esd.uploadingMediaModalTitle')"
-                  :closable="false"
-                  variant="small"
->
-            <div class="sas-product-detail-esd__file-name-uploading">
-                <strong>{{ $tc('sas-esd.fileNameUploadingLabel') }}</strong> {{ fileNameUploading }}
-            </div>
-            <sas-process-bar :process="uploadProcess" />
-        </sw-modal>
-    </template>
-</div>
+            </mt-card>
+            <mt-card
+                v-if="esdMedia"
+                :title="$tc('sas-esd.serialModal.title')"
+                position-identifier="sas-product-detail-esd__switch-serial"
+            >
+                <mt-switch
+                    v-model="product.extensions.esd.hasSerial"
+                    :label="$tc('sas-esd.serialModal.serialSwitch')"
+                />
+                <div
+                    v-if="product.extensions.esd.hasSerial"
+                    class="sas-esd-serial-overview"
+                >
+                    <sas-esd-serial-overview
+                        @load-product="loadProduct"
+                        @serial-open="openModal('serialModal')"
+                    />
+                </div>
+            </mt-card>
+            <mt-card
+                v-if="esdMedia"
+                :title="$tc('sas-esd.downloadLimit.title')"
+                position-identifier="sas-product-detail-esd__switch-custom-limit"
+            >
+                <mt-switch
+                    v-model="product.extensions.esd.hasCustomDownloadLimit"
+                    :disabled="esdMedia.length === 0"
+                    :label="$tc('sas-esd.downloadLimit.customLimitToggle')"
+                />
+                <template v-if="product.extensions.esd.hasCustomDownloadLimit">
+                    <mt-switch
+                        v-model="product.extensions.esd.hasUnlimitedDownload"
+                        :disabled="!product.extensions.esd.hasCustomDownloadLimit"
+                        :label="$tc('sas-esd.downloadLimit.unlimitedToggle')"
+                    />
+                    <mt-number-field
+                        v-if="!product.extensions.esd.hasUnlimitedDownload"
+                        v-model="product.extensions.esd.downloadLimitNumber"
+                        class="sas-product-detail-esd__download-limit-number"
+                        type="number"
+                        :placeholder="$tc('sas-esd.downloadLimit.downloadLimitPlaceholder')"
+                        :label="$tc('sas-esd.downloadLimit.downloadLimitLabel')"
+                    />
+                </template>
+            </mt-card>
+            <sw-modal
+                v-if="isShowUploadProcessModal"
+                :title="$tc('sas-esd.uploadingMediaModalTitle')"
+                :closable="false"
+                variant="small"
+            >
+                <div class="sas-product-detail-esd__file-name-uploading">
+                    <strong>
+                        {{ $tc('sas-esd.fileNameUploadingLabel') }}
+                    </strong>
+                    {{ fileNameUploading }}
+                </div>
+                <sas-process-bar :process="uploadProcess" />
+            </sw-modal>
+        </template>
+    </div>
 {% endblock %}

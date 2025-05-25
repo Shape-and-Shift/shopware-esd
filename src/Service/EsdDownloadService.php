@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Sas\Esd\Service;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdDownloadHistory\EsdDownloadHistoryCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaEntity;
-use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryEntity;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMediaDownloadHistory\EsdMediaDownloadHistoryCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderEntity;
 use Shopware\Core\Framework\Context;
@@ -18,6 +19,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EsdDownloadService
 {
+    /**
+     * @param EntityRepository<EsdOrderCollection>                $esdOrderRepository
+     * @param EntityRepository<EsdDownloadHistoryCollection>      $esdDownloadHistoryRepository
+     * @param EntityRepository<EsdMediaDownloadHistoryCollection> $esdMediaDownloadHistoryRepository
+     */
     public function __construct(
         private readonly EntityRepository $esdOrderRepository,
         private readonly EntityRepository $esdDownloadHistoryRepository,
@@ -43,7 +49,7 @@ class EsdDownloadService
         $isUnlimited = false;
         $esd = $esdOrder->getEsd();
         if (!$esd) {
-            return $limitNumber;
+            return null;
         }
 
         if ($esd->getHasCustomDownloadLimit()) {
@@ -66,10 +72,12 @@ class EsdDownloadService
         return $limitNumber;
     }
 
+    /**
+     * @return array<string, ?int>
+     */
     public function getLimitDownloadNumberList(EsdOrderCollection $esdOrders): array
     {
         $limitDownloadNumberList = [];
-        /** @var EsdOrderEntity $esdOrder */
         foreach ($esdOrders as $esdOrder) {
             $limitDownloadNumberList[$esdOrder->getId()] = $this->getLimitDownloadNumber($esdOrder);
         }
@@ -123,6 +131,11 @@ class EsdDownloadService
         }
     }
 
+    /**
+     * @param array<string> $esdOrderIds
+     *
+     * @return array<string, array<string, int>>
+     */
     public function getDownloadRemainingItems(array $esdOrderIds, Context $context): array
     {
         $criteria = new Criteria();
@@ -130,7 +143,6 @@ class EsdDownloadService
         $downloadHistories = $this->esdMediaDownloadHistoryRepository->search($criteria, $context);
 
         $mediaDownloadTotals = [];
-        /** @var EsdMediaDownloadHistoryEntity $downloadHistory */
         foreach ($downloadHistories as $downloadHistory) {
             if (empty($mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()])) {
                 $mediaDownloadTotals[$downloadHistory->getEsdOrderId()][$downloadHistory->getEsdMediaId()] = 1;

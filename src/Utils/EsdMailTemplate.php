@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Sas\Esd\Utils;
 
 use Shopware\Core\Content\MailTemplate\Aggregate\MailTemplateType\MailTemplateTypeCollection;
+use Shopware\Core\Content\MailTemplate\MailTemplateCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,6 +25,10 @@ class EsdMailTemplate
     public const TEMPLATE_TYPE_DOWNLOAD_DISABLED_ZIP_TECHNICAL_NAME = 'sas_esd.download.disabled.zip';
     public const TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME = 'isDisableZipFile';
 
+    /**
+     * @param EntityRepository<MailTemplateCollection>     $mailTemplateRepository
+     * @param EntityRepository<MailTemplateTypeCollection> $mailTemplateTypeRepository
+     */
     public static function removeMailTemplate(
         EntityRepository $mailTemplateTypeRepository,
         EntityRepository $mailTemplateRepository,

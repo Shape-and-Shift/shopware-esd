@@ -11,15 +11,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class OrderLineItemExtension extends EntityExtension
 {
-    public function getDefinitionClass(): string
-    {
-        return OrderLineItemDefinition::class;
-    }
-
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
             new OneToOneAssociationField('esdOrder', 'id', 'order_line_item_id', EsdOrderDefinition::class, false)
         );
+    }
+
+    public function getEntityName(): string
+    {
+        return OrderLineItemDefinition::ENTITY_NAME;
     }
 }

@@ -1,4 +1,4 @@
-import Plugin from 'src/plugin-system/plugin.class';
+const Plugin = window.PluginBaseClass;
 import Plyr from '@plyr';
 
 export default class EsdVideoPlayer extends Plugin {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Sas\Esd\Content\Product\Extension\Esd;
 
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia\EsdMediaCollection;
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdOrder\EsdOrderCollection;
 use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -14,10 +15,7 @@ class EsdEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
     protected string $productId;
 
@@ -30,6 +28,30 @@ class EsdEntity extends Entity
     protected ?MediaEntity $media = null;
 
     protected ?EsdMediaCollection $esdMedia = null;
+
+    protected ?EsdOrderCollection $orders = null;
+
+    protected string $productVersionId;
+
+    public function getOrders(): ?EsdOrderCollection
+    {
+        return $this->orders;
+    }
+
+    public function setOrders(?EsdOrderCollection $orders): void
+    {
+        $this->orders = $orders;
+    }
+
+    public function getProductVersionId(): string
+    {
+        return $this->productVersionId;
+    }
+
+    public function setProductVersionId(string $productVersionId): void
+    {
+        $this->productVersionId = $productVersionId;
+    }
 
     protected ?bool $hasCustomDownloadLimit = null;
 
@@ -69,7 +91,7 @@ class EsdEntity extends Entity
         $this->product = $product;
     }
 
-    public function hasSerial(): bool
+    public function isHasSerial(): bool
     {
         return $this->hasSerial;
     }

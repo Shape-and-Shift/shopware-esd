@@ -1,32 +1,32 @@
 {% block sw_order_detail_details_custom_fields %}
-    <sw-card
-v-if="transaction.stateMachineState.technicalName === 'paid' && (isEnableDownloadButton || isEnableSerialButton)"
-             :title="$tc('sas-esd.esdMail.cardTitle')"
-             position-identifier="sas-sw-order-detail-base__document"
-             :is-loading="isLoading"
->
+    <mt-card
+        v-if="transaction.stateMachineState.technicalName === 'paid' && (isEnableDownloadButton || isEnableSerialButton)"
+        :title="$tc('sas-esd.esdMail.cardTitle')"
+        position-identifier="sas-sw-order-detail-base__document"
+        :is-loading="isLoading"
+    >
         <sw-container
-columns="1fr 1fr"
-gap="10px"
->
-            <sw-button
-size="small"
-                       variant="primary"
-                       :disabled="!isEnableDownloadButton || isSendMailLoading"
-                       @click="onSendDownloadMail"
->
+            columns="1fr 1fr"
+            gap="10px"
+        >
+            <mt-button
+                size="small"
+                variant="primary"
+                :disabled="!isEnableDownloadButton || isSendMailLoading"
+                @click="onSendDownloadMail"
+            >
                 {{ $tc('sas-esd.esdMail.sendMailDownload') }}
-            </sw-button>
-            <sw-button
-size="small"
-                       variant="primary"
-                       :disabled="!isEnableSerialButton || isSendMailLoading"
-                       @click="onSendSerialMail"
->
+            </mt-button>
+            <mt-button
+                size="small"
+                variant="primary"
+                :disabled="!isEnableSerialButton || isSendMailLoading"
+                @click="onSendSerialMail"
+            >
                 {{ $tc('sas-esd.esdMail.sendMailSerial') }}
-            </sw-button>
+            </mt-button>
         </sw-container>
-    </sw-card>
+    </mt-card>
 
-    {% parent %}
+    {% parent() %}
 {% endblock %}

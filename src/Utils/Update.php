@@ -32,10 +32,10 @@ class Update
         }
 
         $query = $connection->createQueryBuilder();
-        $query->select([
+        $query->select(
             'LOWER(HEX(id)) as id',
-            'LOWER(HEX(media_id)) as media_id',
-        ]);
+            'LOWER(HEX(media_id)) as media_id'
+        );
         $query->where($query->expr()->isNotNull('media_id'));
         $query->from(EsdDefinition::ENTITY_NAME);
 

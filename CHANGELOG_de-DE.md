@@ -1,3 +1,6 @@
+# 4.0.0
+- Shopware 6.7 Kompatibilität
+
 # 3.0.2
 * Problem mit dem freien ESD-Element behoben.
 
