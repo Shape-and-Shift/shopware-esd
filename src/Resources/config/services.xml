@@ -48,13 +48,13 @@
         </service>
 
         <!-- Subscribers -->
-<!--        <service id="Sas\Esd\Checkout\Cart\Subscriber\OrderPlacedSubscriber">-->
-<!--            <argument type="service" id="product.repository"/>-->
-<!--            <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>-->
-<!--            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>-->
-<!--            <argument type="service" id="event_dispatcher"/>-->
-<!--            <tag name="kernel.event_listener"/>-->
-<!--        </service>-->
+         <service id="Sas\Esd\Checkout\Cart\Subscriber\OrderPlacedSubscriber">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Sas\Esd\Service\EsdOrderService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="event_dispatcher"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
 
         <service id="Sas\Esd\Subscriber\MediaPermissionSubscriber">
             <tag name="kernel.event_listener" priority="-10000"/>

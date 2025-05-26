@@ -1,3 +1,6 @@
+# 3.0.2
+* Fixed issue that regarding the free ESD item
+
 # 3.0.1
 - Improved the upload serial number by csv file
  
