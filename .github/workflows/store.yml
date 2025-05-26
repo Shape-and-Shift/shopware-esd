@@ -2,7 +2,7 @@ name: PackPlugin
 on:
     push:
         branches:
-            - master
+            - 3.x
 
 jobs:
     build:
