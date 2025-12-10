@@ -8,11 +8,8 @@ use Shopware\Core\Framework\Event\NestedEvent;
 
 class ReadEsdFileEvent extends NestedEvent
 {
-    protected Context $context;
-
-    public function __construct(protected readonly string $productId)
+    public function __construct(protected readonly string $productId, protected readonly Context $context)
     {
-        $this->context = Context::createDefaultContext();
     }
 
     public function getContext(): Context

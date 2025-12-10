@@ -1,8 +1,6 @@
 import template from './sas-product-esd-form.html.twig';
 import './sas-product-esd-form.scss';
 
-const { Component } = Shopware;
-const { mapGetters, mapState } = Component.getComponentHelper();
 
 export default {
     template,
@@ -17,12 +15,12 @@ export default {
     },
 
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-        ]),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
 
-        ...mapGetters('swProductDetail', [
-            'isLoading',
-        ]),
+        isLoading() {
+            return Shopware.Store.get('swProductDetail').isLoading;
+        },
     },
 };

@@ -1,171 +1,166 @@
 {% block sas_esd_modal_csv %}
-<sw-modal
-:title="$tc('sas-esd.sas-esd-modal-csv.modalHeadline')"
-          class="sas-esl-modal-csv"
-          :is-loading="isLoading"
-          @modal-close="$emit('modal-close')"
->
-
-    {% block sas_esd_modal_csv_import %}
+    <sw-modal
+        :title="$tc('sas-esd.sas-esd-modal-csv.modalHeadline')"
+        class="sas-esl-modal-csv"
+        :is-loading="isLoading"
+        @modal-close="$emit('modal-close')"
+    >
+        {% block sas_esd_modal_csv_import %}
         <div class="sas-esd-csv-import">
-        <div class="form">
-            <div class="vue-csv-uploader-part-one">
-                <div
-v-if="headers === null"
-class="form-check form-group csv-import-checkbox"
->
-                    <slot
-name="hasHeaders"
-:headers="hasHeaders"
-:toggle="toggleHasHeaders"
->
-                        <sw-checkbox-field
-:id="makeId('hasHeaders')"
-:value="hasHeaders"
-:class="checkboxClass"
-:label="$tc('sas-esd.sas-esd-modal-csv.checkboxLabel')"
-@update:value="toggleHasHeaders"
-/>
-                    </slot>
-                </div>
-                <div
-class="csv-import-file"
-aria-label="csv-import-file"
->
-                    <input
-ref="csv"
-type="file"
-:class="inputClass"
-name="csv"
-@change.prevent="validFileMimeType"
->
-
-                    <slot
-v-if="showErrorMessage"
-name="error"
->
-                        <sw-alert
-variant="error"
-appearance="default"
-:show-icon="false"
-:closable="false"
->
-                            {{ $tc('sas-esd.sas-esd-modal-csv.notification.error.invalid') }}
-                        </sw-alert>
-                    </slot>
-                </div>
-                <div class="is-increase-stock">
-                    <sw-switch-field
-                        v-model:value="isIncreaseStock"
-                        :label="$tc('sas-esd.serialModal.increaseStockLabel')"
-                    />
-                </div>
-                <div class="form-group">
-                    <slot
-name="next"
-:load="load"
->
-                        <sw-button
-:disabled="disabledNextButton"
-variant="ghost"
-size="small"
-:square="false"
-:block="false"
-:is-loading="false"
-@click.prevent="load"
->
-                            {{ loadBtnText }}
-                        </sw-button>
-                    </slot>
-                </div>
-            </div>
-            <div class="vue-csv-uploader-part-two">
-                <div
-v-if="sample"
-class="vue-csv-mapping"
->
-                    <table
-v-if="hasHeaders"
-:class="tableClass"
->
-                        <slot name="thead">
-                            <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>CSV Column</th>
-                            </tr>
-                            </thead>
+            <div class="form">
+                <div class="vue-csv-uploader-part-one">
+                    <div
+                        v-if="headers === null"
+                        class="form-check form-group csv-import-checkbox"
+                    >
+                        <slot
+                            name="hasHeaders"
+                            :headers="hasHeaders"
+                            :toggle="toggleHasHeaders"
+                        >
+                            <mt-checkbox
+                                :id="makeId('hasHeaders')"
+                                :checked="hasHeaders"
+                                :class="checkboxClass"
+                                :label="$tc('sas-esd.sas-esd-modal-csv.checkboxLabel')"
+                                @update:checked="toggleHasHeaders"
+                            />
                         </slot>
-                        <tbody>
-                        <tr
-v-for="(field, key) in fieldsToMap"
-:key="key"
->
-                            <td>{{ field.label }}</td>
-                            <td>
-                                <sw-select-field
-                                    v-model:value="map[field.key]"
-                                    :class="tableSelectClass"
-                                    :name="`csv_uploader_map_${key}`"
-                                    :placeholder="$tc('sas-esd.sas-esd-modal-csv.selectPlaceholder')"
->
-                                    <option
-v-if="canIgnore"
-:value="null"
->
-Ignore
-</option>
-                                    <option
-v-for="(column, key) in firstRow"
-:key="key"
-:value="key"
->
-{{ column }}
-</option>
-                                </sw-select-field>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    </div>
+                    <div
+                        class="csv-import-file"
+                        aria-label="csv-import-file"
+                    >
+                        <input
+                            ref="csv"
+                            type="file"
+                            :class="inputClass"
+                            name="csv"
+                            aria-label="csv-import-file-input"
+                            @change.prevent="validFileMimeType"
+                        >
+                        <slot
+                            v-if="showErrorMessage"
+                            name="error"
+                        >
+                            <mt-banner
+                                variant="critical"
+                                appearance="default"
+                                :show-icon="false"
+                                :closable="false"
+                            >
+                                {{ $tc('sas-esd.sas-esd-modal-csv.notification.error.invalid') }}
+                            </mt-banner>
+                        </slot>
+                    </div>
+                    <div class="is-increase-stock">
+                        <mt-switch
+                            v-model="isIncreaseStock"
+                            :label="$tc('sas-esd.serialModal.increaseStockLabel')"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <slot
+                            name="next"
+                            :load="load"
+                        >
+                            <mt-button
+                                :disabled="disabledNextButton"
+                                size="small"
+                                :square="false"
+                                :block="false"
+                                :is-loading="false"
+                                ghost
+                                variant="primary"
+                                @click.prevent="load"
+                            >
+                            {{ loadBtnText }}
+                        </mt-button>
+                        </slot>
+                    </div>
+                </div>
+                <div class="vue-csv-uploader-part-two">
+                    <div
+                        v-if="sample"
+                        class="vue-csv-mapping"
+                    >
+                        <table
+                            v-if="hasHeaders"
+                            :class="tableClass"
+                        >
+                            <slot name="thead">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>CSV Column</th>
+                                    </tr>
+                                </thead>
+                            </slot>
+                            <tbody>
+                                <tr
+                                    v-for="(field, key) in fieldsToMap"
+                                    :key="key"
+                                >
+                                    <td>{{ field.label }}</td>
+                                    <td>
+                                        <mt-select
+                                            v-model="map[field.key]"
+                                            :class="tableSelectClass"
+                                            :name="`csv_uploader_map_${key}`"
+                                            :placeholder="$tc('sas-esd.sas-esd-modal-csv.selectPlaceholder')"
+                                            :options="[
+                                                {
+                                                    label: 'Ignore'
+                                                },
+                                                {
+                                                    label: column
+                                                }
+                                            ]"
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% endblock %}
+        {% endblock %}
 
     {% block sas_esd_modal_csv_footer %}
         <template #modal-footer>
-        {% block ssas_esd_modal_csv_footer_button_cancel %}
-            <sw-button
-size="small"
-variant="danger"
-@click="$emit('modal-close')"
->
+            {% block ssas_esd_modal_csv_footer_button_cancel %}
+            <mt-button
+                size="small"
+                variant="critical"
+                @click="$emit('modal-close')"
+            >
                 {{ $tc('sas-esd.serialModal.cancel') }}
-            </sw-button>
-        {% endblock %}
+            </mt-button>
+            {% endblock %}
 
         {% block ssas_esd_modal_csv_footer_button_save %}
             <slot
-name="submit"
-:submit="submit"
->
-                <sw-button
-:class="buttonClass"
-:value="submitBtnText"
-:disabled="isDisabled"
-variant="ghost"
-size="small"
-:square="false"
-:block="false"
-:is-loading="false"
-@click.prevent="submit"
->
+                name="submit"
+                :submit="submit"
+            >
+                <mt-button
+                    :class="buttonClass"
+                    :value="submitBtnText"
+                    :disabled="isDisabled"
+                    size="small"
+                    :square="false"
+                    :block="false"
+                    :is-loading="false"
+                    ghost
+                    variant="primary"
+                    @click.prevent="submit"
+                >
                     Import csv
-                </sw-button>
+                </mt-button>
             </slot>
+            {% endblock %}
+        </template>
         {% endblock %}
-    </template>
-    {% endblock %}
-</sw-modal>
+    </sw-modal>
 {% endblock %}

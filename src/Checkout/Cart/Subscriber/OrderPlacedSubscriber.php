@@ -14,7 +14,6 @@ use Sas\Esd\Utils\EsdMailTemplate;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -23,6 +22,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderPlacedSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @param EntityRepository<ProductCollection> $productRepository
+     */
     public function __construct(
         private readonly EntityRepository $productRepository,
         private readonly EsdOrderService $esdOrderService,
@@ -31,6 +33,9 @@ class OrderPlacedSubscriber implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * @return array<string, string>
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -57,11 +62,9 @@ class OrderPlacedSubscriber implements EventSubscriberInterface
         $criteria = new Criteria($productIds);
         $criteria->addAssociation('esd.esdMedia');
 
-        /** @var ProductCollection $products */
         $products = $this->productRepository->search($criteria, $event->getContext())->getEntities();
 
         $esdProducts = new ProductCollection();
-        /** @var ProductEntity $product */
         foreach ($products as $product) {
             $esd = $product->getExtension('esd');
             if (!$esd instanceof EsdEntity) {
@@ -89,7 +92,7 @@ class OrderPlacedSubscriber implements EventSubscriberInterface
             $templateData = $this->esdOrderService->mailTemplateData($event->getOrder(), $event->getContext());
 
             if (!empty($templateData['esdOrderLineItems'])) {
-                if ($this->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)) {
+                if ($this->getSystemConfig()) {
                     $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent(
                         $event->getContext(),
                         $event->getOrder(),
@@ -109,9 +112,9 @@ class OrderPlacedSubscriber implements EventSubscriberInterface
         }
     }
 
-    private function getSystemConfig(string $name): bool
+    private function getSystemConfig(): bool
     {
-        $config = $this->systemConfigService->get('SasEsd.config.' . $name);
+        $config = $this->systemConfigService->get('SasEsd.config.' . EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME);
         if (empty($config)) {
             return false;
         }

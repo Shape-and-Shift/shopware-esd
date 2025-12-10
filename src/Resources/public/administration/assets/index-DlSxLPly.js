@@ -1,0 +1,2 @@
+const t=`<div> <mt-card :title="$tc('sas-esd.tab.esdCard.title')" position-identifier="sas-product-detail-esd" > <sw-media-upload-v2 upload-tag="my-upload-tag" variant="regular" allow-multi-select="true" auto-upload="true" :label="$tc('sas-esd.tab.esdCard.mediaUpload.label')" /> </mt-card> </div>`,a={template:t,metaInfo(){return{title:"Custom"}}};export{a as default};
+//# sourceMappingURL=index-DlSxLPly.js.map

@@ -8,7 +8,6 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Flow\Dispatching\Aware\ScalarValuesAware;
 use Shopware\Core\Content\Flow\Exception\CustomerDeletedException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\AssociationNotFoundException;
 use Shopware\Core\Framework\Event\CustomerAware;
 use Shopware\Core\Framework\Event\EventData\ArrayType;
 use Shopware\Core\Framework\Event\EventData\EntityType;
@@ -19,16 +18,18 @@ use Shopware\Core\Framework\Event\FlowEventAware;
 use Shopware\Core\Framework\Event\MailAware;
 use Shopware\Core\Framework\Event\OrderAware;
 use Shopware\Core\Framework\Event\SalesChannelAware;
+use Shopware\Core\Framework\FrameworkException;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAware, SalesChannelAware, OrderAware, MailAware, CustomerAware, FlowEventAware
 {
     public const EVENT_NAME = 'esd.download.payment.status.paid';
 
-    private ?MailRecipientStruct $mailRecipientStruct;
-
     private string $salesChannelId;
 
+    /**
+     * @param array<string, mixed> $templateData
+     */
     public function __construct(
         private readonly Context $context,
         private readonly OrderEntity $order,
@@ -42,6 +43,9 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAwa
         return $this->order;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getEsdFiles(): array
     {
         if (empty($this->templateData['esdFiles'])) {
@@ -51,6 +55,9 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAwa
         return $this->templateData['esdFiles'];
     }
 
+    /**
+     * @return array<string>
+     */
     public function getEsdOrderListIds(): array
     {
         if (empty($this->templateData['esdOrderListIds'])) {
@@ -60,6 +67,9 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAwa
         return $this->templateData['esdOrderListIds'];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getEsdMediaFiles(): array
     {
         if (empty($this->templateData['esdMediaFiles'])) {
@@ -87,14 +97,13 @@ class EsdDownloadPaymentStatusPaidEvent extends Event implements ScalarValuesAwa
     {
         $orderCustomer = $this->order->getOrderCustomer();
         if ($orderCustomer === null) {
-            throw new AssociationNotFoundException('orderCustomer');
+            // @phpstan-ignore-next-line
+            throw FrameworkException::associationNotFound('orderCustomer');
         }
 
-        $this->mailRecipientStruct = new MailRecipientStruct([
+        return new MailRecipientStruct([
             $orderCustomer->getEmail() => $orderCustomer->getFirstName() . ' ' . $orderCustomer->getLastName(),
         ]);
-
-        return $this->mailRecipientStruct;
     }
 
     public function getSalesChannelId(): string

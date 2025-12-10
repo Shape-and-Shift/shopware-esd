@@ -2,7 +2,6 @@ import template from './sas-esd-modal-serial.html.twig';
 import './sas-esd-modal-serial.scss';
 
 const { Mixin } = Shopware;
-const { mapState } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -22,9 +21,9 @@ export default {
     },
 
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-        ]),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
 
         serialRepository() {
             return this.repositoryFactory.create('sas_product_esd_serial');

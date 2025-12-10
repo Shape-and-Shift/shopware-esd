@@ -13,6 +13,9 @@ use Twig\TwigFunction;
 
 class EsdExtension extends AbstractExtension
 {
+    /**
+     * @param EntityRepository<EsdCollection> $esdRepository
+     */
     public function __construct(private readonly EntityRepository $esdRepository)
     {
     }
@@ -20,10 +23,13 @@ class EsdExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('searchEsdByProductIds', [$this, 'searchEsdByProductIds']),
+            new TwigFunction('searchEsdByProductIds', $this->searchEsdByProductIds(...)),
         ];
     }
 
+    /**
+     * @param array<string> $productIds
+     */
     public function searchEsdByProductIds(array $productIds, Context $context): EsdCollection
     {
         if (empty($productIds)) {
@@ -33,10 +39,7 @@ class EsdExtension extends AbstractExtension
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productId', $productIds));
 
-        /** @var EsdCollection $esd */
-        $esd = $this->esdRepository
+        return $this->esdRepository
             ->search($criteria, $context)->getEntities();
-
-        return $esd;
     }
 }

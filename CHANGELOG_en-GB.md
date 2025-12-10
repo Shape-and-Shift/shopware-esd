@@ -1,3 +1,6 @@
+# 4.0.0
+- Shopware 6.7 compatibility
+
 # 3.0.2
 * Fixed issue that regarding the free ESD item
 

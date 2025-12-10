@@ -1,9 +1,7 @@
 parameters:
     level: 8
     inferPrivatePropertyTypeFromConstructor: true
-    checkMissingIterableValueType: false
     reportUnmatchedIgnoredErrors: false
-    checkGenericClassInNonGenericObjectType: false
     paths:
         - ./src
     excludePaths:

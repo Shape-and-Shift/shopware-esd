@@ -7,7 +7,6 @@ import template from './sas-esd-modal-csv.html.twig';
 import './sas-esd-modal-csv.scss';
 
 const { Mixin } = Shopware;
-const { mapState } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -137,6 +136,7 @@ export default {
     methods: {
         submit() {
             this.isLoading = true;
+            // @ts-ignore
             const _this = this;
             this.form.csv = this.buildMappedCsv();
             this.$emit('input', this.form.csv);
@@ -180,6 +180,8 @@ export default {
         },
         buildMappedCsv() {
             const csv = this.hasHeaders ? drop(this.csv) : this.csv;
+
+            // @ts-ignore
             const _this = this;
             return map(csv, (row) => {
                 const newRow = {};
@@ -204,6 +206,7 @@ export default {
             return this.fileMimeTypes.indexOf(type) > -1;
         },
         load() {
+            // @ts-ignore
             const _this = this;
             this.readFile((output) => {
                 _this.sample = get(Papa.parse(output, { preview: 2, skipEmptyLines: true }), 'data');
@@ -247,8 +250,10 @@ export default {
             handler(newVal) {
                 if (!this.url) {
                     const hasAllKeys = Array.isArray(this.mapFields) ? every(this.mapFields, (item) => {
+                        // @ts-ignore
                         return newVal.hasOwnProperty(item) && newVal[item] !== null;
                     }) : every(this.mapFields, (item, key) => {
+                        // @ts-ignore
                         return newVal.hasOwnProperty(key) && newVal[key] !== null;
                     });
                     if (hasAllKeys) {
@@ -290,9 +295,9 @@ export default {
         },
     },
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-        ]),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
         serialRepository() {
             return this.repositoryFactory.create('sas_product_esd_serial');
         },

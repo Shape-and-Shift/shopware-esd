@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdMedia;
 
+use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdVideo\EsdVideoDefinition;
+use Sas\Esd\Content\Product\Extension\Esd\EsdDefinition;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -16,6 +18,30 @@ class EsdMediaEntity extends Entity
     protected ?string $mediaId = null;
 
     protected ?MediaEntity $media = null;
+
+    protected ?EsdDefinition $esd = null;
+
+    protected ?EsdVideoDefinition $esdVideo = null;
+
+    public function getEsd(): ?EsdDefinition
+    {
+        return $this->esd;
+    }
+
+    public function setEsd(?EsdDefinition $esd): void
+    {
+        $this->esd = $esd;
+    }
+
+    public function getEsdVideo(): ?EsdVideoDefinition
+    {
+        return $this->esdVideo;
+    }
+
+    public function setEsdVideo(?EsdVideoDefinition $esdVideo): void
+    {
+        $this->esdVideo = $esdVideo;
+    }
 
     protected ?int $downloadLimitNumber = null;
 

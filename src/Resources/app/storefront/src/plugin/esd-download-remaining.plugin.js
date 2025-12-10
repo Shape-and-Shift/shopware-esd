@@ -1,5 +1,5 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import HttpClient from 'src/service/http-client.service';
+const Plugin = window.PluginBaseClass;
+
 
 export default class EsdDownloadRemaining extends Plugin {
 
@@ -9,7 +9,7 @@ export default class EsdDownloadRemaining extends Plugin {
     };
 
     init() {
-        this.client = new HttpClient();
+        
         this._registerEvents();
     }
 
@@ -28,10 +28,14 @@ export default class EsdDownloadRemaining extends Plugin {
         this._sleep(1000).then(() => {
             const url = window.router['frontend.account.downloads.remaining'];
 
-            this.client.get(url, response => {
+            fetch(url)
+    .then(response => response.text())
+    .then((response) => {
+        {
                 this._renderEsdDownloads(response);
                 this._registerEvents();
-            }, 'text/html');
+            }
+    });
         });
     }
 

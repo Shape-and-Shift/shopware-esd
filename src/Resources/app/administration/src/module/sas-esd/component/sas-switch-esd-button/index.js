@@ -1,7 +1,6 @@
 import template from './sas-switch-esd-button.html.twig';
 
 const { Mixin } = Shopware;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -38,14 +37,17 @@ export default {
     },
 
     computed: {
-        ...mapGetters('swProductDetail', {
-            isStoreLoading: 'isLoading',
-        }),
+        isStoreLoading() {
+            return Shopware.Store.get('swProductDetail').isLoading;
+        },
 
-        ...mapState('swProductDetail', [
-            'product',
-            'parentProduct',
-        ]),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
+
+        parentProduct() {
+            return Shopware.Store.get('swProductDetail').parentProduct;
+        },
 
         productRepository() {
             return this.repositoryFactory.create('product');

@@ -39,13 +39,15 @@ class SasMediaApiService extends ApiService {
         const totalUploads = affectedUploads.length;
         let successUploads = 0;
         let failureUploads = 0;
-        return Promise.all(affectedUploads.map((task) => {
+        // eslint-disable-next-line consistent-return
+        return Promise.all(affectedUploads.map(async (task) => {
             if (task.running) {
                 return Promise.resolve();
             }
 
             task.running = true;
-            return this._startUpload(task).then(() => {
+            try {
+                await this._startUpload(task);
                 task.running = false;
                 successUploads += 1;
                 affectedListeners.forEach((listener) => {
@@ -60,7 +62,7 @@ class SasMediaApiService extends ApiService {
                         },
                     ));
                 });
-            }).catch((cause) => {
+            } catch (cause) {
                 task.plugin = 'ESD';
                 task.error = cause;
                 task.running = false;
@@ -75,7 +77,7 @@ class SasMediaApiService extends ApiService {
                         task,
                     ));
                 });
-            });
+            }
         }));
     }
 
@@ -120,9 +122,7 @@ class SasMediaApiService extends ApiService {
             apiRoute,
             data,
             config,
-        ).then((response) => {
-            return ApiService.handleResponse(response);
-        });
+        ).then((response) => ApiService.handleResponse(response));
     }
 
     uploadMediaFromUrl(id, url, extension, fileName = id) {
@@ -160,8 +160,12 @@ class SasMediaApiService extends ApiService {
     saveUploadProcess(process) {
         this.mediaService.getListenerForTag(this.tag).forEach((listener) => {
             listener(
-                // eslint-disable-next-line max-len
-                this.mediaService._createUploadEvent(UploadEventProcess, this.tag, { fileName: this.fileNameUploading, process }),
+
+                this.mediaService._createUploadEvent(
+                    UploadEventProcess,
+                    this.tag,
+                    { fileName: this.fileNameUploading, process },
+                ),
             );
         });
     }

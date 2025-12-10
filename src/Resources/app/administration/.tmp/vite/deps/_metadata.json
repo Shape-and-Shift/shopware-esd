@@ -1,0 +1,31 @@
+{
+  "hash": "9bfef630",
+  "configHash": "05ca598d",
+  "lockfileHash": "ccee8703",
+  "browserHash": "b40ced1b",
+  "optimized": {
+    "lodash": {
+      "src": "../../../node_modules/lodash/lodash.js",
+      "file": "lodash.js",
+      "fileHash": "5e8f0998",
+      "needsInterop": true
+    },
+    "mime-types": {
+      "src": "../../../node_modules/mime-types/index.js",
+      "file": "mime-types.js",
+      "fileHash": "0ab1aa6a",
+      "needsInterop": true
+    },
+    "papaparse": {
+      "src": "../../../node_modules/papaparse/papaparse.min.js",
+      "file": "papaparse.js",
+      "fileHash": "e6e15c62",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-BUSYA2B4": {
+      "file": "chunk-BUSYA2B4.js"
+    }
+  }
+}

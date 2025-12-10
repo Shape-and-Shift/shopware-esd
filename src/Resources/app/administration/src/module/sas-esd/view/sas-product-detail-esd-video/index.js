@@ -2,7 +2,7 @@ import template from './sas-product-detail-esd-video.html.twig';
 
 const { Mixin, Context } = Shopware;
 const { Criteria, EntityCollection } = Shopware.Data;
-const { mapState, mapGetters } = Shopware.Component.getComponentHelper();
+const { mapVuexState } = Shopware.Component.getComponentHelper();
 
 export default {
     template,
@@ -29,16 +29,19 @@ export default {
     },
 
     computed: {
-        ...mapState('swProductDetail', [
-            'product',
-            'parentProduct',
-        ]),
+        isStoreLoading() {
+            return Shopware.Store.get('swProductDetail').isLoading;
+        },
 
-        ...mapGetters('swProductDetail', {
-            isStoreLoading: 'isLoading',
-        }),
+        product() {
+            return Shopware.Store.get('swProductDetail').product;
+        },
 
-        ...mapState('swProductEsdMedia', [
+        parentProduct() {
+            return Shopware.Store.get('swProductDetail').parentProduct;
+        },
+
+        ...mapVuexState('swProductEsdMedia', [
             'esdMedia',
             'esdVideos',
             'isLoadedEsdMedia',
@@ -360,7 +363,7 @@ export default {
         },
 
         onMediaUploadButtonOpenSidebar() {
-            this.$root.$emit('esd-sidebar-toggle-open');
+            Shopware.Utils.EventBus.emit('esd-sidebar-toggle-open');
         },
     },
 };

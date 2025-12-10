@@ -9,13 +9,16 @@ use Sas\Esd\Content\Product\Extension\Esd\Aggregate\EsdSerial\EsdSerialEntity;
 use Sas\Esd\Content\Product\Extension\Esd\EsdEntity;
 use Sas\Esd\Exception\EsdException;
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 class EsdCartService
 {
+    /**
+     * @param EntityRepository<ProductCollection> $productRepository
+     */
     public function __construct(
         private readonly EntityRepository $productRepository
     ) {
@@ -38,6 +41,11 @@ class EsdCartService
         }
     }
 
+    /**
+     * @param array<string> $productIds
+     *
+     * @throws EsdException
+     */
     public function checkProductsWithSerialKey(array $productIds, Context $context): void
     {
         $criteria = new Criteria($productIds);
@@ -45,14 +53,13 @@ class EsdCartService
 
         $products = $this->productRepository->search($criteria, $context)->getEntities();
 
-        /** @var ProductEntity $product */
         foreach ($products as $product) {
             $productEsd = $product->getExtension('esd');
             if (!$productEsd instanceof EsdEntity) {
                 continue;
             }
 
-            if (!$productEsd->hasSerial()) {
+            if (!$productEsd->isHasSerial()) {
                 continue;
             }
 
