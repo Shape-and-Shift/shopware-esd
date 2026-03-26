@@ -1,3 +1,10 @@
+# 4.0.1
+- Absturz beim Hinzufügen eines ESD-Produkts mit unzureichenden Seriennummern zum Warenkorb behoben
+- Warenkorb-Validierung hinzugefügt, um das Hinzufügen von mehr Artikeln als verfügbare Seriennummern zu verhindern
+- Button-Text "Laden Sie alle Dateien per Zip herunter" zu "Als Zip herunterladen" aktualisiert
+- Doppelte E-Mails für ESD-Produkte mit Seriennummern und Mediendateien behoben
+- Seriennummer-E-Mail enthält jetzt Download-Links, wenn das Produkt Mediendateien hat
+
 # 4.0.0
 - Shopware 6.7 Kompatibilität
 

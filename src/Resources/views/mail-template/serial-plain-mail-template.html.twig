@@ -3,5 +3,6 @@ Thank you for your order.
 Please find the details of your download serial of order {{order.orderNumber}}.
 
 {% for esdSerial in esdData.esdSerials %}
-    Pos.: {{ loop.index }} | Name: {{ esdSerial.productName|u.wordwrap(80) }} | Serial Number: {{ esdSerial.serial }}
+    Pos.: {{ loop.index }} | Name: {{ esdSerial.productName|u.wordwrap(80) }} | Serial Number: {{ esdSerial.serial }}{% if esdSerial.esdOrderId is defined %}{% if esdData.isDisableZipFile is defined and esdData.isDisableZipFile %}{% if esdData.esdMediaFiles[esdSerial.esdOrderId] is defined %}{% for esdMedia in esdData.esdMediaFiles[esdSerial.esdOrderId] %} | Download: {% if order.orderCustomer.customer.guest %}{{ rawUrl('frontend.sas.lineItem.media.url.guest', {esdOrderId: esdSerial.esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}{% else %}{{ rawUrl('frontend.sas.lineItem.media.url', {esdOrderId: esdSerial.esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}{% endif %}{% endfor %}{% endif %}{% else %} | Download: {% if order.orderCustomer.customer.guest %}{{ rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdSerial.esdOrderId}, salesChannel.domains|first.url) }}{% else %}{{ url('frontend.sas.esd.download', {esdOrderId: esdSerial.esdOrderId}) }}{% endif %}{% endif %}{% endif %}
+
 {% endfor %}

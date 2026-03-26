@@ -67,12 +67,25 @@ class OrderStateChangedSubscriber implements EventSubscriberInterface
 
             $templateData = $this->esdOrderService->mailTemplateData($order, $event->getContext());
 
-            if (!empty($templateData['esdOrderLineItems'])) {
+            $serialLineItemIds = array_column($templateData['esdSerials'] ?? [], 'orderLineItemId');
+            $downloadOnlyLineItems = array_diff_key(
+                $templateData['esdOrderLineItems'] ?? [],
+                array_flip($serialLineItemIds)
+            );
+
+            if (!empty($downloadOnlyLineItems)) {
+                $downloadTemplateData = $templateData;
+                $downloadTemplateData['esdOrderLineItems'] = $downloadOnlyLineItems;
+                $downloadTemplateData['esdOrderListIds'] = array_diff_key(
+                    $templateData['esdOrderListIds'] ?? [],
+                    array_flip($serialLineItemIds)
+                );
+
                 if ($this->getSystemConfig()) {
-                    $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($event->getContext(), $order, $templateData);
+                    $event = new EsdDownloadPaymentStatusPaidDisabledZipEvent($event->getContext(), $order, $downloadTemplateData);
                     $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidDisabledZipEvent::EVENT_NAME);
                 } else {
-                    $event = new EsdDownloadPaymentStatusPaidEvent($event->getContext(), $order, $templateData);
+                    $event = new EsdDownloadPaymentStatusPaidEvent($event->getContext(), $order, $downloadTemplateData);
                     $this->eventDispatcher->dispatch($event, EsdDownloadPaymentStatusPaidEvent::EVENT_NAME);
                 }
             }

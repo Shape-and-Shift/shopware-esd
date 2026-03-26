@@ -10,7 +10,8 @@
         <tr>
             <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Pos.</strong></td>
             <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Name</strong></td>
-            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Ordnungsnummer</strong></td>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Seriennummer</strong></td>
+            <td bgcolor="#F7F7F2" style="border-bottom:1px solid #cccccc;"><strong>Download</strong></td>
         </tr>
 
         {% for esdSerial in esdData.esdSerials %}
@@ -20,6 +21,31 @@
                     {{ esdSerial.productName|u.wordwrap(80) }}
                 </td>
                 <td style="border-bottom:1px solid #cccccc;">{{ esdSerial.serial }}</td>
+                <td style="border-bottom:1px solid #cccccc;">
+                    {% if esdSerial.esdOrderId is defined %}
+                        {% if esdData.isDisableZipFile is defined and esdData.isDisableZipFile %}
+                            {% if esdData.esdMediaFiles[esdSerial.esdOrderId] is defined %}
+                                {% for esdMedia in esdData.esdMediaFiles[esdSerial.esdOrderId] %}
+                                    {% if order.orderCustomer.customer.guest %}
+                                        <a href="{{ rawUrl('frontend.sas.lineItem.media.url.guest', {esdOrderId: esdSerial.esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}" style="display: block;">{{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension }}</a>
+                                    {% else %}
+                                        <a href="{{ rawUrl('frontend.sas.lineItem.media.url', {esdOrderId: esdSerial.esdOrderId, mediaId: esdMedia.media.id}, salesChannel.domains|first.url) }}" style="display: block;">{{ esdMedia.media.fileName }}.{{ esdMedia.media.fileExtension }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% else %}
+                            {% if order.orderCustomer.customer.guest %}
+                                <a href="{{ rawUrl('frontend.sas.esd.download.guest', {esdOrderId: esdSerial.esdOrderId}, salesChannel.domains|first.url) }}">
+                                    Download
+                                </a>
+                            {% else %}
+                                <a href="{{ url('frontend.sas.esd.download', {esdOrderId: esdSerial.esdOrderId}) }}">
+                                    Download
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
     </table>

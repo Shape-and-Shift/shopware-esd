@@ -4,9 +4,13 @@ build:
       enabled: true
     assets:
       enabled: true
+      enable_es_build_for_admin: true
+      enable_es_build_for_storefront: false
     pack:
       excludes:
         paths:
           - .idea
+          - .claude
+          - var
           - .gitignore
           - SasEsd.zip

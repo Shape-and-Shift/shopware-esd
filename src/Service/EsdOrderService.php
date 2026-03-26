@@ -174,8 +174,9 @@ class EsdOrderService
 
         $templateData['esdOrderLineItems'] = $esdOrderLineItems;
         $templateData['esdOrderListIds'] = $esdOrderListIds;
+        $templateData['isDisableZipFile'] = $this->esdService->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME);
 
-        if (!$this->esdService->getSystemConfig(EsdMailTemplate::TEMPLATE_DOWNLOAD_DISABLED_ZIP_SYSTEM_CONFIG_NAME)) {
+        if (!$templateData['isDisableZipFile']) {
             /** @var OrderLineItemEntity $lineItem */
             foreach ($esdOrderLineItems as $lineItem) {
                 if (!\is_string($lineItem->getProductId())) {
@@ -203,6 +204,8 @@ class EsdOrderService
             $templateData['esdSerials'][] = [
                 'serial' => $serialOfEsdOrder->getSerial()->getSerial(),
                 'productName' => $serialOfEsdOrder->getOrderLineItem()->getLabel(),
+                'orderLineItemId' => $serialOfEsdOrder->getOrderLineItemId(),
+                'esdOrderId' => $serialOfEsdOrder->getId(),
             ];
         }
 

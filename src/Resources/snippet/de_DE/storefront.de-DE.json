@@ -1,4 +1,7 @@
 {
+    "checkout": {
+        "esd-serial-not-available": "Leider sind ein oder mehrere digitale Produkte in Ihrem Warenkorb derzeit nicht verfügbar."
+    },
     "sasEsd": {
         "account": {
             "headline": "Downloads",
@@ -23,7 +26,7 @@
                 "playButton": "Play",
                 "hideFilesButton": "Ausblenden",
                 "viewFilesButton": "Dateien anzeigen",
-                "downloadAllFilesByZipButton": "Laden Sie alle Dateien per Zip herunter",
+                "downloadAllFilesByZipButton": "Als Zip herunterladen",
                 "unlimitedDownload": "Unbegrenzt",
                 "files": "Dateien",
                 "fileNameLabel": "Dateiname",

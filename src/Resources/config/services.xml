@@ -198,9 +198,13 @@
         <!-- Validation -->
         <service id="Sas\Esd\Checkout\Order\Validation\EsdOrderValidationFactory"/>
 
-        <service id="Sas\Esd\Subscriber\CartSubscriber">
+        <service id="Sas\Esd\Storefront\Controller\CartLineItemControllerDecorator" decorates="Shopware\Storefront\Controller\CartLineItemController">
+            <argument type="service" id=".inner"/>
             <argument type="service" id="Sas\Esd\Service\EsdCartService"/>
-            <tag name="kernel.event_subscriber"/>
+            <tag name="controller.service_arguments"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Sas\Esd\Subscriber\ProductListingSubscriber">

@@ -1,4 +1,7 @@
 {
+    "checkout": {
+        "esd-serial-not-available": "Unfortunately, one or more digital products in your cart are currently out of stock."
+    },
     "sasEsd": {
         "account": {
             "headline": "Downloads",
@@ -23,7 +26,7 @@
                 "playButton": "Play",
                 "hideFilesButton": "Hide",
                 "viewFilesButton": "View files",
-                "downloadAllFilesByZipButton": "Download all files by zip",
+                "downloadAllFilesByZipButton": "Download as zip",
                 "unlimitedDownload": "Unlimited",
                 "files": "Files",
                 "fileNameLabel": "File name",
