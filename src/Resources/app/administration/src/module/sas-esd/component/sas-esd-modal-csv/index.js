@@ -1,6 +1,15 @@
 import { drop, every, forEach, get, isArray, map, set } from 'lodash';
 import Papa from 'papaparse';
-import mimeTypes from 'mime-types';
+
+const lookupMimeType = (fileName) => {
+    const ext = fileName.split('.').pop().toLowerCase();
+    const map = {
+        csv: 'text/csv',
+        txt: 'text/plain',
+        xls: 'application/vnd.ms-excel',
+    };
+    return map[ext] || false;
+};
 
 import template from './sas-esd-modal-csv.html.twig';
 
@@ -193,7 +202,7 @@ export default {
         },
         validFileMimeType() {
             const file = this.$refs.csv.files[0];
-            const mimeType = file.type === '' ? mimeTypes.lookup(file.name) : file.type;
+            const mimeType = file.type === '' ? lookupMimeType(file.name) : file.type;
             if (file) {
                 this.fileSelected = true;
                 this.isValidFileMimeType = this.validation ? this.validateMimeType(mimeType) : true;
