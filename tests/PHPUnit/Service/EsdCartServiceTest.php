@@ -75,7 +75,8 @@ class EsdCartServiceTest extends TestCase
             static::expectException(EsdException::class);
         }
 
-        $this->esdCartService->checkProductsWithSerialKey($productIds, $this->context);
+        $productQuantities = array_fill_keys($productIds, 1);
+        $this->esdCartService->checkProductsWithSerialKey($productQuantities, $this->context);
     }
 
     public function dataCheckProductsProvider(): array

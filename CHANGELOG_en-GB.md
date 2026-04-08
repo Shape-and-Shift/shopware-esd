@@ -1,3 +1,10 @@
+# 4.0.1
+- Fixed crash when adding ESD product with insufficient serial numbers to cart
+- Added cart validation to prevent adding more items than available serial numbers
+- Updated "Download all files by zip" button text to "Download as zip"
+- Fixed duplicate emails for ESD products with both serial numbers and media files
+- Serial email now includes download links when the product has media files attached
+
 # 4.0.0
 - Shopware 6.7 compatibility
 

@@ -26,14 +26,14 @@ class EsdCartService
 
     public function isCanCheckoutOrder(Cart $cart, Context $context): bool
     {
-        $lineItemIds = [];
+        $productQuantities = [];
 
         try {
             foreach ($cart->getLineItems() as $lineItem) {
-                $lineItemIds[] = $lineItem->getId();
+                $productQuantities[$lineItem->getId()] = $lineItem->getQuantity();
             }
 
-            $this->checkProductsWithSerialKey($lineItemIds, $context);
+            $this->checkProductsWithSerialKey($productQuantities, $context);
 
             return true;
         } catch (EsdException) {
@@ -42,13 +42,18 @@ class EsdCartService
     }
 
     /**
-     * @param array<string> $productIds
+     * @param array<string, int> $productQuantities map of productId => quantity
      *
      * @throws EsdException
      */
-    public function checkProductsWithSerialKey(array $productIds, Context $context): void
+    /**
+     * @param array<string, int> $productQuantities map of productId => quantity
+     *
+     * @throws EsdException
+     */
+    public function checkProductsWithSerialKey(array $productQuantities, Context $context): void
     {
-        $criteria = new Criteria($productIds);
+        $criteria = new Criteria(array_keys($productQuantities));
         $criteria->addAssociation('esd.serial.esdOrder');
 
         $products = $this->productRepository->search($criteria, $context)->getEntities();
@@ -71,9 +76,35 @@ class EsdCartService
                 return !$serial->getEsdOrder() instanceof EsdOrderEntity;
             });
 
-            if ($availableSerials->count() <= 0) {
+            $requestedQuantity = $productQuantities[$product->getId()] ?? 1;
+
+            if ($availableSerials->count() < $requestedQuantity) {
                 throw EsdException::productNotEnoughSerialKey($product->getId());
             }
         }
+    }
+
+    public function getAvailableSerialCount(string $productId, Context $context): ?int
+    {
+        $criteria = new Criteria([$productId]);
+        $criteria->addAssociation('esd.serial.esdOrder');
+
+        $product = $this->productRepository->search($criteria, $context)->getEntities()->first();
+        if (!$product) {
+            return null;
+        }
+
+        $productEsd = $product->getExtension('esd');
+        if (!$productEsd instanceof EsdEntity || !$productEsd->isHasSerial()) {
+            return null;
+        }
+
+        if (!$productEsd->getSerial() instanceof EsdSerialCollection || $productEsd->getSerial()->count() <= 0) {
+            return 0;
+        }
+
+        return $productEsd->getSerial()->filter(function (EsdSerialEntity $serial) {
+            return !$serial->getEsdOrder() instanceof EsdOrderEntity;
+        })->count();
     }
 }

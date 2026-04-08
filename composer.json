@@ -3,7 +3,7 @@
     "description":"ESD / Download plugin",
     "type":"shopware-platform-plugin",
     "keywords": ["esd", "download"],
-    "version":"4.0.0",
+    "version":"4.0.1",
     "license":"proprietary",
     "authors":[
         {
@@ -23,7 +23,7 @@
       "phpstan/phpstan": "^1.11.10",
       "phpcompatibility/php-compatibility": "^9.3",
       "squizlabs/php_codesniffer": "^3.6",
-      "infection/infection": "^0.28.0",
+      "infection/infection": "^0.29.0",
       "kubawerlos/php-cs-fixer-custom-fixers": "^v3.21.0",
       "symplify/easy-coding-standard": "^12.1.14",
       "friendsofphp/php-cs-fixer": "^v3.52.1"
