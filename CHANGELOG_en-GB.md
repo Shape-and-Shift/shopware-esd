@@ -1,3 +1,6 @@
+# 3.0.3
+* Fixed checkout TypeError when PayPal Plus is active by making the CheckoutController decorator extend the core CheckoutController
+
 # 3.0.2
 * Fixed issue that regarding the free ESD item
 

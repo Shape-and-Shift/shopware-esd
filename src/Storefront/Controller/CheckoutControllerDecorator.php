@@ -8,13 +8,12 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\CheckoutController;
-use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
-class CheckoutControllerDecorator extends StorefrontController
+class CheckoutControllerDecorator extends CheckoutController
 {
     public function __construct(
         private readonly CheckoutController $decoratedController,
@@ -26,6 +25,11 @@ class CheckoutControllerDecorator extends StorefrontController
     public function cartPage(Request $request, SalesChannelContext $context): Response
     {
         return $this->decoratedController->cartPage($request, $context);
+    }
+
+    public function cartJson(Request $request, SalesChannelContext $context): Response
+    {
+        return $this->decoratedController->cartJson($request, $context);
     }
 
     public function confirmPage(Request $request, SalesChannelContext $context): Response
