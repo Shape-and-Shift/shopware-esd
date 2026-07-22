@@ -1,3 +1,6 @@
+# 4.0.2
+- Fixed 500 error on /checkout/cart.json (off-canvas cart AJAX requests) caused by missing cartJson method in the checkout controller decorator
+
 # 4.0.1
 - Fixed crash when adding ESD product with insufficient serial numbers to cart
 - Added cart validation to prevent adding more items than available serial numbers

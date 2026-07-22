@@ -1,3 +1,6 @@
+# 4.0.2
+- 500-Fehler bei /checkout/cart.json (AJAX-Anfragen des Off-Canvas-Warenkorbs) behoben, verursacht durch fehlende cartJson-Methode im Checkout-Controller-Decorator
+
 # 4.0.1
 - Absturz beim Hinzufügen eines ESD-Produkts mit unzureichenden Seriennummern zum Warenkorb behoben
 - Warenkorb-Validierung hinzugefügt, um das Hinzufügen von mehr Artikeln als verfügbare Seriennummern zu verhindern

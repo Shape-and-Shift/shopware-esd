@@ -28,6 +28,11 @@ class CheckoutControllerDecorator extends StorefrontController
         return $this->decoratedController->cartPage($request, $context);
     }
 
+    public function cartJson(Request $request, SalesChannelContext $context): Response
+    {
+        return $this->decoratedController->cartJson($request, $context);
+    }
+
     public function confirmPage(Request $request, SalesChannelContext $context): Response
     {
         return $this->decoratedController->confirmPage($request, $context);
